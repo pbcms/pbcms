@@ -1,0 +1,7 @@
+RewriteEngine on
+
+RewriteCond %{DOCUMENT_ROOT}/updater.php -f
+RewriteRule  ^(.*)  updater.php [L]
+
+RewriteRule ^$ public/ [L]
+RewriteRule .* public/$0 [L]
