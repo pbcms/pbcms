@@ -169,19 +169,15 @@
                 $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_location' WHERE `name`='site-location'");
                 $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_indexing' WHERE `name`='site-indexing'");
 
-                $configfilecontent = "
-                    <?php
-                        define('PBCMS_DEBUG_MODE', false);
-                    
-                        define('DATABASE_HOSTNAME', '" . DATABASE_HOSTNAME . "');
-                        define('DATABASE_USERNAME', '" . DATABASE_USERNAME . "');
-                        define('DATABASE_PASSWORD', '" . DATABASE_PASSWORD . "');
-                        define('DATABASE_DATABASE', '" . DATABASE_DATABASE . "');
-                        define('DATABASE_TABLE_PREFIX', '" . DATABASE_TABLE_PREFIX . "');
-                ";
-
+                $configtemplate = file_get_contents(APP_DIR . '/sources/templates/config.template.php');
+                str_replace("VAL_PBCMS_DEBUG_MODE", "false", $configtemplate);
+                str_replace("VAL_DATABASE_HOSTNAME", DATABASE_HOSTNAME, $configtemplate);
+                str_replace("VAL_DATABASE_USERNAME", DATABASE_USERNAME, $configtemplate);
+                str_replace("VAL_DATABASE_PASSWORD", DATABASE_PASSWORD, $configtemplate);
+                str_replace("VAL_DATABASE_DATABASE", DATABASE_DATABASE, $configtemplate);
+                str_replace("VAL_DATABASE_TABLE_PREFIX", DATABASE_TABLE_PREFIX, $configtemplate);
                 $configfile = fopen(ROOT_DIR . "/config.php", "w") or die(json_encode(array("success" => false, "error" => "config_file_creation_error", "message"=>"Unable to create configuration file!")));
-                fwrite($configfile, $configfilecontent);
+                fwrite($configfile, $configtemplate);
                 fclose($configfile);
 
                 print_r(json_encode(array(
