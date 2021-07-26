@@ -197,7 +197,7 @@
         }
 
         public function validateUsername($username) {
-            if (preg_match("/[^A-Za-z0-9-_]/", $username)) {
+            if (preg_match("/[^A-Za-z0-9-_.]/", $username)) {
                 return false;
             } else {
                 if (strlen(strval(intval($username))) == strlen($username)) {
@@ -370,7 +370,7 @@
         public function getId($identifier, $byIdAllowed = true) {
             $sql = "SELECT `id` FROM `" . DATABASE_TABLE_PREFIX . "users` WHERE `email`='${identifier}'";
             if ($this->policy->get('usernames-enabled') == '1') {
-                $sql .= " OR `username`=${identifier}";
+                $sql .= " OR `username`='${identifier}'";
             }
 
             if ($byIdAllowed) {
