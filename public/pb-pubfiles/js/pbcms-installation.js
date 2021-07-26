@@ -135,7 +135,41 @@
                     });
                 },
                 finalize: () => {
-                    this.sectionFinished();
+                    var formData = new FormData();
+                    formData.append('FINALIZE', '1');
+                    formData.append('SITE_TITLE', document.querySelector('form.pbcms-installation input[name=site-title]').value);
+                    formData.append('SITE_DESCRIPTION', document.querySelector('form.pbcms-installation input[name=site-description]').value);
+                    formData.append('SITE_LOCATION', document.querySelector('form.pbcms-installation input[name=site-location]').value);
+                    formData.append('SITE_INDEXING', document.querySelector('form.pbcms-installation input[name=allow-indexing]').value);
+                    formData.append('DB_HOSTNAME', document.querySelector('form.pbcms-installation input[name=db-hostname]').value);
+                    formData.append('DB_USERNAME', document.querySelector('form.pbcms-installation input[name=db-username]').value);
+                    formData.append('DB_PASSWORD', document.querySelector('form.pbcms-installation input[name=db-password]').value);
+                    formData.append('DB_DATABASE', document.querySelector('form.pbcms-installation input[name=db-database]').value);
+                    formData.append('USER_FIRSTNAME', document.querySelector('form.pbcms-installation input[name=user-firstname]').value);
+                    formData.append('USER_LASTNAME', document.querySelector('form.pbcms-installation input[name=user-lastname]').value);
+                    formData.append('USER_USERNAME', document.querySelector('form.pbcms-installation input[name=user-username]').value);
+                    formData.append('USER_EMAIL', document.querySelector('form.pbcms-installation input[name=user-email]').value);
+                    formData.append('USER_PASSWORD', document.querySelector('form.pbcms-installation input[name=user-password]').value);
+                    const sec = document.querySelector('section[section-name=finalize]');
+    
+                    fetch(location.href, { 
+                        method: 'POST', 
+                        body: formData 
+                    }).then(res => res.json()).then(res => {
+                        if (res.success) {
+                            if (res.migration_logs.includes("Unable to insert newly executed migrations into migrations database")) {
+                                sec.querySelector('p.error').innerHTML = "<b>!!!INSTALLATION SUCCEEDED, BUT CRITICAL ERROR OCCURED WHILE REGISTERING DATABASE MIGRATIONS!!!</b><br><br>" + res.migration_logs;
+                            } else {
+                                location.href = document.querySelector('form.pbcms-installation input[name=site-location]').value;
+                            }
+                        } else {
+                            if (res.error == 'config_file_creation_error') {
+                                sec.querySelector('p.error').innerHTML = res.message;
+                            } else {
+                                sec.querySelector('p.error').innerHTML = "<pre>" + JSON.stringify(res) + "</pre>";
+                            }
+                        }
+                    });
                 }
             }
     

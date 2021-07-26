@@ -1,10 +1,18 @@
 <?php
+    require 'Database.php';
+
     function validateDatabase() {
         if (isset($_POST['DB_HOSTNAME']) && isset($_POST['DB_USERNAME']) && isset($_POST['DB_DATABASE'])) {
             $hostname = $_POST['DB_HOSTNAME'];
             $username = $_POST['DB_USERNAME'];
             $password = (isset($_POST['DB_PASSWORD']) ? $_POST['DB_PASSWORD'] : "");
             $database = $_POST['DB_DATABASE'];
+
+            define("DATABASE_HOSTNAME", $hostname);
+            define("DATABASE_USERNAME", $username);
+            define("DATABASE_PASSWORD", $password);
+            define("DATABASE_DATABASE", $database);
+            define("DATABASE_TABLE_PREFIX", "pb_");
 
             if (empty($_POST['DB_HOSTNAME']) || empty($_POST['DB_USERNAME']) || empty($_POST['DB_DATABASE'])) {
                 return array(
@@ -17,7 +25,7 @@
             $conn = new \mysqli($hostname, $username, $password, $database);
             if ($conn->connect_errno == 0) {
                 $tables = $conn->query('show tables');
-                if (count($tables->fetch_row()) > 0) {
+                if ($tables->num_rows > 0) {
                     return array(
                         "success" => false,
                         "status" => -1,
@@ -57,6 +65,12 @@
             $username = (isset($_POST['USER_USERNAME']) ? $_POST['USER_USERNAME'] : NULL);
             $email = $_POST['USER_EMAIL'];
             $password = $_POST['USER_PASSWORD'];
+
+            define("USER_FIRSTNAME", $firstname);
+            define("USER_LASTNAME", $lastname);
+            define("USER_USERNAME", $username);
+            define("USER_EMAIL", $email);
+            define("USER_PASSWORD", $password);
 
             if (empty($firstname) || empty($lastname) || empty($email) || empty($password)) {
                 return array(
@@ -117,8 +131,73 @@
         die();
     }
 
-    if (isset($_POST['CONFIGURE_DATABASE'])) {
-        
+    if (isset($_POST['FINALIZE'])) {
+        ini_set("display_errors", 1);
+        header("Content-Type: application/json");
+        $databaseValidation = (object) validateDatabase();
+        if ($databaseValidation->success) {
+            $userValidation = (object) validateUser();
+            if ($userValidation->success) {
+                $db = new \Library\Database();
+                $migrator = new \Library\DatabaseMigrator();
+
+                ob_start();     //Start logging migration.
+                $migrator->migrate();
+                $migrationlogs = ob_get_clean();
+
+                $firstname = USER_FIRSTNAME;
+                $lastname = USER_LASTNAME;
+                $username = USER_USERNAME;
+                $email = USER_EMAIL;
+                $password = password_hash(USER_PASSWORD, PASSWORD_DEFAULT);
+
+                if ($username != NULL) {
+                    $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "users` (`firstname`, `lastname`, `username`, `email`, `password`, `status`) VALUES ('$firstname', '$lastname', '$username', '$email', '$password', 'VERIFIED')");
+                    $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "relations` (`type`, `origin`, `target`) VALUES ('user:group', '$db->insert_id', '1')");
+                } else {
+                    $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "users` (`firstname`, `lastname`, `email`, `password`, `status`) VALUES ('$firstname', '$lastname', '$email', '$password', 'VERIFIED')");
+                    $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "relations` (`type`, `origin`, `target`) VALUES ('user:group', '$db->insert_id', '1')");
+                }
+
+                $site_title = $_POST["SITE_TITLE"];
+                $site_description = $_POST["SITE_DESCRIPTION"];
+                $site_location = $_POST["SITE_LOCATION"];
+                $site_indexing = ($_POST["SITE_INDEXING"] == "on" ? 1 : 0);
+                
+                $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_title' WHERE `name`='site-title'");
+                $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_description' WHERE `name`='site-description'");
+                $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_location' WHERE `name`='site-location'");
+                $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_indexing' WHERE `name`='site-indexing'");
+
+                $configfilecontent = "
+                    <?php
+                        define('PBCMS_DEBUG_MODE', false);
+                    
+                        define('DATABASE_HOSTNAME', '" . DATABASE_HOSTNAME . "');
+                        define('DATABASE_USERNAME', '" . DATABASE_USERNAME . "');
+                        define('DATABASE_PASSWORD', '" . DATABASE_PASSWORD . "');
+                        define('DATABASE_DATABASE', '" . DATABASE_DATABASE . "');
+                        define('DATABASE_TABLE_PREFIX', '" . DATABASE_TABLE_PREFIX . "');
+                ";
+
+                $configfile = fopen(ROOT_DIR . "/config.php", "w") or die(json_encode(array("success" => false, "error" => "config_file_creation_error", "message"=>"Unable to create configuration file!")));
+                fwrite($configfile, $configfilecontent);
+                fclose($configfile);
+
+                print_r(json_encode(array(
+                    "success" => true,
+                    "migration_logs" => $migrationlogs
+                )));
+
+                die();
+            } else {
+                print_r(json_encode($userValidation));
+                die();
+            }
+        } else {
+            print_r(json_encode($databaseValidation));
+            die();
+        }
     }
 ?>
 
