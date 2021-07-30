@@ -2,7 +2,7 @@
     namespace Library;
 
     class Modules {
-        private $loaded = array();
+        private static $loaded = array();
 
         public function initialize($data = array()) {
             $modules = $this->list('enabled');
@@ -39,11 +39,11 @@
         }
 
         public function load($module, $data = array()) {
-            if ($this->exists($module)) {
+            if ($this->exists($module) && !$this->isLoaded($module)) {
                 if ($this->enabled($module) || $force) {
                     require DYNAMIC_DIR . '/modules/' . $module . '/pb_entry.php';
                     $class = 'Module\\' . $this->prepareFunctionNaming($module);
-                    $this->loaded[$module] = new $class($data);
+                    self::$loaded[$module] = new $class($data);
                     return true;
                 } else {
                     return false;
@@ -56,26 +56,68 @@
         public function forwardRequest($module, $params) {
             if ($this->exists($module)) {
                 if ($this->enabled($module)) {
-                    if (isset($this->loaded[$module])) {
-                        if (method_exists($this->loaded[$module], 'requestHandler')) {
-                            $this->loaded[$module]->requestHandler($params);
+                    if (isset(self::$loaded[$module])) {
+                        if (method_exists(self::$loaded[$module], 'requestHandler')) {
+                            return (object) array(
+                                "success" => true,
+                                "response" => self::$loaded[$module]->requestHandler($params)
+                            );
                         } else {
-                            return array(
+                            return (object) array(
+                                "success" => false,
                                 "error" => "no_request_handler"
                             );
                         }
                     } else {
-                        return array(
+                        return (object) array(
+                            "success" => false,
                             "error" => "module_unloaded"
                         );
                     }
                 } else {
-                    return array(
+                    return (object) array(
+                        "success" => false,
                         "error" => "module_disabled"
                     );
                 }
             } else {
-                return array(
+                return (object) array(
+                    "success" => false,
+                    "error" => "unknown_module"
+                );
+            }
+        }
+
+        public function loadConfigurator($module, $params) {
+            if ($this->exists($module)) {
+                if ($this->enabled($module)) {
+                    if (isset(self::$loaded[$module])) {
+                        if (method_exists(self::$loaded[$module], 'configurator')) {
+                            return (object) array(
+                                "success" => true,
+                                "response" => self::$loaded[$module]->configurator($params)
+                            );
+                        } else {
+                            return (object) array(
+                                "success" => false,
+                                "error" => "no_configurator_available"
+                            );
+                        }
+                    } else {
+                        return (object) array(
+                            "success" => false,
+                            "error" => "module_unloaded"
+                        );
+                    }
+                } else {
+                    return (object) array(
+                        "success" => false,
+                        "error" => "module_disabled"
+                    );
+                }
+            } else {
+                return (object) array(
+                    "success" => false,
                     "error" => "unknown_module"
                 );
             }
@@ -101,6 +143,10 @@
 
         public function disabled($module) {
             return file_exists(DYNAMIC_DIR . '/modules/' . $module . '/.disabled');
+        }
+
+        public function isLoaded($module) {
+            return isset(self::$loaded[$module]);
         }
 
         public function prepareFunctionNaming($str) {

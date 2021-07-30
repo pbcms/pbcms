@@ -1,50 +1,8 @@
 <?php
     namespace Controller;
 
-    class System extends \Library\Controller {
-        public function PbDashboard($params) {
-            $this->view("dashboard/overview");
-            $this->template("pb-dashboard");
-        }
-
-        public function PbAuth($params) {
-            
-        }
-
-        public function PbApi($params) {
-            if (isset($params[0])) {
-                $api = $params[0];
-                array_shift($params);
-
-                if (\Registry\Api::exists($api)) {
-                    \Registry\Api::call($api, $params);
-                } else {
-                    \Helper\Respond::JSON((object) array(
-                        "success" => false,
-                        "error" => "unknown_api",
-                        "message" => "The requested API does not exist."
-                    ));
-                }
-            } else {
-                \Helper\Respond::JSON((object) array(
-                    "success" => false,
-                    "error" => "missing_api",
-                    "message" => "No API has been requested."
-                ));
-            }
-        }
-
-        public function Index($params) {
-            echo 'This is my website';
-        }
-
-        public function Token() {
-            $token = new \Library\Token;
-            echo '<pre>';
-
-            $u = new \Library\Users;
-            print_r(\Helper\Json::encode($u->validatePassword('Password1!!!', 'STRONG')));
-        }
+    class System {
+        
     }
 
     class PbError extends \Library\Controller {

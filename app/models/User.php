@@ -9,9 +9,9 @@
         private $token = NULL;
 
         public function __construct() {
-            $this->user = new \Core\User;
-            $this->policy = new \Core\Policy;
-            $this->token = new \Core\Token;
+            $this->user = new \Library\User;
+            $this->policy = new \Library\Policy;
+            $this->token = new \Library\Token;
         }
 
         public function authenticate($identifier, $password, $byIdAllowed = false) {

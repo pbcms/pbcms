@@ -1,6 +1,9 @@
 <?php
     require 'Database.php';
 
+    use Library\Database;
+    use Library\DatabaseMigrator as Migrator;
+
     function validateDatabase() {
         if (isset($_POST['DB_HOSTNAME']) && isset($_POST['DB_USERNAME']) && isset($_POST['DB_DATABASE'])) {
             $hostname = $_POST['DB_HOSTNAME'];
@@ -138,8 +141,8 @@
         if ($databaseValidation->success) {
             $userValidation = (object) validateUser();
             if ($userValidation->success) {
-                $db = new \Library\Database();
-                $migrator = new \Library\DatabaseMigrator();
+                $db = new Database();
+                $migrator = new Migrator();
 
                 ob_start();     //Start logging migration.
                 $migrator->migrate();
@@ -170,12 +173,13 @@
                 $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_indexing' WHERE `name`='site-indexing'");
 
                 $configtemplate = file_get_contents(APP_DIR . '/sources/templates/config.template.php');
-                str_replace("VAL_PBCMS_DEBUG_MODE", "false", $configtemplate);
-                str_replace("VAL_DATABASE_HOSTNAME", DATABASE_HOSTNAME, $configtemplate);
-                str_replace("VAL_DATABASE_USERNAME", DATABASE_USERNAME, $configtemplate);
-                str_replace("VAL_DATABASE_PASSWORD", DATABASE_PASSWORD, $configtemplate);
-                str_replace("VAL_DATABASE_DATABASE", DATABASE_DATABASE, $configtemplate);
-                str_replace("VAL_DATABASE_TABLE_PREFIX", DATABASE_TABLE_PREFIX, $configtemplate);
+                $configtemplate = str_replace("VAL_PBCMS_DEBUG_MODE", "false", $configtemplate);
+                $configtemplate = str_replace("VAL_PBCMS_SAFE_MODE", "false", $configtemplate);
+                $configtemplate = str_replace("VAL_DATABASE_HOSTNAME", DATABASE_HOSTNAME, $configtemplate);
+                $configtemplate = str_replace("VAL_DATABASE_USERNAME", DATABASE_USERNAME, $configtemplate);
+                $configtemplate = str_replace("VAL_DATABASE_PASSWORD", DATABASE_PASSWORD, $configtemplate);
+                $configtemplate = str_replace("VAL_DATABASE_DATABASE", DATABASE_DATABASE, $configtemplate);
+                $configtemplate = str_replace("VAL_DATABASE_TABLE_PREFIX", DATABASE_TABLE_PREFIX, $configtemplate);
                 $configfile = fopen(ROOT_DIR . "/config.php", "w") or die(json_encode(array("success" => false, "error" => "config_file_creation_error", "message"=>"Unable to create configuration file!")));
                 fwrite($configfile, $configtemplate);
                 fclose($configfile);

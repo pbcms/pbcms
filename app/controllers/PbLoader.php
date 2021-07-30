@@ -6,21 +6,8 @@
             
         }
 
-        public function Theme($params) {
-            $path = implode('/', $params);
-            $path = str_replace('.../', './', $path);
-            $path = str_replace('../', './', $path);
-
-            if (file_exists(DYNAMIC_DIR . '/themes/' . $path)) {
-                header("Content-Type: " . mime_content_type(DYNAMIC_DIR . '/themes/' . $path));
-                print_r(file_get_contents(DYNAMIC_DIR . '/themes/' . $path));
-            } else {
-                $this->displayError(404, 'not found', 'not found');
-            }
-        }
-
         public function Module($params) {
-            global $modules;
+            $modules = new Modules;
             $module = $params[0];
 
             array_shift($params);
@@ -45,7 +32,7 @@
         }
 
         public function ModuleStatic($params) {
-            global $modules;
+            $modules = new Modules;
             $module = $params[0];
 
             if ($modules->exists($module)) {

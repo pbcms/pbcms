@@ -17,6 +17,14 @@
     <body>
         <div class="sidebar">
             <div class="sidebar-inner">
+                <?php
+                    if (Core::Safemode()) {
+                        ?>
+                            <b style="color:red; position:absolute;text-align:center;width:300px;">IN SAFE MODE</b>
+                        <?php
+                    }
+                ?>
+
                 <div class="sidebar-top-branding">
                     <img src="<?php echo SITE_LOCATION; ?>/pb-pubfiles/img/pb-logos/full-dark.png" alt="PBCMS Logo (Full, Dark)">
                 </div>
@@ -121,7 +129,7 @@
             <div class="content-container">
                 <div class="content-shadow"></div>
                 <div class="content">
-
+                    <?php echo $content; ?>
                 </div>
             </div>
         </div>

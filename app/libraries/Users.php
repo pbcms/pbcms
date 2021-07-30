@@ -1,6 +1,8 @@
 <?php
     namespace Library;
 
+    use Helper\Validate as Validator;
+
     class Users {
         private $db = NULL;
         private $policy = NULL;
@@ -19,10 +21,10 @@
         }
 
         public function create($user) {
-            $user = \Helper\Validate::trimObject($user);
-            $missing = \Helper\Validate::listMissing($this->required, $user);
+            $user = Validator::trimObject($user);
+            $missing = Validator::listMissing($this->required, $user);
             if (count($missing) == 0) {
-                $user = (object) \Helper\Validate::removeUnlisted($this->allowed, $user);
+                $user = (object) Validator::removeUnlisted($this->allowed, $user);
                 if (isset($user->status) && !in_array($user->status, $this->userStatusses)) unset($user->status);
 
                 $user->email = filter_var($user->email, FILTER_SANITIZE_EMAIL);
@@ -211,7 +213,7 @@
         public function find($identifier, $byIdAllowed = true) {
             $sql = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "users` WHERE `email`='${identifier}'";
             if ($this->policy->get('usernames-enabled') == '1') {
-                $sql .= " OR `username`=${identifier}";
+                $sql .= " OR `username`='${identifier}'";
             }
 
             if ($byIdAllowed) {
@@ -222,6 +224,7 @@
             if ($res->num_rows > 0) {
                 $res = (object) $res->fetch_assoc();
                 $res->fullname = $res->firstname . ' ' . $res->lastname;
+                $res->id = intval($res->id);
                 return $res;
             } else {
                 return NULL;
@@ -241,8 +244,8 @@
             if (count(array_keys(get_object_vars($input))) > 0) {
                 $allowedFilters = array("limit", "offset", "order");
 
-                $filters = (object) \Helper\Validate::removeUnlisted($allowedFilters, $input);
-                $properties = (object) \Helper\Validate::removeUnlisted($this->filterAllowedProperties, $input);
+                $filters = (object) Validator::removeUnlisted($allowedFilters, $input);
+                $properties = (object) Validator::removeUnlisted($this->filterAllowedProperties, $input);
 
                 if (count(array_keys(get_object_vars($properties))) > 0) {
                     $sql .= " WHERE";
@@ -268,7 +271,7 @@
         public function update($user, $changes) {
             $user = $this->find($user);
             if ($user) {
-                $changes = (object) \Helper\Validate::removeUnlisted($this->allowed, $changes);
+                $changes = (object) Validator::removeUnlisted($this->allowed, $changes);
                 if (count(array_keys((array) $changes)) > 0) {
                     if (isset($changes->status) && !in_array($user->status, $this->userStatusses)) unset($user->status);
                     if (isset($changes->email)) {
@@ -379,7 +382,7 @@
 
             $res = $this->db->query($sql);
             if ($res->num_rows > 0) {
-                return $res->fetch_assoc()['id'];
+                return intval($res->fetch_assoc()['id']);
             } else {
                 return NULL;
             }

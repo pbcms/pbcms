@@ -290,6 +290,25 @@ form.pbcms-installation .sections section[section-name=preloader].current-sectio
     background-color: var(--c-blue-dark);
 }
 
+.pbcms-system-display .input-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.pbcms-system-display .input-buttons > button:not(:last-child),
+.pbcms-system-display .input-buttons > a:not(:last-child) {
+    margin-right: 15px;
+}
+
+.pbcms-system-display .input-buttons > a {
+    color: var(--c-blue-dark);
+    margin-top: 16px;
+}
+
+.pbcms-system-display .input-buttons > a:hover {
+    color: var(--c-blue-light);
+}
+
 /* ANIMATIONS */
 
 @-webkit-keyframes rotate {

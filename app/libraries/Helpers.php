@@ -1,6 +1,9 @@
 <?php
     namespace Helper;
 
+
+    
+
     class Query {
         public static function encode($data) {
             $res = '';
@@ -65,7 +68,9 @@
      }
 
     class Header {
-        public static function Location($loc) {
+        public static function Location($loc, $status = 302) {
+            if ($status < 300 || $status > 399) $status = 302;
+            http_response_code($status);
             header("Location: ${loc}");
         }
 
@@ -80,7 +85,7 @@
     
     class Request {
         public static function authenticated($redirect = false, $followup = '') {
-            if (!isset($_COOKIE['clientToken'])) {
+            if (!isset($_COOKIE['pb-refresh-token'])) {
                 return false;
             } else {
                 $clientToken = $_COOKIE['clientToken'];
@@ -120,6 +125,19 @@
                 )); 
 
                 exit();
+            }
+        }
+
+        public static function method($lowercase = false) {
+            return ($lowercase ? strtolower($_SERVER['REQUEST_METHOD']) : strtoupper($_SERVER['REQUEST_METHOD']));
+        }
+
+        public static function requireMethod($method) {
+            if (self::method() !== strtoupper($method)) {
+                ApiResponse::error('invalid_request_method', "The request was made with an incorrect request method. (The '" . strtoupper($method) . "' method is required)");
+                return false;
+            } else {
+                return true;
             }
         }
     }

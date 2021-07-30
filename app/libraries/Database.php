@@ -6,13 +6,13 @@
         private $username = DATABASE_USERNAME;
         private $password = DATABASE_PASSWORD;
         private $database = DATABASE_DATABASE;
-        protected $conn = NULL;
+        protected static $conn = NULL;
 
         public function __construct() {
             $this->insert_id = NULL;
-            $this->conn = new \mysqli($this->hostname, $this->username, $this->password, $this->database);
+            if (self::$conn == NULL) self::$conn = new \mysqli($this->hostname, $this->username, $this->password, $this->database);
 
-            if ($this->conn->connect_error) {
+            if (self::$conn->connect_error) {
                 die("Error 500: Connection to the database failed!");
             }
         }
@@ -22,22 +22,18 @@
         }
 
         public function query($sql) {
-            $res = $this->conn->query($sql);
-            $this->insert_id = $this->conn->insert_id;
+            $res = self::$conn->query($sql);
+            $this->insert_id = self::$conn->insert_id;
             return $res;
-        }
-        
-        public function close() {
-            return $this->conn->close();
         }
 
         public function escape($input) {
-            return $this->conn->real_escape_string($input);
+            return self::$conn->real_escape_string($input);
         }
 
         public function escapeObject($data) {
             $data = (object) $data;
-            foreach($data as $key => $value) $data->{$key} = $this->conn->real_escape_string($value);
+            foreach($data as $key => $value) $data->{$key} = self::$conn->real_escape_string($value);
             return $data;
         }
     }

@@ -1,6 +1,6 @@
 RewriteEngine on
 
-RewriteCond %{DOCUMENT_ROOT}/updater.php -f
+RewriteCond %{DOCUMENT_ROOT}/execute-update -f
 RewriteRule  ^(.*)  updater.php [L]
 
 RewriteRule ^$ public/ [L]

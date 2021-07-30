@@ -1,2 +1,3 @@
 <?php
-    require_once('../app/Core.php');
+    ini_set('display_errors', 1);
+    require_once('../app/Loader.php');

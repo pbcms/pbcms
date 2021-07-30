@@ -1,5 +1,6 @@
 <?php
     define('PBCMS_DEBUG_MODE', false);
+    define('PBCMS_SAFE_MODE', false);
 
     define('DATABASE_HOSTNAME', '');
     define('DATABASE_USERNAME', '');
