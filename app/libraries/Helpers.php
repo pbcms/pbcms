@@ -1,9 +1,6 @@
 <?php
     namespace Helper;
 
-
-    
-
     class Query {
         public static function encode($data) {
             $res = '';
@@ -132,9 +129,26 @@
             return ($lowercase ? strtolower($_SERVER['REQUEST_METHOD']) : strtoupper($_SERVER['REQUEST_METHOD']));
         }
 
+        public static function parsePost() {
+            $db = new \Library\Database;
+            return $db->escapeObject($_POST);
+        }
+
         public static function requireMethod($method) {
             if (self::method() !== strtoupper($method)) {
                 ApiResponse::error('invalid_request_method', "The request was made with an incorrect request method. (The '" . strtoupper($method) . "' method is required)");
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        public static function requireData($properties, $origin = NULL) {
+            if ($origin == NULL) $origin = $_POST;
+            $missing = Validate::listMissing($properties, $origin);
+
+            if (count($missing) > 0) {
+                ApiResponse::error('missing_information', 'The following post information is missing from the request: ' . join(',', $missing) . '.');
                 return false;
             } else {
                 return true;

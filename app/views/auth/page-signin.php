@@ -17,6 +17,11 @@
     </span>
 </div>
 
+<div class="input-checkbox">
+    <input type="checkbox" name="stay-signedin">
+    <span>Stay signed-in?</span>
+</div>
+
 <div class="input-buttons">
     <button type="submit" class="process-section">
         Continue

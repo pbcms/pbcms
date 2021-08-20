@@ -4,6 +4,7 @@
     use Library\Token;
     use Library\Sessions;
     use Library\Database;
+    use Library\PasswordPolicies;
     use Helper\ApiResponse as Respond;
     use Helper\Request as Request;
     use Helper\Validate as Validate;
@@ -13,48 +14,45 @@
             case 'create-session': 
                 $db = new Database();
                 $required = array("identifier", "password");
-                $postdata = $db->escapeObject($_POST);
-                $missing = Validate::listMissing($required, $postdata);
+                $postdata = Request::parsePost();
 
                 if (!Request::requireMethod('post')) die();
-                if (count($missing) > 0) {
-                    Respond::error('missing_information', 'The following post information is missing from the request: ' . join(',', $missing) . '.');
-                } else {
-                    $users = new Users;
-                    $info = $users->find($postdata->identifier, false);
-                    if ($info) {
-                        if (password_verify($postdata->password, $info->password)) {
-                            $tokens = new Token;
-                            $sessions = new Sessions;
-                            $policy = new Policy;
+                if (!Request::requireData($required)) die();
 
-                            if ($info->status == "LOCKED") {
-                                Respond::error('user_locked', "The user you are trying to create a session for has been locked by the system or an administrator.");
-                                die();
-                            }
+                $users = new Users;
+                $info = $users->find($postdata->identifier, false);
+                if ($info) {
+                    if (password_verify($postdata->password, $info->password)) {
+                        $tokens = new Token;
+                        $sessions = new Sessions;
+                        $policy = new Policy;
 
-                            if (intval($policy->get('allow-stay-signedin')) == 1 && isset($postdata->stay_signedin) && intval($postdata->stay_signedin) == 1) {
-                                $session = $sessions->create($info->id, false);
-                                $token = $tokens->create('refresh-token', array("session" => $session), false);
-                            } else {
-                                $session = $sessions->create($info->id);
-                                $token = $tokens->create('refresh-token', array("session" => $session));
-                            }
+                        if ($info->status == "LOCKED") {
+                            Respond::error('user_locked', "The user you are trying to create a session for has been locked by the system or an administrator.");
+                            die();
+                        }
 
-                            if ($token->success) {
-                                $secure = (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) ? true : false);
-                                $url = parse_url(SITE_LOCATION);
-                                setcookie('pb-refresh-token', $token->token, 2147483647, $url['path'], $url['host'], $secure, true);
-                                Respond::success();
-                            } else {
-                                Respond::error($token->error, "An error occured while creating the refresh-token");
-                            }
+                        if (intval($policy->get('allow-stay-signedin')) == 1 && isset($postdata->stay_signedin) && intval($postdata->stay_signedin) == 1) {
+                            $session = $sessions->create($info->id, false);
+                            $token = $tokens->create('refresh-token', array("session" => $session), false);
                         } else {
-                            Respond::error('invalid_password', "An invalid password has been provided for the user identified by $postdata->identifier.");
+                            $session = $sessions->create($info->id);
+                            $token = $tokens->create('refresh-token', array("session" => $session));
+                        }
+
+                        if ($token->success) {
+                            $secure = (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) ? true : false);
+                            $url = parse_url(SITE_LOCATION);
+                            setcookie('pb-refresh-token', $token->token, 2147483647, $url['path'], $url['host'], $secure, true);
+                            Respond::success();
+                        } else {
+                            Respond::error($token->error, "An error occured while creating the refresh-token");
                         }
                     } else {
-                        Respond::error('unknown_user', "A user identified by $postdata->identifier does not exist.");
+                        Respond::error('invalid_password', "An invalid password has been provided for the user identified by $postdata->identifier.");
                     }
+                } else {
+                    Respond::error('unknown_user', "A user identified by $postdata->identifier does not exist.");
                 }
                 
                 break;
@@ -111,6 +109,44 @@
                 break;
             case 'authenticated':
                 
+
+                break;
+            case 'password-policy':
+                $policy = new Policy;
+                $passwordPolicies = new PasswordPolicies();
+
+                $result = $policy->get('password-policy');
+                $policies = (array) $passwordPolicies->properties();
+                if (explode(':', $result)[0] == "CUSTOM") {
+                    $type = explode(':', $result)[0];
+                    $result = explode(':', $result)[1];
+                } else {
+                    $type = $result;
+                    $result = $passwordPolicies->get($result);
+                }
+
+                Respond::success(array(
+                    "type" => $type,
+                    "policy" => $result
+                ));
+
+                break;
+            case 'validate-password':
+                $users = new Users;
+                $required = array("password");
+                $postdata = Request::parsePost();
+
+                if (!Request::requireMethod('post')) die();
+                if (!Request::requireData($required)) die();
+
+                if (isset($postdata->policy)) {
+                    $res = $users->validatePassword($postdata->password, $postdata->policy);
+                } else {
+                    $res = $users->validatePassword($postdata->password);
+                }
+
+                $res->valid = $res->success;
+                Respond::success($res);
 
                 break;
         }

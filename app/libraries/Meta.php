@@ -1,6 +1,8 @@
 <?php
     namespace Library;
 
+    use \Registry\Event;
+
     class Meta {
         private $meta = array(
             "charset" => "UTF-8",
@@ -21,6 +23,11 @@
         );
 
         public function __construct($batch = array()) {
+            $eventResult = Event::trigger("meta_class_initiated", $this->meta);
+            foreach($eventResult as $eventBatch) {
+                if (is_array($eventBatch)) $this->batch($eventBatch);
+            }
+
             $this->batch($batch);
         }
 
@@ -84,7 +91,15 @@
         }
 
         public function generate($meta = NULL) {
-            if ($meta == NULL) $meta = $this->meta;
+            if ($meta == NULL) {
+                $eventResult = Event::trigger("meta_class_generation", $this->meta);
+                foreach($eventResult as $eventBatch) {
+                    if (is_array($eventBatch)) $this->batch($eventBatch);
+                }
+
+                $meta = $this->meta;
+            }
+
             $generated = "";
             foreach($meta as $tag => $value) {
                 if ($tag == 'charset') {

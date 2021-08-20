@@ -231,6 +231,10 @@ form.pbcms-installation .sections section[section-name=preloader].current-sectio
     color: red !important;
 }
 
+.pbcms-system-display .input-checkbox input {
+    margin-right: 4px;
+}
+
 .pbcms-system-display .input-toggle {
     margin-top: 15px;
     display: flex;

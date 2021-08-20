@@ -93,6 +93,7 @@
         }
 
         public function validatePassword($password, $passpolicy = '') {
+            $passpolicy = strtoupper($passpolicy);
             $data = (object) array(
                 "policy" => $this->policy->get('password-policy'),
                 "uppercase" => boolval(preg_match('@[A-Z]@', $password)),
@@ -128,10 +129,10 @@
 
             $data->plainEnforcedPolicy = 'score=1';
             if (isset($policies[$data->policy])) {
-                $data->plainEnforcedPolicy = $policies[$data->policy];
+                $data->plainEnforcedPolicy = strtolower($policies[$data->policy]);
             } else if (explode(':', $passpolicy)[0] == "CUSTOM") {
                 $data->policy = "CUSTOM";
-                $data->plainEnforcedPolicy = explode(':', $passpolicy)[1];
+                $data->plainEnforcedPolicy = strtolower(explode(':', $passpolicy)[1]);
             } else {
                 $data->policy = "STRONG";
             }
@@ -142,7 +143,7 @@
             foreach($data->enforcedPolicy as $item) {
                 $item = explode('=', $item);
                 $key = $item[0];
-                $value = (isset($item[1]) ? $item[1] : 1);
+                $value = (isset($item[1]) ? $item[1] : NULL);
 
                 switch($key) {
                     case "uppercase":
@@ -174,13 +175,19 @@
                         
                         break;
                     case "length":
+                        if ($value != NULL) {
+                            $data->minimumLength = $value;
+                            $factors->length = $data->length >= $data->minimumLength;
+                        }
+                            
                         if (!$factors->length) {
                             $result = false;
                             array_push($issues, $key);
                         }
-                        
+
                         break;
                     case "score":
+                        if ($value == NULL) $value = 1;
                         if (!($data->score >= floatval($value))) {
                             $result = false;
                             array_push($issues, $key);
