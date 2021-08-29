@@ -3,6 +3,7 @@
 
     use Helper\Header;
     use Helper\Respond;
+    use Helper\Request;
     use Registry\Auth as Callback;
 
     class PbAuth extends \Library\Controller {
@@ -11,22 +12,38 @@
         }
 
         public function Signin($params) {
+            if (Request::signedin() && !isset($_GET['forced'])) {
+                Header::Location(SITE_LOCATION . (isset($_GET['followup']) ? $_GET['followup'] : 'pb-dashboard'));
+                die();
+            }
+
             $this->view('auth/page-signin');
             $this->template('pb-portal', array(
                 "title" => "Signin",
                 "subtitle" => "Signin to your account.",
                 "description" => "Sign into your account on " . SITE_TITLE,
-                "copyright" => "&copy; " . SITE_TITLE . " " . date("Y")
+                "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
+                "body" => array(
+                    ['script', 'pb-pages-auth-signin.js', array("origin" => "pubfiles")]
+                )
             ));
         } 
 
         public function Signup($params) {
+            if (Request::signedin() && !isset($_GET['forced'])) {
+                Header::Location(SITE_LOCATION . (isset($_GET['followup']) ? $_GET['followup'] : 'pb-dashboard'));
+                die();
+            }
+
             $this->view('auth/page-signup');
             $this->template('pb-portal', array(
                 "title" => "Signup",
                 "subtitle" => "Make your new account.",
                 "description" => "Make a new account on " . SITE_TITLE,
-                "copyright" => "&copy; " . SITE_TITLE . " " . date("Y")
+                "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
+                "body" => array(
+                    ['script', 'pb-pages-auth-signup.js', array("origin" => "pubfiles")]
+                )
             ));
         }
 

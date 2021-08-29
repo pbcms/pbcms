@@ -78,51 +78,124 @@
         public static function ContentType($type) {
             header("Content-Type: ${type}");
         }
+
+        public static function Authorization() {        //Credit: https://stackoverflow.com/a/40582472
+            $headers = null;
+            if (isset($_SERVER['Authorization'])) {
+                $headers = trim($_SERVER["Authorization"]);
+            } else if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+                $headers = trim($_SERVER["HTTP_AUTHORIZATION"]);
+            } else if (function_exists('apache_request_headers')) {
+                $requestHeaders = apache_request_headers();
+                $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
+                if (isset($requestHeaders['Authorization'])) $headers = trim($requestHeaders['Authorization']);
+            }
+            
+            return $headers;
+        }
     }
     
     class Request {
-        public static function authenticated($redirect = false, $followup = '') {
-            if (!isset($_COOKIE['pb-refresh-token'])) {
-                return false;
-            } else {
-                $clientToken = $_COOKIE['clientToken'];
-                $decoded = $this->token->decodeClientToken($clientToken);
-                if ($decoded->success) {
-                    return true;
+        public static function sessionInfo($fromRefreshToken = false) {
+            if ($fromRefreshToken) {
+                if (isset($_COOKIE['pb-refresh-token'])) {
+                    $token = new \Library\Token;
+                    $decoded = $token->decode('refresh-token', $_COOKIE['pb-refresh-token']);
+                    if ($decoded->success) {
+                        $sessionUUID = $decoded->payload->session;
+                    } else {
+                        return (object) array(
+                            "success" => false,
+                            "error" => $decoded->error,
+                            "message" => "An error occured while decoding the refresh token."
+                        );
+                    }
                 } else {
-                    return false;
-                }
-            }
-        }
-
-        public static function austhenticated($userModel, $redirect = false, $followup = '') {
-            if (!$userModel->authenticated()) {
-                if ($redirect) {
-                    $followup = ($followup == '' ? '' : '?followup=' . $followup);
-                    Header::Location('/account/signin' . $followup);
-                } else {
-                    Header::JSON();
-                    print_r(json_encode(array(
+                    return (object) array(
                         "success" => false,
-                        "error" => "not_authenticated",
-                        "message" => "Je bent niet aangemeld."
-                    )));
+                        "error" => "missing_refresh_token",
+                        "message" => "No refresh token present."
+                    );
                 }
+            } else {
+                $headers = Header::Authorization();
+                if (!empty($headers)) {
+                    if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
+                        $token = new \Library\Token;
+                        $decoded = $token->decode('access-token', $matches[1]);
+                        if ($decoded->success) {
+                            $sessionUUID = $decoded->payload->session;
+                        } else {
+                            return (object) array(
+                                "success" => false,
+                                "error" => $decoded->error,
+                                "message" => "An error occured while decoding the access token."
+                            );
+                        }
+                    } else {
+                        return (object) array(
+                            "success" => false,
+                            "error" => "invalid_authorization_header",
+                            "message" => "Invalid authorization header present, expecting Bearer token."
+                        );
+                    }
+                } else {
+                    return (object) array(
+                        "success" => false,
+                        "error" => "missing_authorization_header",
+                        "message" => "No authorization header present."
+                    );
+                }
+            }
+            
+            $sessions = new \Library\Sessions;
+            $session = $sessions->info($sessionUUID);
+            if ($session) {
+                if ($session->expired) {
+                    return (object) array(
+                        "success" => false,
+                        "error" => "session_expired",
+                        "message" => "The requested session has since expired."
+                    );
+                } else {
+                    $users = new \Library\Users;
+                    $user = $users->info($session->user);
 
-                exit();
+                    if ($user != NULL) {
+                        if ($user->status == "LOCKED") return (object) array(
+                            "success" => false,
+                            "error" => "user_locked",
+                            "message" => "The user you are trying to request an access token for has been locked by the system or an administrator."
+                        );
+
+                        return (object) array(
+                            "success" => true,
+                            "info" => $session
+                        );
+                    } else {
+                        return (object) array(
+                            "success" => false,
+                            "error" => "unknown_user",
+                            "message" => "The user you are trying to request an access token for does not exist anymore."
+                        );
+                    }
+                }
+            } else {
+                return (object) array(
+                    "success" => false,
+                    "error" => "unknown_session",
+                    "message" => "The requested session does not exist."
+                );
             }
         }
 
-        public static function privileged($userModel, $message = "Je hebt niet het recht om deze actie uit te voeren.") {
-            if (!$userModel->privileged()) {
-                Respond::JSON(array(
-                    "success" => false,
-                    "error" => "insufficient_permissions",
-                    "message" => $message
-                )); 
+        
+        public static function signedin() {
+            return self::sessionInfo(true)->success;
+        }
 
-                exit();
-            }
+        public static function authenticated() {
+            return self::sessionInfo(false)->success;
         }
 
         public static function method($lowercase = false) {
@@ -152,6 +225,15 @@
                 return false;
             } else {
                 return true;
+            }
+        }
+
+        public static function request($url, $execute = true) {
+            $router = new Router;
+            if ($router->refactorRequest($url)) {
+                if ($execute) $router->executeRequest();
+            } else {
+                return false;
             }
         }
     }

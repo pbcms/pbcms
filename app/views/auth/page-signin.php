@@ -3,11 +3,14 @@
     $policy = new Policy;
 ?>
 
+<p class="error"></p>
+
 <div class="input-field">
     <input type="text" name="identifier" placeholder=" ">
     <span>
         E-mail address<?php if (intval($policy->get('usernames-enabled')) == 1) echo " or username"; ?>
     </span>
+    <ul class="error-list"></ul>
 </div>
 
 <div class="input-field">
@@ -15,6 +18,7 @@
     <span>
         Password
     </span>
+    <ul class="error-list"></ul>
 </div>
 
 <div class="input-checkbox">

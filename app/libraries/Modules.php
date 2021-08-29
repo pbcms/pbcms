@@ -27,6 +27,12 @@
                             }
 
                             break;
+                        case 'pre-core':
+                            if ($this->preCore($item)) {
+                                array_push($modules, $item);
+                            }
+
+                            break;
                         default:
                             if ($this->enabled($item)) {
                                 array_push($modules, $item);
@@ -145,6 +151,10 @@
             return file_exists(DYNAMIC_DIR . '/modules/' . $module . '/.disabled');
         }
 
+        public function preCore($module) {
+            return file_exists(DYNAMIC_DIR . '/modules/' . $module . '/.pre-core');
+        }
+
         public function isLoaded($module) {
             return isset(self::$loaded[$module]);
         }
@@ -160,6 +170,13 @@
     class ModuleConfig extends ObjectPropertyWorker {
         public function __construct($plugin) {
             $this->init('module-config', $this->prepareFunctionNaming($plugin));
+        }
+
+        public function defaults($properties) {
+            $properties = (array) $properties;
+            foreach($properties as $key => $value) {
+                if (!$this->existsInDatabase($key)) $this->set($key, $value);
+            }
         }
 
         private function prepareFunctionNaming($str) {

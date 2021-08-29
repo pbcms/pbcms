@@ -19,7 +19,7 @@
 
             "description" => SITE_DESCRIPTION,
             "og:description" => SITE_DESCRIPTION,
-            "twitter:description" => SITE_DESCRIPTION
+            "twitter:description" => SITE_DESCRIPTION,
         );
 
         public function __construct($batch = array()) {

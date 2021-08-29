@@ -1,1 +1,21 @@
-{}
+{
+    "messages": {
+        "api-auth": {
+            "create-session": {
+                "error-user_locked": "De gebruiker waarvoor u een sessie probeert te creëeren is vergrendeld door het systeem of een administrator.",
+                "error-token_error": "Er is een fout opgetreden tijdens het creëeren van uw refresh-token.",
+                "error-invalid_password": "Er is een fout wachtwoord opgegeven voor de gebruiker geidentificeerd met {{IDENTIFIER}}.",
+                "error-unknown_user": "Een gebruiker geidentificeerd met {{IDENTIFIER}} bestaat niet."
+            },
+            "access-token": {
+                "error-session_expired": "De aangevraagde sessie is verlopen.",
+                "error-user_locked": "De gebruiker waarvoor u een access-token probeert te creëeren is vergrendeld door het systeem of een administrator.",
+                "error-token_error": "Er is een fout opgetreden tijdens het creëeren van uw access-token.",
+                "error-unknown_user": "De gebruiker waarvoor u een access-token probeert te creëeren bestaat niet meer.",
+                "error-unknown_session": "De aangevraagde sessie bestaat niet.",
+                "error-decode_error": "Er is een fout opgetreden tijdens het ontsleutelen van uw refresh-token.",
+                "error-missing_refresh_token": "Er is geen refresh-token aanwezig."
+            }
+        }
+    }
+}

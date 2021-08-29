@@ -15,7 +15,7 @@
                 if ($this->exists($type, $name)) {
                     return false;
                 } else {
-                    $this->db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "objects` (`type`, `name`) VALUES ('${type}', '${name}'");
+                    $this->db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "objects` (`type`, `name`) VALUES ('${type}', '${name}')");
                     return true;
                 }
             }
@@ -94,6 +94,22 @@
                 } else {
                     return NULL;
                 }
+            }
+        }
+
+        public function propertyExists($type, $name = '', $property = '') {
+            if ($property == '') {
+                $obj = $this->info($type);
+                $property = $name;
+            } else {
+                $obj = $this->info($type, $name);
+            }
+
+            if ($obj == NULL) {
+                return false;
+            } else {
+                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "object-properties` WHERE `property`='${property}'");
+                return $res->num_rows > 0;
             }
         }
 
@@ -179,6 +195,11 @@
             if (!$this->initialized) return;
             $this->set($property, $this->hardcoded[$property]);
             unset($this->hardcoded[$property]);
+        }
+
+        protected function existsInDatabase($property) {
+            if (!$this->initialized) return;
+            return $this->obj->propertyExists($this->type, $this->name, $property);
         }
 
         public function get($property) {

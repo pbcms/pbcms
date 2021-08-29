@@ -2,15 +2,28 @@
     namespace Controller;
 
     use Helper\Header;
+    use Helper\Request;
 
     class PbDashboard extends \Library\Controller {
+        public function __construct() {
+            if (!Request::signedin()) {
+                $router = new \Library\Router;
+                $request = $router->documentRequest();
+                Header::Location(SITE_LOCATION . 'pb-auth/signin?forced&followup=' . $request->url);
+                die();
+            }
+        }
+
         public function Index($params) {
             Header::Location(SITE_LOCATION . 'pb-dashboard/overview');
         } 
 
         public function Overview($params) {
             $this->view("dashboard/overview");
-            $this->template("pb-dashboard");
+            $this->template("pb-dashboard", array(
+                "title" => "overview",
+                "section" => "overview"
+            ));
         } 
 
         public function Updates($params) {

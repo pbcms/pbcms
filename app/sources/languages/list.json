@@ -1,0 +1,12 @@
+[
+    {
+        "name": "English",
+        "short": "en",
+        "listed": true
+    },
+    {
+        "name": "Nederlands",
+        "short": "nl",
+        "listed": true
+    }
+]

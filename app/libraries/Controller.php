@@ -88,7 +88,9 @@
             }
         }
 
-        public function displayError($error, $short, $message) {
+        public function displayError($error, $short = null, $message = null) {
+            $short = "Short title.";
+            $message = "This explains the occured error.";
             $data = array(
                 "errorCode" => $error,
                 "errorMessage" => $message,
@@ -101,13 +103,13 @@
             ob_end_clean();
 
             $data = array(
-                "title" => $short . " - Birkje.nl",
-                "head" => '<link rel="stylesheet" href="' . SITE_LOCATION . 'pb-pubfiles/css/siteFront_errorPage.css">',
-                "scripts" => '<script src="' . SITE_LOCATION . 'pb-pubfiles/js/siteFront_errorPage.js"></script>',
-                "navbarNoShadow" => true
+                "title" => $short,
+                "description" => $message,
+                "subtitle" => 'An error occured while processing your request.',
+                "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
             );
 
-            include_once APP_DIR . '/templates/pb-default.php';
+            include_once APP_DIR . '/templates/pb-error.php';
             http_response_code($error);
 
             die();

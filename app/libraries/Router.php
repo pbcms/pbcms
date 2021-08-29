@@ -8,7 +8,7 @@
         protected static $virtualPath = NULL;
         protected static $currentController;
 
-        protected static $controller = 'System';
+        protected static $controller = 'Root';
         protected static $method = 'Index';
         protected static $params = [];
         protected static $url = '/';
@@ -31,17 +31,13 @@
 
         public function refactorRequest($url) {
             if (self::$executed) return false;
-            if (self::$controller == 'System') {
-                if (self::$method == 'PbApi' || self::$method == 'PbDashboard' || self::$method == 'PbAuth') {
-                    return false;
-                }
-            } else if (self::$controller == 'PbLoader') {
+            if (self::$controller == 'PbApi' || self::$controller == 'PbAuth' || self::$controller == 'PbDashboard' || self::$controller == 'PbLoader') {
                 return false;
             }
             
             self::$preferredLanguage = NULL;
             self::$virtualPath = NULL;
-            self::$controller = 'System';
+            self::$controller = 'Root';
             self::$method = 'Index';
             self::$params = [];
             self::$url = $url;
@@ -67,61 +63,68 @@
                 "params" => self::$params,
                 "url" => self::$url,
 
-                "preferred-language" => self::$preferredLanguage,
-                "virtual-path" => self::$virtualPath
+                "preferred_language" => self::$preferredLanguage,
+                "virtual_path" => self::$virtualPath
             );
         }
 
         public function processRequest($virtualIndex = 0) {
             if (self::$executed) return false;
+            if ($this->controllerExists(self::$controller)) {
+                $this->loadController(self::$controller);
+                $class = 'Controller\\' . self::$controller;
+                self::$currentController = new $class;
 
-            $this->loadController(self::$controller);
-            $class = 'Controller\\' . self::$controller;
-            self::$currentController = new $class;
-
-            if (method_exists(self::$currentController, $this->prepareFunctionNaming(self::$method))) {
-                return;
-            } else {
-                $virtualPaths = $this->matchVirtualPath();
-                if (count($virtualPaths) > 0 && isset($virtualPaths[$virtualIndex])) {
-                    self::$controller = 'System';
-                    self::$method = 'Index';
-                    self::$params = [];
-
-                    $virtual = $virtualPaths[$virtualIndex]['path'];
-                    $target = $virtualPaths[$virtualIndex]['target'];
-                    $rest = array_slice($this->processUrl(self::$url), count($this->processUrl($virtual)));
-                    $final = join('/', $this->processUrl($target)) . '/' . join('/', $rest);
-
-                    self::$virtualPath = $virtualPaths[$virtualIndex]['id'];
-                    self::$preferredLanguage = $virtualPaths[$virtualIndex]['lang'];
-                    Store::set('router-virtual-path', $virtualPaths[$virtualIndex]['id']);
-                    Store::set('router-preferred-language', $virtualPaths[$virtualIndex]['lang']);
-                    $this->fillProperties($final);
-                    $this->processRequest($virtualIndex + 1);
-                } else {
-                    self::$method = NULL;
-                    self::$virtualPath = NULL;
-                    self::$preferredLanguage = NULL;
-                    Store::delete('router-virtual-path');
-                    Store::delete('router-virtual-path');
+                if (method_exists(self::$currentController, $this->prepareFunctionNaming(self::$method))) {
                     return;
                 }
+            }
+
+            $virtualPaths = $this->matchVirtualPath();
+            if (count($virtualPaths) > 0 && isset($virtualPaths[$virtualIndex])) {
+                self::$controller = 'Root';
+                self::$method = 'Index';
+                self::$params = [];
+
+                $virtual = $virtualPaths[$virtualIndex]['path'];
+                $target = $virtualPaths[$virtualIndex]['target'];
+                $rest = array_slice($this->processUrl(self::$url), count($this->processUrl($virtual)));
+                $final = join('/', $this->processUrl($target)) . '/' . join('/', $rest);
+
+                self::$virtualPath = $virtualPaths[$virtualIndex]['id'];
+                self::$preferredLanguage = $virtualPaths[$virtualIndex]['lang'];
+                Store::set('router-virtual-path', $virtualPaths[$virtualIndex]['id']);
+                Store::set('router-preferred-language', $virtualPaths[$virtualIndex]['lang']);
+                $this->fillProperties($final);
+                $this->processRequest($virtualIndex + 1);
+            } else {
+                self::$method = NULL;
+                self::$virtualPath = NULL;
+                self::$preferredLanguage = NULL;
+                Store::delete('router-virtual-path');
+                Store::delete('router-preferred-language');
+
+                if (!$this->controllerExists(self::$controller)) {
+                    $this->displayError(404);
+                }
+
+                return;
             }
         }
 
         public function executeRequest() {
             if (self::$executed) return false;
-            self::$executed = true;
             if (!self::$method) {
                 if (method_exists(self::$currentController, '__error')) {
                     self::$currentController->__error(404);
                 } else {
-                    $this->errorRoute(404);
+                    $this->displayError(404);
                 }
             } else {
                 self::$currentController->{$this->prepareFunctionNaming(self::$method)}(self::$params);
-            }            
+            }
+            
+            self::$executed = true;
         }
 
         private function fillProperties($orig = '') {
@@ -131,7 +134,7 @@
             $url = $this->processUrl($orig);
             if (count($url) < 1) return NULL;
 
-            foreach($url as $segment) if (substr($segment, 0, 2) == '__') $this->errorRoute(403);
+            foreach($url as $segment) if (substr($segment, 0, 2) == '__') $this->displayError(403);
 
             if ($this->controllerExists($url[$index])) {
                 self::$controller = $this->prepareFunctionNaming($url[$index]);
@@ -255,7 +258,6 @@
         }
 
         public function controllerExists($controller) {
-            if (\strtolower($controller) == 'error') $controller = '';
             if (file_exists(APP_DIR . '/controllers/' . $this->prepareFunctionNaming($controller) . '.php')) {
                 return true;
             } else if (file_exists(DYNAMIC_DIR . '/controllers/' . $this->prepareFunctionNaming($controller) . '.php')) {
@@ -276,13 +278,10 @@
             
         }
 
-        public function errorRoute($error) {
-            if (self::$executed) return false;
+        public function displayError($error, $short = null, $message = null) {
             self::$executed = true;
-            $this->loadController('System');
-
-            $errorController = new \Controller\PbError;
-            $errorController->Display($error);
+            $controller = new \Library\Controller;
+            $controller->displayError($error, $short, $message);
             die;
         }
     }

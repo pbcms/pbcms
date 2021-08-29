@@ -140,6 +140,10 @@ form.pbcms-installation .sections section[section-name=preloader].current-sectio
     margin-bottom: 30px;
 }
 
+.pbcms-system-display p.error:empty {
+    display: none;
+}
+
 .pbcms-system-display button {
     margin-top: 20px;
     background-color: black;
@@ -228,6 +232,19 @@ form.pbcms-installation .sections section[section-name=preloader].current-sectio
 }
 
 .pbcms-system-display .input-field.red-border span {
+    color: red !important;
+}
+
+.pbcms-system-display .input-field ul {
+    width: calc(100% - 60px);
+    padding: 7px 20px 0px;
+}
+
+.pbcms-system-display .input-field:not(.red-border) ul.error-list {
+    display: none;
+}
+
+.pbcms-system-display .input-field.red-border ul li {
     color: red !important;
 }
 

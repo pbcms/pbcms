@@ -1,11 +1,11 @@
 <?php
     /**
-     * Template: pb-portal
+     * Template: pb-error
      * Authors: The PBCMS developers
-     * Description: This template is used for so-called "portal" pages. The signin and signup pages can be seen as portal pages.
+     * Description: This template is used for the error pages.
      * 
      * ==== REQUIRED DATA ATTRIBUTES ====
-     * - title;         The title of the page. " - PBCMS" will be put behind the title.
+     * - title;         The title of the page. " - SITE TITLE" will be put behind the title.
      * - description;   The description of the page. Used for meta generation.
      * - copyright;     The copyright message placed at the bottom of the page.
      * 
@@ -18,7 +18,7 @@
     use Library\Meta;
     $meta = new Meta;
     $meta->set('robots', 'index, nofollow');
-    $meta->set('title', $data['title'] . ' - PBCMS');
+    $meta->set('title', $data['title'] . ' - ' . SITE_TITLE);
     $meta->set('description', $data['description']);
     if (isset($data['meta'])) $meta->batch($data['meta']);
 
@@ -42,7 +42,7 @@
         ?>
     </head>
     <body>
-        <form class="pbcms-system-display portal">
+        <div class="pbcms-system-display error-display portal">
             <div class="top-bar">
                 <div class="logo-container">
                     <img src="<?php echo SITE_LOCATION; ?>/pb-pubfiles/img/pb-logos/full-dark.png" alt="PBCMS Logo (Full, Dark)">
@@ -54,7 +54,7 @@
             <div class="content">
                 <?php echo $content; ?>
             </div>
-        </form>
+        </div>
 
         <div class="page-copyright">
             <p>

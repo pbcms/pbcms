@@ -1,18 +1,46 @@
+<?php
+    /**
+     * Template: pb-dashboard
+     * Authors: The PBCMS developers
+     * Description: This template is used for dashboard pages.
+     * 
+     * ==== REQUIRED DATA ATTRIBUTES ====
+     * - title;         The title of the page. "Dashboard - " will be appended before the given title.
+     * - section;       The section in the sidebar to be activated.
+     *  
+     * ==== OPTIONAL DATA ATTRIBUTES ====
+     * - meta;          Additional meta tags to be included by the Meta Batch definition.
+     * - head;          Additional head assets to be included by the Assets Batch function definition. (eg. styles)
+     * - body;          Additional body assets to be included by the Assets Batch function definition. (eg. scripts)
+     */
+
+    use Library\Meta;
+    $meta = new Meta;
+    $meta->set('robots', 'index, nofollow');
+    $meta->set('title', 'Dashboard - ' . $data['title']);
+    if (isset($data['meta'])) $meta->batch($data['meta']);
+
+    Core::SystemAssets();
+    $assets = new \Library\Assets;
+    $assets->registerHead('style', 'https://fonts.googleapis.com', array("rel" => "preconnect"));
+    $assets->registerHead('style', 'https://fonts.gstatic.com', array("rel" => "preconnect", "properties" => "crossorigin"));
+    $assets->registerHead('style', 'https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap');
+    $assets->registerHead('script', 'https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js');
+    $assets->registerHead('style', "pbcms-dashboard.css", array("origin" => "pubfiles"));
+
+    $assets->registerBody('script', "feather.replace();");
+
+    if (isset($data['head'])) $assets->registerBatch('head', $data['head']);
+    if (isset($data['body'])) $assets->registerBatch('body', $data['body']);
+?>
+
 <!DOCTYPE html>
     <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dashboard - <?php echo SITE_TITLE; ?></title>
-
-        <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-
-        <style>
-            <?php echo file_get_contents(PUBFILES_DIR . '/css/pbcms-dashboard.css'); ?>
-        </style>
+        <?php 
+            echo $meta->generate(); 
+            echo $assets->generateHead();
+        ?>
     </head>
     <body>
         <div class="sidebar">
@@ -134,8 +162,8 @@
             </div>
         </div>
 
-        <script>
-            feather.replace();
-        </script>
+        <?php
+            echo $assets->generateBody();
+        ?>
     </body>
 </html>

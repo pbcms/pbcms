@@ -1,1 +1,21 @@
-{}
+{
+    "messages": {
+        "api-auth": {
+            "create-session": {
+                "error-user_locked": "The user you are trying to create a session for has been locked by the system or an administrator.",
+                "error-token_error": "An error occured while creating the refresh-token.",
+                "error-invalid_password": "An invalid password has been provided for the user identified by {{IDENTIFIER}}.",
+                "error-unknown_user": "A user identified by {{IDENTIFIER}} does not exist."
+            },
+            "access-token": {
+                "error-session_expired": "The requested session has since expired.",
+                "error-user_locked": "The user you are trying to request an access token for has been locked by the system or an administrator.",
+                "error-token_error": "An error occured while creating the access-token.",
+                "error-unknown_user": "The user you are trying to request an access token for does not exist anymore.",
+                "error-unknown_session": "The requested session does not exist.",
+                "error-decode_error": "An error occured while decoding the refresh token.",
+                "error-missing_refresh_token": "No refresh token present."
+            }
+        }
+    }
+}
