@@ -89,25 +89,12 @@
         }
 
         public function displayError($error, $short = null, $message = null) {
-            $short = "Short title.";
-            $message = "This explains the occured error.";
-            $data = array(
-                "errorCode" => $error,
-                "errorMessage" => $message,
-                "errorShort" => $short
-            );
-
-            include_once APP_DIR . '/views/pages/error.php';
+            include_once APP_DIR . '/views/pages/error-' . $error . '.php';
 
             $content = ob_get_contents();
             ob_end_clean();
 
-            $data = array(
-                "title" => $short,
-                "description" => $message,
-                "subtitle" => 'An error occured while processing your request.',
-                "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
-            );
+            $data['copyright'] = "&copy; " . SITE_TITLE . " " . date("Y");
 
             include_once APP_DIR . '/templates/pb-error.php';
             http_response_code($error);

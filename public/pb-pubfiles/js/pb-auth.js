@@ -20,7 +20,7 @@ const PbAuth = (function() {
                 }, new Date(res.data.expiration * 1000) - new Date().getTime());
                 return true;
             } else {
-                location.href = SITE_LOCATION + 'pb-auth/signin?forced&error=' + res.data.error + '&followup=' + location.pathname;
+                location.href = SITE_LOCATION + 'pb-auth/signin?error=' + res.data.error + '&followup=' + location.pathname;
                 return false;
             }
         }

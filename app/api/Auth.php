@@ -70,7 +70,10 @@
                         $session = $sessions->info($decoded->payload->session);
                         if ($session) {
                             if ($session->expired) {
-                                Respond::error("session_expired", $lang->get('messages.api-auth.access-token.error-session_expired', "The requested session has since expired."));
+                                //Respond::error("session_expired", $lang->get('messages.api-auth.access-token.error-session_expired', "The requested session has since expired."));
+                                Respond::error("session_expired", array(
+                                    "res" => $session
+                                ));
                             } else {
                                 $users = new Users;
                                 $user = $users->info($session->user);

@@ -1,4 +1,48 @@
 {
+    "common": {
+        "messages": {
+            "error-unknown_error": "Er is een onbekende fout opgetreden."
+        }
+    },
+
+    "pages": {
+        "pb-auth": {
+            "signin": {
+                "title": "Inloggen",
+                "subtitle": "Log in tot uw account.",
+                "description": "Log in tot uw account op {{SITE_TITLE}}",
+                "field-identifier": "E-mail adres",
+                "field-identifier-full": "E-mail adres of gebruikersnaam",
+                "field-password": "Wachtwoord",
+                "box-stay-signedin": "Ingelogd blijven?",
+                "button-continue": "Doorgaan",
+                "link-signup": "Heeft u nog geen account?"
+            }
+        }
+    },
+
+    "error-pages": {
+        "error-404": {
+            "title": "Pagina niet gevonden",
+            "description": "De opgevraagde pagina bestaat niet."
+        },
+        "error-403": {
+            "title": "Verboden toegang",
+            "description": "U heeft geen toegang tot de opgevraagde pagina."
+        }
+    },
+
+    "templates": {
+        "pb-portal": {
+            "back-to-site": "Terug naar de site",
+            "powered-by": "Aangedreven door {{LINK}}"
+        },
+        "pb-error": {
+            "subtitle": "Er is een fout opgetreden tijdens het verwerken van uw verzoek.",
+            "powered-by": "Aangedreven door {{LINK}}"
+        }
+    },
+    
     "messages": {
         "api-auth": {
             "create-session": {

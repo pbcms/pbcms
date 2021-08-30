@@ -1,4 +1,48 @@
 {
+    "common": {
+        "messages": {
+            "error-unknown_error": "An unknown error has occured."
+        }
+    },
+
+    "pages": {
+        "pb-auth": {
+            "signin": {
+                "title": "Signin",
+                "subtitle": "Signin to your account.",
+                "description": "Sign into your account on {{SITE_TITLE}}",
+                "field-identifier": "E-mail address",
+                "field-identifier-full": "E-mail address or username",
+                "field-password": "Password",
+                "box-stay-signedin": "Stay signed-in?",
+                "button-continue": "Continue",
+                "link-signup": "Don't have an account yet?"
+            }
+        }
+    },
+
+    "error-pages": {
+        "error-404": {
+            "title": "Page not found",
+            "description": "The requested page does not exist."
+        },
+        "error-403": {
+            "title": "Forbidden access",
+            "description": "You do not have access to the requested page."
+        }
+    },
+
+    "templates": {
+        "pb-portal": {
+            "back-to-site": "Back to site",
+            "powered-by": "Powered by {{LINK}}"
+        },
+        "pb-error": {
+            "subtitle": "An error occurred while processing your request.",
+            "powered-by": "Powered by {{LINK}}"
+        }
+    },
+
     "messages": {
         "api-auth": {
             "create-session": {

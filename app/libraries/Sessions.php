@@ -48,7 +48,7 @@
                 if ($row->expiration == NULL) {
                     $row->expired = false;
                 } else {
-                    $row->expired = time() > $row->lastSeen + $row->expiration;
+                    $row->expired = time() > (intval($row->lastSeen) + intval($row->expiration));
                 }
 
                 return $row;

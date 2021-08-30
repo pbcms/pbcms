@@ -16,11 +16,17 @@
      */
 
     use Library\Meta;
+    use Library\Language;
+
     $meta = new Meta;
     $meta->set('robots', 'index, nofollow');
     $meta->set('title', $data['title'] . ' - PBCMS');
     $meta->set('description', $data['description']);
     if (isset($data['meta'])) $meta->batch($data['meta']);
+
+    $lang = new Language;
+    $lang->detectLanguage();
+    $lang->load();
 
     Core::SystemAssets();
     $assets = new \Library\Assets;
@@ -58,7 +64,7 @@
 
         <div class="page-copyright">
             <p>
-                <a href="<?php echo (isset($_GET['referrer']) ? $_GET['referrer'] : SITE_LOCATION); ?>">Back to site</a> - <?php echo $data['copyright']; ?>, Powered by <a href="https://pbcms.io" target="_blank">PBCMS</a>.
+                <a href="<?php echo (isset($_GET['referrer']) ? $_GET['referrer'] : SITE_LOCATION); ?>"><?php echo $lang->get("templates.pb-portal.back-to-site", "Back to site"); ?></a> - <?php echo $data['copyright']; ?>, <?php echo str_replace("{{LINK}}", '<a href="https://pbcms.io" target="_blank">PBCMS</a>', $lang->get('templates.pb-portal.powered-by', "Powered by {{SITE}}")); ?>.
             </p>
         </div>
         

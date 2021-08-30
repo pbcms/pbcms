@@ -156,6 +156,7 @@
                         method: 'POST', 
                         body: formData 
                     }).then(res => res.json()).then(res => {
+                        console.log(res);
                         if (res.success) {
                             if (res.migration_logs.includes("Unable to insert newly executed migrations into migrations database")) {
                                 sec.querySelector('p.error').innerHTML = "<b>!!!INSTALLATION SUCCEEDED, BUT CRITICAL ERROR OCCURED WHILE REGISTERING DATABASE MIGRATIONS!!!</b><br><br>" + res.migration_logs;
