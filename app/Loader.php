@@ -23,7 +23,7 @@
                 
                 require_once 'Core.php';
                 new Core();
-            } 
+            }
         }
 
         private function definitions() {

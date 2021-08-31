@@ -118,6 +118,7 @@
             );
         }
     }
+
     if (isset($_POST['SITE_LOC_DETECTION'])) {
         die("DETECTION_SUCCESSFUL");
     }
@@ -207,7 +208,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="pbcms_debug_mode" content="<?php echo (PBCMS_DEBUG_MODE ? 'true' : 'false'); ?>">
+        <meta name="pbcms_debug_mode" content="<?php echo (defined('PBCMS_DEBUG_MODE') && PBCMS_DEBUG_MODE ? 'true' : 'false'); ?>">
         <title>PBCMS Installation procedure</title>
 
         <link rel="preconnect" href="https://fonts.gstatic.com">
