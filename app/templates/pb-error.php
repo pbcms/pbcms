@@ -54,7 +54,7 @@
                     <img src="<?php echo SITE_LOCATION; ?>/pb-pubfiles/img/pb-logos/full-dark.png" alt="PBCMS Logo (Full, Dark)">
                 </div>
                 <h1 class="portal-subtitle">
-                    <?php echo $lang->get('templates.pb-error.subtitle'); ?>
+                    <?php echo (isset($data['subtitle']) ? $data['subtitle'] : $lang->get('templates.pb-error.subtitle', 'An error occured while processing your request.')) ?>
                 </h1>
             </div>
             <div class="content">

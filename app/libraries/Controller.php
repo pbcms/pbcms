@@ -1,6 +1,9 @@
 <?php
     namespace Library;
 
+    use Library\Router;
+    use Library\Policy;
+
     class Controller {
         public function model($model) {
             $model = ucwords($model);
@@ -89,7 +92,14 @@
         }
 
         public function displayError($error, $short = null, $message = null) {
-            include_once APP_DIR . '/views/pages/error-' . $error . '.php';
+            $policy = new Policy;
+            $router = new Router;
+            $request = $router->documentRequest();
+            if ($error == 404 && ($request->url == '' || $request->url == '/') && intval($policy->get('show-welcome-page')) === 1) {
+                include_once APP_DIR . '/views/pages/error-welcome-page.php';
+            } else {
+                include_once APP_DIR . '/views/pages/error-' . $error . '.php';
+            }
 
             $content = ob_get_contents();
             ob_end_clean();
