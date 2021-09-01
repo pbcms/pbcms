@@ -33,16 +33,47 @@
                         Event::trigger('modules-initialized', $router->documentRequest());
                     }
     
-                    $router->processRequest();
-                    Event::trigger('request-processed', $router->documentRequest());
-    
-                    $router->executeRequest();
-                    Event::trigger('request-executed', $router->documentRequest());
+                    if (self::DefaultOperationMode()) {
+                        $router->processRequest();
+                        Event::trigger('request-processed', $router->documentRequest());
+        
+                        $router->executeRequest();
+                        Event::trigger('request-executed', $router->documentRequest());
+                    } else {
+                        switch(OPERATION_MODE) {
+                            case "CLI": 
+                                core_initialized();
+                                break;
+                            default:
+                                die("Illegal operation mode defined.");
+                                break;
+                        }
+                    }
                 }
             }
     
             public static function Safemode() {
                 return self::$inSafemode;
+            }
+
+            public static function InCli() {
+                return OPERATION_MODE == "CLI";
+            }
+
+            public static function DefaultOperationMode() {
+                return OPERATION_MODE == "DEFAULT";
+            }
+
+            public static function Print($text) {
+                if (self::InCli()) {
+                    fwrite(STDOUT, $text);
+                } else {
+                    echo $text;
+                }
+            }
+
+            public static function PrintLine($text) {
+                self::Print($text . PHP_EOL);
             }
 
             public static function SystemAssets($forceAuth = false) {

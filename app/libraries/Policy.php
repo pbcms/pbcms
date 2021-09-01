@@ -17,12 +17,17 @@
             }
         }
 
-        public function list($limit = 10) {
-            $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "policies` LIMIT ${limit}");
+        public function list($limit = 10, $offset = 0) {
+            if ($limit < 1) {
+                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "policies`");
+            } else {
+                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "policies` LIMIT ${limit} OFFSET ${offset}");
+            }
+
             if ($res->num_rows > 0) {
                 return $res->fetch_all(MYSQLI_ASSOC);
             } else {
-                return NULL;
+                return array();
             }
         }
 

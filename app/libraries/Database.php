@@ -40,6 +40,7 @@
 
     class DatabaseMigrator {
         private $db;
+
         public function __construct() {
             $this->db = new Database;
             $this->createMigrationsTable();
@@ -328,6 +329,6 @@
         }
     
         private function log($message) {
-            echo '[' . date("Y-m-d H:i:s") . '] ~ ' . $message . PHP_EOL;
+            \Core::PrintLine('[' . date("Y-m-d H:i:s") . '] ~ ' . $message);
         }
     }

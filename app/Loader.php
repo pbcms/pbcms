@@ -37,9 +37,9 @@
             define("PUBLIC_DIR", ROOT_DIR . '/public');
             define("DYNAMIC_DIR", ROOT_DIR . '/dynamic');
             define("PUBFILES_DIR", ROOT_DIR . '/public/pb-pubfiles');
-            define("REQUEST_PROTOCOL", strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,strpos( $_SERVER["SERVER_PROTOCOL"],'/'))).'://');
-            define("REQUEST_HTTP_HOST", $_SERVER['HTTP_HOST']);
-            define("REQUEST_BASE", REQUEST_PROTOCOL . REQUEST_HTTP_HOST);
+            define("REQUEST_PROTOCOL", (isset($_SERVER["SERVER_PROTOCOL"]) ? strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,strpos( $_SERVER["SERVER_PROTOCOL"],'/'))).'://' : NULL));
+            define("REQUEST_HTTP_HOST", (isset($_SERVER["HTTP_HOST"]) ? $_SERVER['HTTP_HOST'] : NULL));
+            define("REQUEST_BASE", (!REQUEST_PROTOCOL || !REQUEST_HTTP_HOST ? NULL : REQUEST_PROTOCOL . REQUEST_HTTP_HOST));
         }
 
         private function prepareConfiguration() {
@@ -68,6 +68,7 @@
             require_once 'libraries/Token.php';
             require_once 'libraries/Router.php';
             require_once 'libraries/Modules.php';
+            require_once 'libraries/Cli.php';
         }
     }
 
