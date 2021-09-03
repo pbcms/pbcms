@@ -19,7 +19,7 @@
 
         public function list($limit = 10, $offset = 0) {
             if ($limit < 1) {
-                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "policies`");
+                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "policies` OFFSET ${offset}");
             } else {
                 $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "policies` LIMIT ${limit} OFFSET ${offset}");
             }
@@ -42,6 +42,7 @@
 
         public function set($name, $value) {
             $value = strval($value);
+            if (empty($name)) return false;
             if ($this->exists($name)) {
                 $this->db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='${value}' WHERE `name`='${name}'");
             } else {
