@@ -34,17 +34,19 @@
 
                     $earliest = $migrator->listMigrations($options)[0];
                     if ($earliest) {
-                        $cli->printLine("Do you really want to rollback until the following migration?");
-                        $cli->printLine("  " . $earliest->migration);
-                        $cli->printLine();
-                        $prompt = $cli->prompt("Yes / no ~> ");
-                        $cli->printLine();
-                        print_r($prompt);
-                        if (strtolower($prompt) == "yes") {
-                            $migrator->rollback($options);
-                        } else {
-                            $cli->printLine("I did not recieve a clear \"yes\", cancelling.");
+                        if (!isset($options['confirm'])) {
+                            $cli->printLine("Do you really want to rollback until the following migration?");
+                            $cli->printLine("  " . $earliest->migration);
+                            $cli->printLine(" ");
+                            $prompt = $cli->prompt("Type \"\e[92mconfirm\e[39m\" to continue: \e[92m");
+                            $cli->printLine("\e[39m ");
+                            if (strtolower($prompt) != "confirm") {
+                                $cli->printLine("Did not receive \"\e[92mconfirm\e[39m\", cancelling.");
+                                break;
+                            }
                         }
+                        
+                        $migrator->rollback($options);
                     } else {
                         $migrator->rollback($options);
                     }
@@ -68,53 +70,49 @@
                         if (strlen(strval($item->name)) > $longest->name) $longest->name = strlen(strval($item->name)) + 2;
                     }
 
-                    function createColumn($value, $width) {
-                        return "  " . $value . join('', array_fill(0, $width - strlen(strval($value)), ' '));
-                    }
-
                     $cli->printLine(str_replace(' ', '=', join("+", array(
                         "",
-                        createColumn("=", $longest->id),
-                        createColumn("=", $longest->version),
-                        createColumn("=", $longest->task),
-                        createColumn("=", $longest->name),
+                        $this->createColumn("=", $longest->id),
+                        $this->createColumn("=", $longest->version),
+                        $this->createColumn("=", $longest->task),
+                        $this->createColumn("=", $longest->name),
                         ""
                     ))));
 
                     $cli->printLine(join("|", array(
                         "",
-                        createColumn("ID", $longest->id),
-                        createColumn("Version", $longest->version),
-                        createColumn("Task", $longest->task),
-                        createColumn("Name", $longest->name),
+                        $this->createColumn("ID", $longest->id),
+                        $this->createColumn("Version", $longest->version),
+                        $this->createColumn("Task", $longest->task),
+                        $this->createColumn("Name", $longest->name),
                         ""
                     )));
 
                     $cli->printLine(str_replace(' ', '=', join("+", array(
                         "",
-                        createColumn("=", $longest->id),
-                        createColumn("=", $longest->version),
-                        createColumn("=", $longest->task),
-                        createColumn("=", $longest->name),
+                        $this->createColumn("=", $longest->id),
+                        $this->createColumn("=", $longest->version),
+                        $this->createColumn("=", $longest->task),
+                        $this->createColumn("=", $longest->name),
                         ""
                     ))));
 
                     foreach($list as $item) {
                         $cli->printLine(join("|", array(
                             "",
-                            createColumn($item->id, $longest->id),
-                            createColumn($item->version, $longest->version),
-                            createColumn($item->task, $longest->task),
-                            createColumn($item->name, $longest->name),
+                            $this->createColumn($item->id, $longest->id),
+                            $this->createColumn($item->version, $longest->version),
+                            $this->createColumn($item->task, $longest->task),
+                            $this->createColumn($item->name, $longest->name),
                             ""
                         )));
     
                         $cli->printLine(str_replace(' ', '-', join("+", array(
                             "",
-                            createColumn("-", $longest->id),
-                            createColumn("-", $longest->version),
-                            createColumn("-", $longest->task),
-                            createColumn("-", $longest->name),
+                            $this->createColumn("-", $longest->id),
+                            $this->createColumn("-", $longest->version),
+                            $this->createColumn("-", $longest->task),
+                            $this->createColumn("-", $longest->name),
                             ""
                         ))));
                     }
@@ -147,6 +145,7 @@
             if (isset($this->arg->arguments['version'])) $options['version'] = $this->arg->arguments['version'];
             if (isset($this->arg->arguments['task'])) $options['task'] = $this->arg->arguments['task'];
             if (isset($this->arg->arguments['name'])) $options['name'] = $this->arg->arguments['name'];
+            if (isset($this->arg->arguments['confirm'])) $options['confirm'] = $this->arg->arguments['confirm'];
             return $options;
         }
 
@@ -171,5 +170,10 @@
             $cli->printLine("  \e[96m--version\e[39m, \e[96m-v\e[39m           The version of the targeted migration: \e[90mx.x.x\e[39m");
             $cli->printLine("  \e[96m--task\e[39m, \e[96m-t\e[39m              The task ID of the targeted migration (\e[93mNOT UNIQUE!\e[39m): \e[90mx\e[39m");
             $cli->printLine("  \e[96m--name\e[39m, \e[96m-n\e[39m              The name of the targeted migration.\e[90mname-of-migration\e[39m");
+            $cli->printLine("  \e[96m--confirm\e[39m               Confirm an action.");
+        }
+
+        public function createColumn($value, $width) {
+            return "  " . $value . join('', array_fill(0, $width - strlen(strval($value)), ' '));
         }
     }
