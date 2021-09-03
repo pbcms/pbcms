@@ -114,6 +114,29 @@ form.pbcms-installation .sections section {
     height: calc(100% - 100px);
     padding: 50px 35px 50px 40px;
     display: none;
+    overflow-y: scroll;
+}
+
+form.pbcms-installation .sections section::-webkit-scrollbar {
+    width: 14px;
+}
+
+form.pbcms-installation .sections section::-webkit-scrollbar-track {
+    background: #fff; 
+}
+
+form.pbcms-installation .sections section::-webkit-scrollbar-thumb {
+    border: 4px solid rgba(255, 255, 255, 0);
+    background-clip: padding-box;
+    border-radius: 9999px;
+    background-color: #888;
+}
+
+form.pbcms-installation .sections section::-webkit-scrollbar-thumb:hover {
+    border: 3px solid rgba(255, 255, 255, 0);
+    background-clip: padding-box;
+    border-radius: 9999px;
+    background-color: #555;
 }
 
 form.pbcms-installation .sections section.current-section {
@@ -128,6 +151,10 @@ form.pbcms-installation .sections section[section-name=preloader].current-sectio
 
 .pbcms-system-display h2 {
     padding: 5px 0px 25px;
+}
+
+.pbcms-system-display h3 {
+    padding: 15px 0px 10px;
 }
 
 .pbcms-system-display p {
