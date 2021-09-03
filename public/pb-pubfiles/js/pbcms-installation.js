@@ -141,6 +141,8 @@
                     formData.append('SITE_DESCRIPTION', document.querySelector('form.pbcms-installation input[name=site-description]').value);
                     formData.append('SITE_LOCATION', document.querySelector('form.pbcms-installation input[name=site-location]').value);
                     formData.append('SITE_INDEXING', document.querySelector('form.pbcms-installation input[name=allow-indexing]').value);
+                    formData.append('SITE_EMAIL', document.querySelector('form.pbcms-installation input[name=site-email]').value);
+                    formData.append('SITE_EMAIL_PUBLIC', document.querySelector('form.pbcms-installation input[name=publish-email]').value);
                     formData.append('DB_HOSTNAME', document.querySelector('form.pbcms-installation input[name=db-hostname]').value);
                     formData.append('DB_USERNAME', document.querySelector('form.pbcms-installation input[name=db-username]').value);
                     formData.append('DB_PASSWORD', document.querySelector('form.pbcms-installation input[name=db-password]').value);

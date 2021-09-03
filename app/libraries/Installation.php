@@ -167,11 +167,15 @@
                 $site_description = $_POST["SITE_DESCRIPTION"];
                 $site_location = $_POST["SITE_LOCATION"];
                 $site_indexing = ($_POST["SITE_INDEXING"] == "on" ? 1 : 0);
+                $site_email = $_POST["SITE_EMAIL"];
+                $site_email_public = ($_POST["SITE_EMAIL_PUBLIC"] == "on" ? 1 : 0);
                 
                 $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_title' WHERE `name`='site-title'");
                 $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_description' WHERE `name`='site-description'");
                 $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_location' WHERE `name`='site-location'");
                 $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_indexing' WHERE `name`='site-indexing'");
+                $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_email' WHERE `name`='site-email'");
+                $db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "policies` SET `value`='$site_email_public' WHERE `name`='site-email-public'");
 
                 $configtemplate = file_get_contents(APP_DIR . '/sources/templates/config.template.php');
                 $configtemplate = str_replace("VAL_PBCMS_DEBUG_MODE", "false", $configtemplate);
@@ -315,6 +319,28 @@
                         <label>Robots indexing</label>
                         <input type="checkbox" name="allow-indexing" id="allow-indexing" checked>
                         <label for="allow-indexing"></label>
+                    </div>
+
+                    <h3>
+                        Website E-mail
+                    </h3>
+
+                    <p>
+                        Enter the E-mail address of this website. This E-mail address will be used to send E-mail's with and if enabled, published to search engines like Google. <br>
+                        To disable the E-mail address being published in your site's Meta, turn off <i>Publish E-mail</i>.
+                    </p>
+
+                    <div class="input-field">
+                        <input type="text" name="site-email" placeholder=" ">
+                        <span>
+                            Website E-mail
+                        </span>
+                    </div>
+
+                    <div class="input-toggle">
+                        <label>Publish E-mail</label>
+                        <input type="checkbox" name="publish-email" id="publish-email" checked>
+                        <label for="publish-email"></label>
                     </div>
 
                     <button type="button" class="process-section">
