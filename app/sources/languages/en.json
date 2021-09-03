@@ -26,15 +26,19 @@
             "title": "Welcome",
             "description": "Welcome to your new PBCMS site!",
             "content-1": "Welcome to your new PCBMS instance, this is a small introduction page. <br>Start by <a href='{{SITE_LOCATION}}pb-auth/signin'>signin in to your account</a> and by exploring the dashboard!",
-            "content-2": "By the way, this page is only shown because it is enabled by default when no homepage exist. You can <a href='#'>disable it</a> or <a href='#'>create a homepage</a>."
+            "content-2": "This page is only shown because it is enabled by default when no homepage exist. You can <a href='#'>disable it</a> or <a href='#'>create a homepage</a>."
+        },
+        "error-403": {
+            "title": "Forbidden access",
+            "description": "You do not have access to the requested page."
         },
         "error-404": {
             "title": "Page not found",
             "description": "The requested page does not exist."
         },
-        "error-403": {
-            "title": "Forbidden access",
-            "description": "You do not have access to the requested page."
+        "error-500": {
+            "title": "Internal server error",
+            "description": "An internal server error occured."
         }
     },
 

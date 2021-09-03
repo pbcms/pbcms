@@ -9,7 +9,7 @@
         "title" => $lang->get('error-pages.error-welcome-page.title', 'Welcome'),
         "description" => $lang->get('error-pages.error-welcome-page.description', 'Welcome to your new PBCMS site!'),
         "subtitle" => $lang->get('error-pages.error-welcome-page.description', 'Welcome to your new PBCMS site!'),
-    )
+    );
 ?>
 
 <p>

@@ -98,7 +98,11 @@
             if ($error == 404 && ($request->url == '' || $request->url == '/') && intval($policy->get('show-welcome-page')) === 1) {
                 include_once APP_DIR . '/views/pages/error-welcome-page.php';
             } else {
-                include_once APP_DIR . '/views/pages/error-' . $error . '.php';
+                if (file_exists(APP_DIR . '/views/pages/error-' . $error . '.php')) {
+                    include_once APP_DIR . '/views/pages/error-' . $error . '.php';
+                } else {
+                    include_once APP_DIR . '/views/pages/error-unknown.php';
+                }
             }
 
             $content = ob_get_contents();

@@ -26,7 +26,7 @@
             "title": "Welkom",
             "description": "Welkom bij uw nieuwe PBCMS site!",
             "content-1": "Welkom bij uw nieuwe PBCMS installatie, dit is een korte introductie. <br>Begin met <a href='{{SITE_LOCATION}}pb-auth/signin'>het inloggen tot uw account</a> en met het ontdekken van het dashboard!",
-            "content-2": "Daarbij, deze pagina wordt enkel getoond omdat deze standaard aan staat zolang er geen thuis-pagina bestaat. U kunt <a href='#'>dit uitschakelen</a> of <a href='#'>een thuis-pagina creëren</a>."
+            "content-2": "Deze pagina wordt enkel getoond omdat deze standaard aan staat zolang er geen thuis-pagina bestaat. U kunt <a href='#'>dit uitschakelen</a> of <a href='#'>een thuis-pagina creëren</a>."
         },
         "error-404": {
             "title": "Pagina niet gevonden",
@@ -35,6 +35,10 @@
         "error-403": {
             "title": "Verboden toegang",
             "description": "U heeft geen toegang tot de opgevraagde pagina."
+        },
+        "error-500": {
+            "title": "Interne server fout",
+            "description": "Er is een interne server fout opgetreden."
         }
     },
 
