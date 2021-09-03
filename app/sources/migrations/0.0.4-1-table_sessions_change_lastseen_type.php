@@ -7,6 +7,6 @@
         }
 
         public function down($db) {
-            echo "No need to revert changes, was a bug in database structure and will work in prior versions too." . PHP_EOL;
+            \Core::PrintLine("No need to revert changes, was a bug in database structure and will work in prior versions too.");
         }
     }

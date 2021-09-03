@@ -7,7 +7,7 @@
             if ($res->num_rows == 0) {
                 $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "policies` (`name`, `value`) VALUES ('show-welcome-page', 1)");
             } else {
-                echo "Entry for policy \"show-welcome-page\" already exists, not overriding it." . PHP_EOL;
+                \Core::PrintLine("Entry for policy \"show-welcome-page\" already exists, not overriding it.");
             }
         }
 
@@ -16,7 +16,7 @@
             if ($res->num_rows == 0 || intval($res->fetch_assoc()['value']) === 1) {
                 $db->query("DELETE FROM `" . DATABASE_TABLE_PREFIX . "policies` WHERE `name`='show-welcome-page'");
             } else {
-                echo "Non-default value for policy \"show-welcome-page\" was found, not deleting the entry." . PHP_EOL;
+                \Core::PrintLine("Non-default value for policy \"show-welcome-page\" was found, not deleting the entry.");
             }
         }
     }
