@@ -19,7 +19,7 @@
 
         public function list($limit = 10, $offset = 0) {
             if ($limit < 1) {
-                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "policies` OFFSET ${offset}");
+                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "policies` LIMIT 18446744073709551610 OFFSET ${offset}"); //Limit by the biggest unsigned int possible.
             } else {
                 $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "policies` LIMIT ${limit} OFFSET ${offset}");
             }
