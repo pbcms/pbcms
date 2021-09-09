@@ -325,7 +325,7 @@
         }
 
         private function createMigrationsTable() {
-            $this->db->query("CREATE TABLE IF NOT EXISTS `" . DATABASE_TABLE_PREFIX . "migrations` (`id` INT AUTO_INCREMENT PRIMARY KEY, `migration` VARCHAR(2048) UNIQUE, `version` VARCHAR(16), `task` INT, `name` VARCHAR(1024), `created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=INNODB;");
+            $this->db->query("CREATE TABLE IF NOT EXISTS `" . DATABASE_TABLE_PREFIX . "migrations` (`id` INT AUTO_INCREMENT PRIMARY KEY, `migration` VARCHAR(500) UNIQUE, `version` VARCHAR(16), `task` INT, `name` VARCHAR(450), `created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=INNODB;");
         }
     
         private function log($message) {

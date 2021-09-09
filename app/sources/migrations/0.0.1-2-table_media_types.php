@@ -5,7 +5,7 @@
         public function up($db) {
             $db->query("CREATE TABLE`" . DATABASE_TABLE_PREFIX . "media-types` (
                 `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                `type` varchar(1024) NOT NULL UNIQUE,
+                `type` varchar(500) NOT NULL UNIQUE,
                 `extensions` varchar(8192) NOT NULL,
                 `max-size` varchar(128) DEFAULT '2M'
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");

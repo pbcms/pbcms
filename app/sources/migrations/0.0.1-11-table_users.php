@@ -8,7 +8,7 @@
                 `firstname` varchar(255) NOT NULL,
                 `lastname` varchar(255) NOT NULL,
                 `email` varchar(255) NOT NULL UNIQUE,
-                `username` varchar(1024) DEFAULT NULL UNIQUE,
+                `username` varchar(500) DEFAULT NULL UNIQUE,
                 `password` varchar(128) NOT NULL,
                 `status` varchar(128) NOT NULL DEFAULT 'UNVERIFIED',
                 `created` timestamp NOT NULL DEFAULT current_timestamp(),
