@@ -6,9 +6,11 @@
     use Library\Database;
     use Library\PasswordPolicies;
     use Library\Language;
+    use Library\Mailer;
     use Helper\ApiResponse as Respond;
     use Helper\Request;
     use Helper\Validate;
+    use Registry\Event;
 
     $lang = new Language;
     $lang->detectLanguage();
@@ -16,8 +18,7 @@
 
     if (isset($params[0])) {
         switch ($params[0]) {
-            case 'create-session': 
-                $db = new Database();
+            case 'create-session':
                 $required = array("identifier", "password");
                 $postdata = Request::parsePost();
 
@@ -118,6 +119,75 @@
                     Respond::error('missing_refresh_token', $lang->get('messages.api-auth.access-token.error-missing_refresh_token', "No refresh token present."));    
                 }
 
+                break;
+            case 'reset-password':
+                $policy = new Policy;
+                $resetPolicy = $policy->get("password-reset-policy");
+                if ($resetPolicy == "NONE") {
+                    Respond::error('no_reset_policy', "Unfortunately, the administrator of this site hasn't configured a password reset policy. We are unable to reset your password at this moment.");
+                    die();
+                }
+
+                $required = array("identifier");
+                $postdata = Request::parsePost();
+
+                if (!Request::requireMethod('post')) die();
+                if (!Request::requireData($required)) die();
+
+                $users = new Users;
+                $info = $users->find($postdata->identifier, false);
+                if ($info) {
+                    $tokens = new Token;
+                    if ($info->status == "LOCKED") {
+                        Respond::error('user_locked', $lang->get('messages.api-auth.create-session.error-user_locked', "The user you are trying to create a session for has been locked by the system or an administrator."));
+                        die();
+                    }
+
+                    switch($resetPolicy) {
+                        case "EMAIL": 
+                            $uuid = \Helper\uuidv4();
+                            $users->metaSet($info->id, "password-reset-identifier", $uuid);
+                            $mailer = new Mailer;
+                            $content = file_get_contents(APP_DIR . '/sources/templates/password-reset-email.template.html');
+                            $content = str_replace("{{RESET_LINK}}", SITE_LOCATION . 'pb-auth/reset-password/' . $uuid, $content);
+                            $content = str_replace("{{SITE_LOCATION}}", SITE_LOCATION, $content);
+
+                            $res = $mailer->send($info->email, SITE_TITLE . ": Request to reset your password.", $content, array(
+                                'Mime-Version' => '1.0',
+                                'Content-Type' => 'text/html;charset=UTF-8'
+                            ));
+                                
+                            if ($res) {
+                                Respond::success(array(
+                                    "res" => $res,
+                                    "email" => $info->email,
+                                    "content" => $content
+                                ));
+                            } else {
+                                Respond::error("email_error", "An error occured while sending the password reset email.");
+                            }
+
+                            break;
+                        case "REQUESTADMIN":
+                            Respond::error('policy_unavailable', "Unfortunately, the REQUESTADMIN policy is still in development. We are unable to reset your password at this moment.");
+                            break;
+                        default:
+                            $found = false;
+                            $results = Event::trigger('custom-password-reset-policy', $resetPolicy);
+                            foreach($results as $result) {
+                                if (!$found && is_callable($result)) {
+                                    $found = true;
+                                    call_user_func_array($result, array($postdata, $info));
+                                }
+                            }
+
+                            if (!$found) Respond::error('unknown_policy', "The configured password reset policy is unknown to this site. We are unable to reset your password at this moment.");
+                            break;
+                    }
+                } else {
+                    Respond::error('unknown_user', str_replace("{{IDENTIFIER}}", $postdata->identifier, $lang->get('messages.api-auth.create-session.error-unknown_user', "A user identified by {{IDENTIFIER}} does not exist.")));
+                }
+                
                 break;
             case 'signedin':
             case 'authenticated':

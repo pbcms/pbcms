@@ -54,6 +54,40 @@
             ));
         }
 
+        public function forgotPassword() {
+            if (Request::signedin()) {
+                Header::Location(SITE_LOCATION . (isset($_GET['followup']) ? $_GET['followup'] : 'pb-dashboard'));
+                die();
+            }
+
+            $this->view('auth/page-forgot-password');
+            $this->template('pb-portal', array(
+                "title" => "Forgot your password",
+                "subtitle" => "Recover your password.",
+                "description" => "Recover your account for " . SITE_TITLE,
+                "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
+                "body" => array(
+                    ['script', 'pb-pages-auth-forgot-password.js', array("origin" => "pubfiles")]
+                )
+            ));
+        }
+
+        public function ResetPassword($params) {
+            if (isset($params[0])) {
+                
+            } else {
+                $this->view('auth/page-reset-password-error', array(
+                    "message" => "The password reset verifier is missing from your request."
+                ));
+
+                $this->template('pb-error', array(
+                    "title" => "Missing reset verifier",
+                    "description" => "The password reset verifier is missing from your request",
+                    "copyright" => "&copy; " . SITE_TITLE . " " . date("Y")
+                ));
+            }
+        }
+
         public function Signout($params) {
             Header::Location(SITE_LOCATION);
         }
