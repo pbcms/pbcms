@@ -2,6 +2,12 @@
     "common": {
         "messages": {
             "error-unknown_error": "Er is een onbekende fout opgetreden."
+        },
+        "words": {
+            "edit": "bewerken",
+            "warning": "waarschuwing",
+            "save": "opslaan",
+            "cancel": "annuleren"
         }
     },
 
@@ -17,6 +23,42 @@
                 "box-stay-signedin": "Ingelogd blijven?",
                 "button-continue": "Doorgaan",
                 "link-signup": "Heeft u nog geen account?"
+            },
+            "signup": {
+
+            },
+            "forgot-password": {
+                "title": "Wachtwoord vergeten",
+                "subtitle": "Reset uw wachtwoord.",
+                "description": "Reset uw wachtwoord op {{SITE_TITLE}}",
+                "field-identifier": "E-mail adres",
+                "field-identifier-full": "E-mail adres of gebruikersnaam",
+                "button-send-email": "Verstuur e-mail",
+                "link-signin": "Inloggen"
+            },
+            "reset-password": {
+
+            }
+        },
+        "pb-dashboard": {
+            "policies": {
+                "page-title": "Beleidgeving aanpassen",
+                "page-subtitle": "Pas beleidgeving op uw eigen risico aan. Aanpassingen aan het beleid kan uw website grote schade toebrengen.",
+                "table": {
+                    "column-id": "ID",
+                    "column-name": "Naam",
+                    "column-value": "Waarde (aanpasbaar)"
+                }
+            },
+            "modules": {
+                "page-title": "Modules beheren",
+                "page-subtitle": "Modules voor uw website beheren of installeren.",
+                "table": {
+                    "column-name": "Naam",
+                    "column-enabled": "Ingeschakeld",
+                    "column-pre-core": "Pre-Core",
+                    "column-is-loaded": "Is geladen?"
+                }
             }
         }
     },
@@ -50,10 +92,39 @@
         "pb-error": {
             "subtitle": "Er is een fout opgetreden tijdens het verwerken van uw verzoek.",
             "powered-by": "Aangedreven door {{LINK}}"
+        },
+        "pb-dashboard": {
+            "dashboard": "Dashboard",
+            "section-titles": {
+                "overview": "Overzicht",
+                "updates": "Updates",
+                "media": "Media",
+                "virtual-paths": "Virtuele paden",
+                "profile": "Profiel",
+                "users": "Gebruikers",
+                "modules": "Modules",
+                "objects": "Objecten",
+                "policies": "Beleidgeving"
+            },
+            "section-categories": {
+                "content": "inhoud",
+                "configuration": "configuratie",
+                "shortcuts": "snelkoppelingen"
+            },
+            "top-bar": {
+                "search-placeholder": "Start met typen om te zoeken."
+            }
         }
     },
     
     "messages": {
+        "__api-controller": {
+            "__unknown-error": "Er is een fout opgetreden tijdens het ophalen van de foutmelding!",
+            "error-unknown_api": "De opgevraagde API bestaat niet.",
+            "error-missing_api": "Er is geen API opgevraagd.",
+            "error-unknown_method": "De opgevraagde methode bestaat niet voor de opgevraagde API.",
+            "error-missing_method": "Er is geen methode opgevraagd voor de opgevraagde API."
+        },
         "api-auth": {
             "create-session": {
                 "error-user_locked": "De gebruiker waarvoor u een sessie probeert te creëeren is vergrendeld door het systeem of een administrator.",
@@ -69,6 +140,9 @@
                 "error-unknown_session": "De aangevraagde sessie bestaat niet.",
                 "error-decode_error": "Er is een fout opgetreden tijdens het ontsleutelen van uw refresh-token.",
                 "error-missing_refresh_token": "Er is geen refresh-token aanwezig."
+            },
+            "reset-password": {
+
             }
         }
     }

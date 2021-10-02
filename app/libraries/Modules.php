@@ -50,6 +50,10 @@
                     require DYNAMIC_DIR . '/modules/' . $module . '/pb_entry.php';
                     $class = 'Module\\' . $this->prepareFunctionNaming($module);
                     self::$loaded[$module] = new $class($data);
+                    if (method_exists(self::$loaded[$module], 'initialize')) {
+                        self::$loaded[$module]->initialize($data);
+                    }
+
                     return true;
                 } else {
                     return false;

@@ -6,13 +6,14 @@
     use Registry\Action;
 
     class Language {
-        private $loaded = NULL;
+        private $loaded = false;
         protected $language = NULL;
         protected static $defaultlang = NULL;
         protected static $list = array();
         private static $inmemory = array();
+        private static $updates = array();
 
-        public function __construct() {
+        public function __construct($preflang = '') {
             if (!self::$defaultlang) {
                 $policy = new Policy;
                 self::$defaultlang = $policy->get('default-language');
@@ -21,6 +22,7 @@
 
             $this->language = self::$defaultlang;
             if (count(self::$list) == 0) self::$list = JSON::decode(\file_get_contents(APP_DIR . '/sources/languages/list.json'));
+            $this->setLanguage($preflang);
         }
 
         public function accepted() {
@@ -92,9 +94,14 @@
         }
 
         public function load() {
-            if ($this->loaded !== NULL) return false;
+            if ($this->loaded) return false;
             if (!isset(self::$inmemory[$this->language])) self::$inmemory[$this->language] = JSON::decode(\file_get_contents(APP_DIR . '/sources/languages/' . $this->language . '.json'));
-            $this->loaded = self::$inmemory[$this->language];
+            if (isset(self::$updates[$this->language])) {
+                self::$inmemory[$this->language] = array_replace_recursive(self::$inmemory[$this->language], self::$updates[$this->language]);
+                unset(self::$updates[$this->language]);
+            }
+
+            $this->loaded = true;
             return true;
         }
 
@@ -108,9 +115,9 @@
 
         public function get($selector = NULL, $fallback = NULL) {
             if (!$selector) {
-                return $this->loaded;
+                return self::$inmemory[$this->language];
             } else {
-                $current = $this->loaded;
+                $current = self::$inmemory[$this->language];
                 $selector = explode('.', $selector);
 
                 foreach($selector as $item) {
@@ -131,7 +138,7 @@
             if (in_array($short, $this->accepted())) {
                 return false;
             } else {
-                self::$inmemory[$this->language] = $data;
+                self::$inmemory[$short] = $data;
                 array_push(self::$list, array(
                     "name" => $name,
                     "short" => $short,
@@ -140,5 +147,39 @@
 
                 return true;
             }
+        }
+
+        public function update($lang, $selector, $value = null) {
+            if (!isset(self::$inmemory[$lang]) && !isset(self::$updates[$lang])) self::$updates[$lang] = array();
+            if (!$value) {
+                if (is_array($selector)) {
+                    $local = $selector;
+                } else {
+                    return false;
+                }
+            } else if (!$selector) {
+                if (is_array($value)) {
+                    $local = $value;
+                } else {
+                    return false;
+                }
+            } else {
+                $local = array();
+                $current = &$local;
+                foreach(explode('.', $selector) as $item) {
+                    $current[$item] = array();
+                    $current = &$current[$item];
+                }
+
+                $current = $value;
+            }
+
+            if (isset(self::$inmemory[$lang])) {
+                self::$inmemory[$lang] = array_replace_recursive(self::$inmemory[$lang], $local);
+            } else {
+                self::$updates[$lang] = array_replace_recursive(self::$updates[$lang], $local);
+            }
+
+            return true;
         }
     }

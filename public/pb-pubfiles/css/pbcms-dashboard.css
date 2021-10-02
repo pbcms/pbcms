@@ -85,10 +85,20 @@ html, body {
     overflow-y: scroll;
 }
 
-.sidebar-options::-webkit-scrollbar { width: 5px; }
+.sidebar-options::-webkit-scrollbar { width: 18px; }
 .sidebar-options::-webkit-scrollbar-track { background: black; }
-.sidebar-options::-webkit-scrollbar-thumb { background: #222; }
-.sidebar-options::-webkit-scrollbar-thumb:hover { background: #333; }
+.sidebar-options::-webkit-scrollbar-thumb { 
+    border: 6px solid rgb(0, 0, 0);
+    background-clip: padding-box;
+    border-radius: 9999px;
+    background: #555;
+}
+.sidebar-options::-webkit-scrollbar-thumb:hover {
+    border: 5px solid rgb(0, 0, 0); 
+    background-clip: padding-box;
+    border-radius: 9999px;
+    background: #666; 
+}
 
 .sidebar-options > a {
     width: calc(100% - 100px);
@@ -323,6 +333,99 @@ html, body {
     width: 100%;
 }
 
+.content section,
+.content .section {
+    width: calc(100% - 110px);
+    padding: 20px 30px;
+    margin: 20px 25px 10px;
+    background-color: white;
+    border-radius: 10px;
+    position: relative;
+}
+
+.content section.no-padding,
+.content .section.no-padding {
+    width: calc(100% - 50px);
+    padding: 0px;
+}
+
+.content section.transparent,
+.content .section.transparent {
+    background-color: transparent !important;
+}
+
+.content section.page-introduction,
+.content .section.page-introduction {
+    background-color: transparent !important;
+    width: calc(100% - 50px);
+    padding: 0px;
+    padding-bottom: 15px;
+}
+
+.content section.page-introduction h1,
+.content .section.page-introduction h1 {
+    font-size: 30px;
+    padding-bottom: 10px;
+}
+
+.content section.page-introduction,
+.content .section.page-introduction {
+    background-color: transparent !important;
+}
+
+.content .sections-container {
+    display: flex;
+    margin: 0px 10px;
+}
+
+.content .sections-container section,
+.content .sections-container .section {
+    width: calc(100% - 90px);
+    margin: 20px 15px 10px;
+}
+
+.content .sections-container section.no-padding,
+.content .sections-container .section.no-padding,
+.content .sections-container section.page-introduction,
+.content .sections-container .section.page-introduction {
+    width: calc(100% - 30px);
+    margin: 20px 15px 10px;
+}
+
+.content .sections-container .section-5   { width: calc(5% - 90px); }
+.content .sections-container .section-10  { width: calc(10% - 90px); }
+.content .sections-container .section-15  { width: calc(15% - 90px); }
+.content .sections-container .section-20  { width: calc(20% - 90px); }
+.content .sections-container .section-25  { width: calc(25% - 90px); }
+.content .sections-container .section-30  { width: calc(30% - 90px); }
+.content .sections-container .section-35  { width: calc(35% - 90px); }
+.content .sections-container .section-40  { width: calc(40% - 90px); }
+.content .sections-container .section-45  { width: calc(45% - 90px); }
+.content .sections-container .section-50  { width: calc(50% - 90px); }
+.content .sections-container .section-50  { width: calc(50% - 90px); }
+.content .sections-container .section-55  { width: calc(55% - 90px); }
+.content .sections-container .section-60  { width: calc(60% - 90px); }
+.content .sections-container .section-65  { width: calc(65% - 90px); }
+.content .sections-container .section-70  { width: calc(70% - 90px); }
+.content .sections-container .section-75  { width: calc(75% - 90px); }
+.content .sections-container .section-80  { width: calc(80% - 90px); }
+.content .sections-container .section-85  { width: calc(85% - 90px); }
+.content .sections-container .section-90  { width: calc(90% - 90px); }
+.content .sections-container .section-95  { width: calc(95% - 90px); }
+.content .sections-container .section-100 { width: calc(100% - 90px); }
+
+.content > section:first-child,
+.content > .section:first-child,
+.content > .sections-container:first-child {
+    margin-top: 25px;
+}
+
+.content > section:last-child,
+.content > .section:last-child,
+.content > .sections-container:last-child {
+    margin-bottom: 30px;
+}
+
 form.pbcms-installation .sections section[section-name=preloader].current-section {
     display: flex;
     justify-content: center;
@@ -335,7 +438,8 @@ form.pbcms-installation .sections section[section-name=preloader].current-sectio
     margin-bottom: 30px;
 }
 
-.content button {
+.content button,
+.content .button {
     margin-top: 20px;
     background-color: black;
     padding: 8px 20px;
@@ -346,6 +450,17 @@ form.pbcms-installation .sections section[section-name=preloader].current-sectio
     font-size: 16px;
     cursor: pointer;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    text-decoration: none;
+}
+
+.content button.light-blue,
+.content .button.light-blue {
+    background-color: var(--c-blue-light);
+}
+
+.content button.dark-blue,
+.content .button.dark-blue {
+    background-color: var(--c-blue-dark);
 }
 
 .content .input-fields {
@@ -483,6 +598,91 @@ form.pbcms-installation .sections section[section-name=preloader].current-sectio
 .content .input-toggle input:checked + label::after {
     left: 11px;
     background-color: var(--c-blue-dark);
+}
+
+.content table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.content > table,
+.content section > table,
+.content .section > table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.content table td, 
+.content table th {
+    min-height: 40px;
+    min-width: 20px;
+}
+
+.content table td:not(.no-padding), 
+.content table th:not(.no-padding) {
+    padding: 8px;
+}
+
+.content table td.column-id, 
+.content table th.column-id {
+    text-align: left;
+    padding-left: 20px;
+    min-width: 0px;
+}
+
+.content table tr { background-color: #fafafa; }
+.content table tr:nth-child(even){ background-color: #e5e5e5; }
+.content table tr:hover { background-color: #d9d9d9; }
+
+.content table thead th {
+    height: 30px;
+    text-align: left;
+    background-color: #111;
+    color: white;
+}
+
+.content table td input, 
+.content table th input {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    padding: 0px 8px;
+    height: 40px;
+    width: 100%;
+}
+
+.content table td .input-toggle, 
+.content table th .input-toggle {
+    height: 40px;
+    margin-top: 0px;
+}
+
+.content table td .input-toggle input + label, 
+.content table th .input-toggle input + label {
+    margin: 6px 5px 5px 8px;
+}
+
+.content section.buttons,
+.content .section.buttons,
+.content section .buttons,
+.content .section .buttons {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+}
+
+.content section.buttons > div,
+.content .section.buttons > div,
+.content section .buttons > div,
+.content .section .buttons > div {
+    display: flex;
+}
+
+.content section.buttons > .button,
+.content .section.buttons > .button,
+.content section .buttons > .button,
+.content .section .buttons > .button {
+    margin-top: 0px;
 }
 
 /* ANIMATIONS */

@@ -15,9 +15,13 @@
      */
 
     use Library\Meta;
+    use Library\Users;
+    use Library\UserPermissions;
+    use Helper\Request;
+
     $meta = new Meta;
     $meta->set('robots', 'index, nofollow');
-    $meta->set('title', 'Dashboard - ' . $data['title']);
+    $meta->set('title', $this->lang->get("templates.pb-dashboard.dashboard", "Dashboard") . ' - ' . $data['title']);
     if (isset($data['meta'])) $meta->batch($data['meta']);
 
     Core::SystemAssets();
@@ -32,6 +36,10 @@
 
     if (isset($data['head'])) $assets->registerBatch('head', $data['head']);
     if (isset($data['body'])) $assets->registerBatch('body', $data['body']);
+
+    $users = new Users;
+    $userperm = new UserPermissions;
+    $shortcuts = json_decode($users->metaGet($this->session->user->id, 'dashboard-shortcuts'));
 ?>
 
 <!DOCTYPE html>
@@ -54,62 +62,113 @@
                 ?>
 
                 <div class="sidebar-top-branding">
-                    <img src="<?php echo SITE_LOCATION; ?>/pb-pubfiles/img/pb-logos/full-dark.png" alt="PBCMS Logo (Full, Dark)">
+                    <img src="<?php echo SITE_LOCATION; ?>pb-pubfiles/img/pb-logos/full-dark.png" alt="PBCMS Logo (Full, Dark)">
                 </div>
 
                 <div class="sidebar-options">
-                    <a href="/pb-dashboard/overview" section="overview">
+                    <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/overview" <?php if ($data['section'] == 'overview') echo 'active'; ?>>
                         <i data-feather="disc"></i>
-                        <span>Overview</span>
+                        <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.overview', "Overview"); ?></span>
                     </a>
-                    <a href="/pb-dashboard/updates" section="updates">
-                        <i data-feather="refresh-cw"></i>
-                        <span>Updates</span>
-                    </a>
+                    
+                    <?php if ($userperm->check($this->session->user->id, "site.administration.perform-updates")) { ?>
+                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/updates" <?php if ($data['section'] == 'updates') echo 'active'; ?>>
+                            <i data-feather="refresh-cw"></i>
+                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.updates', "Updates"); ?></span>
+                        </a>
+                    <?php } ?>
 
                     <h6 class="category">
-                        Content
+                        <?php echo $this->lang->get('templates.pb-dashboard.section-categories.content'); ?>
                     </h6>
-                    <a href="/pb-dashboard/media" section="media">
+                    <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/media" <?php if ($data['section'] == 'media') echo 'active'; ?>>
                         <i data-feather="image"></i>
-                        <span>Media</span>
+                        <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.media', "Media"); ?></span>
                     </a>
-                    <a href="/pb-dashboard/virtual-paths" section="virtual-paths">
-                        <i data-feather="list"></i>
-                        <span>Virtual paths</span>
-                    </a>
+                    <?php if ($userperm->check($this->session->user->id, "router.virtual-path.%")) { ?>
+                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/virtual-paths"  <?php if ($data['section'] == 'virtual-paths') echo 'active'; ?>>
+                            <i data-feather="list"></i>
+                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.virtual-paths', "Virtual paths"); ?></span>
+                        </a>
+                    <?php } ?>
 
                     <h6 class="category">
-                        Configuration
+                        <?php echo $this->lang->get('templates.pb-dashboard.section-categories.configuration'); ?>
                     </h6>
-                    <a href="/pb-dashboard/users" section="users">
-                        <i data-feather="users"></i>
-                        <span>Users</span>
+                    <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/profile" <?php if ($data['section'] == 'profile') echo 'active'; ?>>
+                        <i data-feather="user"></i>
+                        <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.profile', "Profile"); ?></span>
                     </a>
-                    <a href="/pb-dashboard/modules" section="modules">
-                        <i data-feather="package"></i>
-                        <span>Modules</span>
-                    </a>
-                    <a href="/pb-dashboard/objects" section="objects">
-                        <i data-feather="box"></i>
-                        <span>Objects</span>
-                    </a>
-                    <a href="/pb-dashboard/policies" section="policies">
-                        <i data-feather="book"></i>
-                        <span>Policies</span>
-                    </a>
+                    <?php if ($userperm->check($this->session->user->id, "user.%.other")) { ?>
+                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/users" <?php if ($data['section'] == 'users') echo 'active'; ?>>
+                            <i data-feather="users"></i>
+                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.users', "Users"); ?></span>
+                        </a>
+                    <?php } ?>
+                    <?php if ($userperm->check($this->session->user->id, "module.%")) { ?>
+                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/modules" <?php if ($data['section'] == 'modules') echo 'active'; ?>>
+                            <i data-feather="package"></i>
+                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.modules', "Modules"); ?></span>
+                        </a>
+                    <?php } ?>
+                    <?php if ($userperm->check($this->session->user->id, "object.%")) { ?>
+                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/objects" <?php if ($data['section'] == 'objects') echo 'active'; ?>>
+                            <i data-feather="box"></i>
+                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.objects', "Objects"); ?></span>
+                        </a>
+                    <?php } ?>
+                    <?php if ($userperm->check($this->session->user->id, "policy.%")) { ?>
+                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/policies" <?php if ($data['section'] == 'policies') echo 'active'; ?>>
+                            <i data-feather="book"></i>
+                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.policies', "Policies"); ?></span>
+                        </a>
+                    <?php } ?>
+
+
 
                     <h6 class="category">
-                        Shortcuts - <a href="/pb-dashboard/shortcuts">edit</a>
+                        <?php echo $this->lang->get('templates.pb-dashboard.section-categories.shortcuts', "Shortcuts"); ?> - <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/shortcuts"><?php echo $this->lang->get('common.words.edit', "Edit"); ?></a>
                     </h6>
-                    <a href="/pb-dashboard/module-config/maintenance" section="shortcut-maintenance">
-                        <i data-feather="cloud-off"></i>
-                        <span>Maintenance</span>
-                    </a>
-                    <a href="/pb-dashboard/module-config/articles" section="articles">
-                        <i data-feather="file-text"></i>
-                        <span>Articles</span>
-                    </a>
+                    <?php
+                        if (!$shortcuts || count($shortcuts) < 1) {
+                            ?>
+                                <a href="/pb-dashboard/shortcuts/create" <?php if ($data['section'] == 'shortcuts') echo 'active'; ?>>
+                                    <i data-feather="link"></i>
+                                    <span>New shortcut</span>
+                                </a>
+                            <?php
+                        } else {
+                            foreach($shortcuts as $shortcut) {
+                                $shortcut = (array) $shortcut;
+                                switch($shortcut['shortcut-type']) {
+                                    case 'module-config':
+                                        ?>
+                                            <a href="<?php echo SITE_LOCATION . 'pb-dashboard/module-config/' . $shortcut['target']; ?>" <?php if ($data['section'] == 'module-config-' . $shortcut['target']) echo 'active'; ?>>
+                                                <i data-feather="<?php echo $shortcut['icon']; ?>"></i>
+                                                <span><?php echo $shortcut['title']; ?></span>
+                                            </a>
+                                        <?php
+                                        break;
+                                    case 'custom': 
+                                        ?>
+                                            <a href="<?php echo SITE_LOCATION . $shortcut['target']; ?>">
+                                                <i data-feather="<?php echo $shortcut['icon']; ?>"></i>
+                                                <span><?php echo $shortcut['title']; ?></span>
+                                            </a>
+                                        <?php
+                                        break;
+                                    case 'remote':
+                                        ?>
+                                            <a href="<?php echo $shortcut['target']; ?>">
+                                                <i data-feather="<?php echo $shortcut['icon']; ?>"></i>
+                                                <span><?php echo $shortcut['title']; ?></span>
+                                            </a>
+                                        <?php
+                                        break;
+                                }
+                            }
+                        }
+                    ?>
                 </div>
                 <div class="sidebar-footer">
                     <p>&copy; <a href="https://pbcms.io" target="_blank">PBCMS Project</a> <?php echo date("Y"); ?></p>
@@ -119,7 +178,7 @@
         <div class="container">
             <div class="control-bar">
                 <div class="control-button search-control">
-                    <input type="text" class="search-bar" name="search-bar" placeholder="Start typing to search.">
+                    <input type="text" class="search-bar" name="search-bar" placeholder="<?php echo $this->lang->get('templates.pb-dashboard.top-bar.search-placeholder', "Start typing to search."); ?>">
                     <div class="search-button">
                         <i data-feather="search" class="icon-button"></i>
                     </div>

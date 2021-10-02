@@ -3,9 +3,11 @@
 
     use Library\Router;
     use Library\Policy;
+    use Library\Language;
+    use Helper\ApiResponse as Respond;
 
     class Controller {
-        public function model($model) {
+        public function __model($model) {
             $model = ucwords($model);
             if (file_exists(APP_DIR . '/models/' . $model . '.php')) {
                 require_once APP_DIR . '/models/' . $model . '.php';
@@ -20,17 +22,17 @@
             }
         }
 
-        public function view($view, $data = []) {
+        public function __view($view, $data = []) {
             if (file_exists(APP_DIR . '/views/' . $view . '.php')) {
                 include_once APP_DIR . '/views/' . $view . '.php';
             } else if (file_exists(DYNAMIC_DIR . '/views/' . $view . '.php')) {
                 include_once DYNAMIC_DIR . '/views/' . $view . '.php';
             } else {
-                $this->displayError(500, "Unknown View", "Interne server fout");
+                $this->__displayError(500, "Unknown View", "Interne server fout");
             }
         }
 
-        public function template($template, $data = []) {
+        public function __template($template, $data = []) {
             $content = ob_get_contents();
             ob_end_clean();
 
@@ -57,11 +59,11 @@
             if (file_exists(DYNAMIC_DIR . '/templates/' . $template . '.php')) {
                 include_once DYNAMIC_DIR . '/templates/' . $template . '.php';
             } else {
-                $this->displayError(500, "Unknown Template", "Interne server fout");
+                $this->__displayError(500, "Unknown Template", "Interne server fout");
             }
         }
 
-        public function modelExists($model) {
+        public function __modelExists($model) {
             if (file_exists(APP_DIR . '/models/' . $model . '.php')) {
                 return true;
             } else if (file_exists(DYNAMIC_DIR . '/models/' . $model . '.php')) {
@@ -71,7 +73,7 @@
             }
         }
 
-        public function viewExists($view) {
+        public function __viewExists($view) {
             if (file_exists(APP_DIR . '/views/' . $view . '.php')) {
                 return true;
             } else if (file_exists(DYNAMIC_DIR . '/views/' . $view . '.php')) {
@@ -81,7 +83,7 @@
             }
         }
 
-        public function templateExists($template) {
+        public function __templateExists($template) {
             if (file_exists(APP_DIR . '/templates/' . $template . '.php')) {
                 return true;
             } else if (file_exists(DYNAMIC_DIR . '/templates/' . $template . '.php')) {
@@ -91,7 +93,7 @@
             }
         }
 
-        public function displayError($error, $short = null, $message = null) {
+        public function __displayError($error) {
             $policy = new Policy;
             $router = new Router;
             $request = $router->documentRequest();
@@ -113,6 +115,51 @@
             include_once APP_DIR . '/templates/pb-error.php';
             http_response_code($error);
 
+            die();
+        }
+    }
+
+    class ApiController extends Controller {
+        private $api;
+        private $methods = array();
+
+        public function __usingApi($api) {
+            $this->api = $api;
+        }
+
+        public function __registerMethod($method, $callback) {
+            if (isset($this->methods[$method])) {
+                return false;
+            } else {
+                $this->methods[$method] = $callback;
+                return true;
+            }
+        }
+
+        public function __callMethod($method) {
+            if (isset($this->methods[$method])) {
+                $callback = $this->methods[$method];
+                $arguments = func_get_args();
+                array_shift($arguments);
+                
+                if (count($arguments) > 0) {
+                    call_user_func_array($callback, $arguments);
+                } else {
+                    call_user_func($callback);
+                }
+                
+                return true;
+            } else {
+                return false;
+            }
+        }
+            
+        public function __apiError($error, $preflang = '') {
+            $lang = new Language($preflang);
+            if (!$preflang) $lang->detectLanguage();
+            $lang->load();
+
+            Respond::error($error, $lang->get("messages.__api-controller.error-" . $error, $lang->get("messages.__api-controller.__unknown-error", "An error occured while retrieving the error message!")));
             die();
         }
     }

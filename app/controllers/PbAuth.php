@@ -14,7 +14,7 @@
             $this->lang->load();
         }
 
-        public function Index() {
+        public function __index() {
             Header::Location(SITE_LOCATION . 'pb-auth/signin', 301);
         }
 
@@ -24,8 +24,8 @@
                 die();
             }
 
-            $this->view('auth/page-signin');
-            $this->template('pb-portal', array(
+            $this->__view('auth/page-signin');
+            $this->__template('pb-portal', array(
                 "title" => $this->lang->get('pages.pb-auth.signin.title', "Signin"),
                 "subtitle" => $this->lang->get('pages.pb-auth.signin.subtitle', "Signin to your account"),
                 "description" => str_replace('{{SITE_TITLE}}', SITE_TITLE, $this->lang->get('pages.pb-auth.signin.description', "Signin to your account on {{SITE_TITLE}}")),
@@ -42,8 +42,8 @@
                 die();
             }
 
-            $this->view('auth/page-signup');
-            $this->template('pb-portal', array(
+            $this->__view('auth/page-signup');
+            $this->__template('pb-portal', array(
                 "title" => "Signup",
                 "subtitle" => "Make your new account.",
                 "description" => "Make a new account on " . SITE_TITLE,
@@ -60,11 +60,11 @@
                 die();
             }
 
-            $this->view('auth/page-forgot-password');
-            $this->template('pb-portal', array(
-                "title" => "Forgot your password",
-                "subtitle" => "Recover your password.",
-                "description" => "Recover your account for " . SITE_TITLE,
+            $this->__view('auth/page-forgot-password');
+            $this->__template('pb-portal', array(
+                "title" => $this->lang->get('pages.pb-auth.forgot-password.title', "Forgot password"),
+                "subtitle" => $this->lang->get('pages.pb-auth.forgot-password.subtitle', "Reset your password."),
+                "description" => str_replace('{{SITE_TITLE}}', SITE_TITLE, $this->lang->get('pages.pb-auth.forgot-password.description', "Reset your password on {{SITE_TITLE}}")),
                 "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
                 "body" => array(
                     ['script', 'pb-pages-auth-forgot-password.js', array("origin" => "pubfiles")]
@@ -73,18 +73,30 @@
         }
 
         public function ResetPassword($params) {
-            if (isset($params[0])) {
-                
-            } else {
-                $this->view('auth/page-reset-password-error', array(
-                    "message" => "The password reset verifier is missing from your request."
-                ));
 
-                $this->template('pb-error', array(
-                    "title" => "Missing reset verifier",
-                    "description" => "The password reset verifier is missing from your request",
-                    "copyright" => "&copy; " . SITE_TITLE . " " . date("Y")
-                ));
+
+            if (Request::method() == "POST") {
+                if (!isset($params[0])) Respond::error("missing_verifier", "The password reset verifier is missing from your request.");
+            } else {
+                if (!isset($params[0])) {
+                    $this->__view('auth/page-reset-password-error', array(
+                        "message" => "The password reset verifier is missing from your request."
+                    ));
+
+                    $this->__template('pb-error', array(
+                        "title" => "Missing reset verifier.",
+                        "description" => "The password reset verifier is missing from your request.",
+                        "copyright" => "&copy; " . SITE_TITLE . " " . date("Y")
+                    ));
+                } else {
+                    
+                    $this->__view('auth/page-reset-password');
+                    $this->__template('pb-error', array(
+                        "title" => "Reset your password",
+                        "description" => "Reset your password.",
+                        "copyright" => "&copy; " . SITE_TITLE . " " . date("Y")
+                    ));
+                }
             }
         }
 
@@ -98,8 +110,8 @@
                     Callback::call($params[0], array_slice($params, 1));
                 } else {
                     http_response_code(404);
-                    $this->view('auth/auth-options');
-                    $this->template('pb-portal', array(
+                    $this->__view('auth/auth-options');
+                    $this->__template('pb-portal', array(
                         "title" => "Unknown callback",
                         "subtitle" => "An unknown callback was requested!",
                         "description" => "Unknown callback requested!",
@@ -111,8 +123,8 @@
                 }
             } else {
                 http_response_code(400);
-                $this->view('auth/auth-options');
-                $this->template('pb-portal', array(
+                $this->__view('auth/auth-options');
+                $this->__template('pb-portal', array(
                     "title" => "Invalid request",
                     "subtitle" => "No callback was requested!",
                     "description" => "No callback requested!",
@@ -126,10 +138,10 @@
 
         public function __error($code) {
             http_response_code($code);
-            $this->view('auth/auth-options');
+            $this->__view('auth/auth-options');
 
             if ($code == 404) {
-                $this->template('pb-portal', array(
+                $this->__template('pb-portal', array(
                     "title" => "Unknown action",
                     "subtitle" => "An unknown action was requested!",
                     "description" => "Unknown action requested!",
@@ -139,7 +151,7 @@
                     )
                 ));
             } else {
-                $this->template('pb-portal', array(
+                $this->__template('pb-portal', array(
                     "title" => "Error $code",
                     "subtitle" => "Error $code has occured!",
                     "description" => "Error $code.",

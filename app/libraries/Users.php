@@ -337,12 +337,10 @@
                         $sql .= " `$key`='$value'";
                     }
 
-                    $sql .= " `updated`=CURRENT_TIMESTAMP() WHERE `id`=" . $user->id;
+                    $sql .= ", `updated`=CURRENT_TIMESTAMP() WHERE `id`=" . $user->id;
                     $res = $this->db->query($sql);
                     return (object) array(
-                        "success" => true,
-                        "errors" => $error->errors,
-                        "messages" => $error->messages
+                        "success" => true
                     );
                 } else {
                     return (object) array(
@@ -465,5 +463,92 @@
             $this->lockProperty("MEDIUM", "score=0.8,uppercase,lowercase,length");
             $this->lockProperty("STRONG", "score=1");
             $this->lockPurge();
+        }
+    }
+
+    class UserPermissions {
+        private $db;
+        private $roles;
+        private $users;
+        private $relations;
+        private $permissions;
+
+        public function __construct() {
+            $this->db = new \Library\Database;
+            $this->users = new Users;
+            $this->roles = new \Library\Roles;
+            $this->relations = new \Library\Relations;
+            $this->permissions = new \Library\Permissions;
+        }
+
+        public function grant($user, $permission) {
+            $id = $this->users->getId($user);
+            if (!$id) return false;
+            return $this->permission->grant("user", $id, $permission);
+        }
+
+        public function reject($user, $permission) {
+            $id = $this->users->getId($user);
+            if (!$id) return false;
+            return $this->permission->reject("user", $id, $permission);
+        }
+
+        public function clear($user, $permission) {
+            $id = $this->users->getId($user);
+            if (!$id) return false;
+            return $this->permission->clear("user", $id, $permission);
+        }
+
+        public function check($user, $permission, $extendedResult = false) {
+            $id = $this->users->getId($user);
+            if (!$id) return false;
+            $roles = $this->relations->list(array(
+                "type" => 'user:role',
+                "origin" => $id,
+                "order" => "DESC"
+            ));
+            
+            $grantSize = 0;
+            $rejectSize = 0;
+
+            foreach($roles as $role) {
+                $role = (array) $role;
+                $res = $this->permissions->check("role", $role['id'], $permission, true);
+                if ($res->grantSize > $grantSize) $grantSize = $res->grantSize;
+                if ($res->rejectSize > $rejectSize) $rejectSize = $res->rejectSize;
+            }
+
+            $res = $this->permissions->check("user", $id, $permission, true);
+            if ($res->grantSize > $grantSize) $grantSize = $res->grantSize;
+            if ($res->rejectSize > $rejectSize) $rejectSize = $res->rejectSize;
+
+            if ($extendedResult) {
+                return (object) array(
+                    "granted" => $grantSize > $rejectSize,
+                    "grantSize" => $grantSize,
+                    "rejectSize" => $rejectSize
+                );
+            } else {
+                return $grantSize > $rejectSize;
+            }
+        }
+
+        public function list($input, $checkWildcards = true) {
+            if (is_numeric($input) || is_string($input)) {
+                $id = $this->users->getId($user);
+                if (!$id) return false;
+                return $this->permission->list(array(
+                    "target" => "user:" . $id
+                ));
+            } else {
+                if (!isset($input['target']) && !isset($input['targetType'])) $input['targetType'] = 'user';
+                return $this->permission->list($input, $checkWildcards);
+            }
+        }
+
+        public function find($user, $permission) {
+            $id = $this->users->getId($user);
+            if (!$id) return false;
+            return $this->permission->find("user", $id, $permission);
         }
     }

@@ -161,14 +161,20 @@ form.pbcms-installation .sections section[section-name=preloader].current-sectio
     margin-bottom: 20px;
 }
 
-.pbcms-system-display p.error {
+.pbcms-system-display p.error,
+.pbcms-system-display p.success {
     color: red;
     font-weight: bold;
     margin-bottom: 30px;
 }
 
-.pbcms-system-display p.error:empty {
+.pbcms-system-display p.error:empty,
+.pbcms-system-display p.success:empty {
     display: none;
+}
+
+.pbcms-system-display p.success {
+    color: green;
 }
 
 .pbcms-system-display button {

@@ -63,7 +63,10 @@
             require_once 'libraries/Objects.php';
             require_once 'libraries/Mailer.php';
             require_once 'libraries/Helpers.php';
+            require_once 'libraries/Roles.php';
             require_once 'libraries/Users.php';
+            require_once 'libraries/Relations.php';
+            require_once 'libraries/Permissions.php';
             require_once 'libraries/Sessions.php';
             require_once 'libraries/Language.php';
             require_once 'libraries/Token.php';

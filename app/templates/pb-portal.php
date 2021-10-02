@@ -48,7 +48,7 @@
         ?>
     </head>
     <body>
-        <form class="pbcms-system-display portal">
+        <form class="pbcms-system-display portal" method="POST">
             <div class="top-bar">
                 <div class="logo-container">
                     <img src="<?php echo SITE_LOCATION; ?>/pb-pubfiles/img/pb-logos/full-dark.png" alt="PBCMS Logo (Full, Dark)">

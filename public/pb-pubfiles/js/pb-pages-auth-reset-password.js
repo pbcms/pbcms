@@ -58,4 +58,12 @@
 
         return success;
     }
+
+    function submitPortal() {
+
+    }
+
+    function showError(error) {
+
+    }
 })();

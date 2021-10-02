@@ -170,7 +170,8 @@
 
                         return (object) array(
                             "success" => true,
-                            "info" => $session
+                            "info" => $session,
+                            "user" => $user
                         );
                     } else {
                         return (object) array(
@@ -188,7 +189,6 @@
                 );
             }
         }
-
         
         public static function signedin() {
             return self::sessionInfo(true)->success;
@@ -228,8 +228,17 @@
             }
         }
 
-        public static function request($url, $execute = true) {
-            $router = new Router;
+        public static function requireAuthentication() {
+            if (!self::authenticated()) {
+                ApiResponse::error('not_authenticated', 'You must be authenticated to perform this request.');
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        public static function rewrite($url, $execute = true) {
+            $router = new \Library\Router;
             if ($router->refactorRequest($url)) {
                 if ($execute) $router->executeRequest();
             } else {

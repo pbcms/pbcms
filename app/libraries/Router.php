@@ -9,7 +9,7 @@
         protected static $currentController;
 
         protected static $controller = 'Root';
-        protected static $method = 'Index';
+        protected static $method = '__index';
         protected static $params = [];
         protected static $url = '/';
         protected $db;
@@ -38,7 +38,7 @@
             self::$preferredLanguage = NULL;
             self::$virtualPath = NULL;
             self::$controller = 'Root';
-            self::$method = 'Index';
+            self::$method = '__index';
             self::$params = [];
             self::$url = $url;
 
@@ -83,7 +83,7 @@
             $virtualPaths = $this->matchVirtualPath();
             if (count($virtualPaths) > 0 && isset($virtualPaths[$virtualIndex])) {
                 self::$controller = 'Root';
-                self::$method = 'Index';
+                self::$method = '__index';
                 self::$params = [];
 
                 $virtual = $virtualPaths[$virtualIndex]['path'];
@@ -105,7 +105,7 @@
                 Store::delete('router-preferred-language');
 
                 if (!$this->controllerExists(self::$controller)) {
-                    $this->displayError(404);
+                    self::$controller = NULL;
                 }
 
                 return;
@@ -114,6 +114,10 @@
 
         public function executeRequest() {
             if (self::$executed) return false;
+            if (!self::$controller) {
+                $this->displayError(404);
+            }
+
             if (!self::$method) {
                 if (method_exists(self::$currentController, '__error')) {
                     self::$currentController->__error(404);
@@ -281,7 +285,7 @@
         public function displayError($error, $short = null, $message = null) {
             self::$executed = true;
             $controller = new \Library\Controller;
-            $controller->displayError($error, $short, $message);
+            $controller->__displayError($error, $short, $message);
             die;
         }
     }
