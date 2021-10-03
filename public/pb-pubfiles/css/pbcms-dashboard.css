@@ -331,6 +331,29 @@ html, body {
 .container .content {
     height: 100%;
     width: 100%;
+    overflow-y: scroll;
+}
+
+.container .content::-webkit-scrollbar {
+    width: 14px;
+}
+
+.container .content::-webkit-scrollbar-track {
+    background: #f0f0f0; 
+}
+
+.container .content::-webkit-scrollbar-thumb {
+    border: 4px solid rgba(255, 255, 255, 0);
+    background-clip: padding-box;
+    border-radius: 9999px;
+    background-color: #bbb;
+}
+
+.container .content::-webkit-scrollbar-thumb:hover {
+    border: 3px solid rgba(255, 255, 255, 0);
+    background-clip: padding-box;
+    border-radius: 9999px;
+    background-color: #888;
 }
 
 .content section,
@@ -424,12 +447,6 @@ html, body {
 .content > .section:last-child,
 .content > .sections-container:last-child {
     margin-bottom: 30px;
-}
-
-form.pbcms-installation .sections section[section-name=preloader].current-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .content p.error {
