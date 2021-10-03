@@ -4,6 +4,33 @@
     use Library\Database;
     use Library\DatabaseMigrator as Migrator;
 
+    //Add minified core for PrintLine functionality.
+    class Core {
+        public static function Safemode() {
+            return self::$inSafemode;
+        }
+
+        public static function InCli() {
+            return OPERATION_MODE == "CLI";
+        }
+
+        public static function DefaultOperationMode() {
+            return OPERATION_MODE == "DEFAULT";
+        }
+
+        public static function Print($text) {
+            if (self::InCli()) {
+                fwrite(STDOUT, $text);
+            } else {
+                echo $text;
+            }
+        }
+
+        public static function PrintLine($text) {
+            self::Print($text . PHP_EOL);
+        }
+    }
+
     function validateDatabase() {
         if (isset($_POST['DB_HOSTNAME']) && isset($_POST['DB_USERNAME']) && isset($_POST['DB_DATABASE'])) {
             $hostname = $_POST['DB_HOSTNAME'];
@@ -157,10 +184,10 @@
 
                 if ($username != NULL) {
                     $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "users` (`firstname`, `lastname`, `username`, `email`, `password`, `status`) VALUES ('$firstname', '$lastname', '$username', '$email', '$password', 'VERIFIED')");
-                    $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "relations` (`type`, `origin`, `target`) VALUES ('user:group', '$db->insert_id', '1')");
+                    $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "relations` (`type`, `origin`, `target`) VALUES ('user:role', '$db->insert_id', '1')");
                 } else {
                     $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "users` (`firstname`, `lastname`, `email`, `password`, `status`) VALUES ('$firstname', '$lastname', '$email', '$password', 'VERIFIED')");
-                    $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "relations` (`type`, `origin`, `target`) VALUES ('user:group', '$db->insert_id', '1')");
+                    $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "relations` (`type`, `origin`, `target`) VALUES ('user:role', '$db->insert_id', '1')");
                 }
 
                 $site_title = $_POST["SITE_TITLE"];
