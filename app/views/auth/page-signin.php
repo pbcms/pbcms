@@ -32,19 +32,31 @@
     <ul class="error-list"></ul>
 </div>
 
-<div class="input-checkbox">
-    <input type="checkbox" name="stay-signedin">
-    <span>
-        <?php echo $lang->get("pages.pb-auth.signin.box-stay-signedin", "Stay signed-in?"); ?>
-    </span>
-</div>
+<?php
+        if (intval($policy->get("allow-stay-signedin")) === 1) {
+            ?>
+                <div class="input-checkbox">
+                    <input type="checkbox" name="stay-signedin">
+                    <span>
+                        <?php echo $lang->get("pages.pb-auth.signin.box-stay-signedin", "Stay signed-in?"); ?>
+                    </span>
+                </div>
+            <?php
+        }
+    ?>
 
 <div class="input-buttons">
     <button type="submit" class="process-section">
     <?php echo $lang->get("pages.pb-auth.signin.button-continue", "Continue"); ?>
     </button>
 
-    <a href="<?php echo SITE_LOCATION; ?>pb-auth/signup">
-        <?php echo $lang->get("pages.pb-auth.signin.link-signup", "Don't have an account yet?"); ?>
-    </a>
+    <?php
+        if (intval($policy->get("signup-allowed")) === 1) {
+            ?>
+                <a href="<?php echo SITE_LOCATION; ?>pb-auth/signup">
+                    <?php echo $lang->get("pages.pb-auth.signin.link-signup", "Don't have an account yet?"); ?>
+                </a>
+            <?php
+        }
+    ?>
 </div>
