@@ -51,18 +51,59 @@
             }
         }
 
-        public function list($limit = 10) {
-            $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` LIMIT ${limit}");
-            return $res->fetch_all(MYSQLI_ASSOC);
+        public function list($arg1 = null, $arg2 = null, $arg3 = null) {
+            if (!$arg1) {
+                $type = null;
+                $limit = 10;
+                $offset = 0;
+            } else if (is_numeric($arg1)) {
+                $type = null;
+                $limit = $arg1;
+                $offset = (is_numeric($arg2) ? $arg2 : 0);
+            } else if (is_string($arg1)) {
+                $type = $arg1;
+                $limit = (is_numeric($arg2) ? $arg2 : 10);
+                $offset = (is_numeric($arg3) ? $arg3 : 0);
+            } else {
+                return false;
+            }
+
+            if (!$type) {
+                if ($limit < 1) {
+                    $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` LIMIT 18446744073709551610 OFFSET ${offset}"; //Limit by the biggest unsigned int possible.
+                } else {
+                    $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` LIMIT ${limit} OFFSET ${offset}";
+                }
+            } else {
+                if ($limit < 1) {
+                    $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` WHERE `type`='${type}' LIMIT 18446744073709551610 OFFSET ${offset}"; //Limit by the biggest unsigned int possible.
+                } else {
+                    $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` WHERE `type`='${type}' LIMIT ${limit} OFFSET ${offset}";
+                }
+            }
+
+            $res = $this->db->query($query);
+            if ($res->num_rows > 0) {
+                return $res->fetch_all(MYSQLI_ASSOC);
+            } else {
+                return array();
+            }
         }
 
-        public function properties($type, $name = '') {
+        public function properties($type, $name = '', $parse = false) {
             $obj = $this->info($type, $name);
             if ($obj == NULL) {
                 return false;
             } else {
                 $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "object-properties` WHERE `object`='" . $obj->id . "'");
-                return $res->fetch_all(MYSQLI_ASSOC);
+                $properties = $res->fetch_all(MYSQLI_ASSOC);
+                if ($parse) {
+                    $parsed = array();
+                    foreach($properties as $property) $parsed[$property['property']] = $property['value'];
+                    return $parsed;
+                } else {
+                    return $properties;
+                }
             }
         }
 
