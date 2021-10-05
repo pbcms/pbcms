@@ -190,3 +190,250 @@
             return $str;
         }
     }
+
+    class ModuleManager {
+        public function installModule($name) {
+            $module = $this->moduleRepoInfo($name);
+            if ($module) {
+                $filename = tempnam(sys_get_temp_dir(), 'pbmodule_' . $module->module);
+                $file = fopen($filename, 'w+');
+                fwrite($file, $this->retrieveFile($module->latest, true));
+                fclose($file);
+
+                $zip = new \ZipArchive();
+                if ($zip->open($filename) === true) {
+                    $root = '';
+                    if ($zip->statIndex(0)['name'] == $module->module . '-' . $module->version . '/') $root = $module->module . '-' . $module->version . '/';
+                    if ($zip->locateName($root . 'pb_entry.php') === false) return -3;
+                    if ($zip->locateName($root . 'module.json') === false) return -4;
+
+                    mkdir(DYNAMIC_DIR . '/modules/' . $module->module, 775);
+                    fclose(fopen(DYNAMIC_DIR . '/modules/' . $module->module . '/.disabled', 'w+'));
+                    if ($zip->extractTo(DYNAMIC_DIR . '/modules/' . $module->module)) {
+                        if ($root !== '') {
+                            $success = true;
+                            $files = scandir(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root);
+                            foreach ($files as $file) {
+                                if (in_array($file, array(".",".."))) continue;
+                                if (!copy(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root . $file, DYNAMIC_DIR . '/modules/' . $module->module . '/' . $file)) {
+                                    $success = false;
+                                }
+                            }
+
+                            if ($success) {
+                                // https://stackoverflow.com/a/1653776
+                                function deleteDirectory($dir) {
+                                    if (!file_exists($dir)) return true;
+                                    if (!is_dir($dir)) return unlink($dir);
+                                    foreach (scandir($dir) as $item) {
+                                        if ($item == '.' || $item == '..') continue;
+                                        if (!deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) return false;
+                                    }
+                                
+                                    return rmdir($dir);
+                                }
+
+                                return (deleteDirectory(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root) ? 1 : -7);
+                            } else {
+                                return -6;
+                            }
+                        } else {
+                            return 1;
+                        }
+                    } else {
+                        return -5;
+                    }
+                } else {
+                    return -2;
+                }
+            } else {
+                return -1;
+            }
+        }
+
+        public function updateModule($name) {
+
+        }
+
+        public function removeModule($name) {
+
+        }
+
+        public function moduleExists($name) {
+            $exists = false;
+            $modules = $this->listModules();
+            foreach($modules as $item) {
+                if ($item['module'] == $name) {
+                    $exists = true;
+                    break;
+                }
+            }
+
+            return $exists;
+        }
+
+        public function moduleRepoInfo($name) {
+            $module = null;
+            $modules = $this->listModules();
+            foreach($modules as $item) {
+                if ($item->module == $name) {
+                    if (!$module) {
+                        $module = (object) $item;
+                    } else if (version_compare($item->version, $module->version) === 1) {
+                        $module = (object) $item;
+                    }
+                }
+            }
+
+            return $module;
+        }
+
+        public function moduleInstalled($name) {
+            return file_exists(DYNAMIC_DIR . '/modules/' . $module . '/pb_entry.php');
+        }
+
+        public function listModules($includeDisabled = false) {
+            $result = array();
+            $repositories = $this->listRepositories();
+            foreach($repositories as $repository) {
+                if ($includeDisabled || intval($repository->enabled) == 1) {
+                    $result = array_replace_recursive($result, $this->getRepository($repository->name));
+                }
+            }
+
+            return $result;
+        }
+
+        public function addRepository($name, $url, $enabled = true) {
+            if ($this->repositoryExists($name)) {
+                return false;
+            } else {
+                $objects = new Objects;
+                $objects->create('modules-repository', $name);
+                $objects->set('modules-repository', $name, 'url', $url);
+                $objects->set('modules-repository', $name, 'enabled', ($enabled ? 1 : 0));
+            }
+        }
+
+        public function enableRepository($name) {
+            if ($this->repositoryExists($name)) {
+                return false;
+            } else {
+                $objects = new Objects;
+                $objects->set('modules-repository', $name, 'enabled', 1);
+            }
+        }
+
+        public function disableRepository($name) {
+            if ($this->repositoryExists($name)) {
+                return false;
+            } else {
+                $objects = new Objects;
+                $objects->set('modules-repository', $name, 'enabled', 0);
+            }
+        }
+
+        public function removeRepository($name) {
+            if ($this->repositoryExists($name)) {
+                $objects = new Objects;
+                $objects->purge('modules-repository', $name);
+            } else {
+                return false;
+            }
+        }
+
+        public function repositoryExists($name) {
+            $objects = new Objects;
+            return ($objects->info('modules-repository', $name) ? true : false);
+        }
+
+        public function getRepository($name, $forceRefresh = false) {
+            $objects = new Objects;
+            if ($this->repositoryExists($name)) {
+                if (!file_exists(APP_DIR . '/sources/repositories/modules-' . $name . '.json') || $forceRefresh) {
+                    $repository = (object) $objects->info('modules-repository', $name);
+                    $properties = (object) $objects->properties('modules-repository', $repository->name, true);
+                    $file = fopen(APP_DIR . '/sources/repositories/modules-' . $repository->name . '.json', 'w+');
+                    fputs($file, $this->retrieveFile($properties->url, true));
+                    fclose($file);
+                }
+
+                return json_decode(file_get_contents(APP_DIR . '/sources/repositories/modules-' . $name . '.json'));
+            } else {
+                return false;
+            }
+        }
+
+        public function listRepositories() {
+            $objects = new Objects;
+            $repositories = $objects->list('modules-repository', 0);
+            $result = array();
+            foreach($repositories as $repository) {
+                $repository = (object) $repository;
+                $properties = (object) $objects->properties('modules-repository', $repository->name, true);
+                array_push($result, (object) array(
+                    "name" => $repository->name,
+                    "url" => $properties->url,
+                    "enabled" => (intval($properties->enabled) === 1 ? true : false)
+                ));
+            }
+
+            return $result;
+        }
+
+        public function repositoryInfo($name) {
+            $objects = new Objects;
+            if ($this->repositoryExists($name)) {
+                $repository = (object) $objects->info('modules-repository', $name);
+                $properties = (object) $objects->properties('modules-repository', $repository->name, true);
+                return (object) array(
+                    "name" => $repository->name,
+                    "url" => $properties->url,
+                    "enabled" => (intval($properties->enabled) === 1 ? true : false)
+                );
+            } else {
+                return false;
+            }
+        }
+
+        public function refreshRepository($name) {
+            $objects = new Objects;
+            if ($this->repositoryExists($name)) {
+                $repository = (object) $objects->info('modules-repository', $name);
+                $properties = (object) $objects->properties('modules-repository', $repository->name, true);
+                $file = fopen(APP_DIR . '/sources/repositories/modules-' . $repository->name . '.json', 'w+');
+                fputs($file, $this->retrieveFile($properties->url, true));
+                fclose($file);
+
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public function refreshRepositories($includeDisabled = false) {
+            $repositories = $this->listRepositories();
+            foreach($repositories as $repository) {
+                if ($includeDisabled || intval($repository->enabled) == 1) {
+                    $file = fopen(APP_DIR . '/sources/repositories/modules-' . $repository->name . '.json', 'w+');
+                    fputs($file, $this->retrieveFile($repository->url, true));
+                    fclose($file);
+                }
+            }
+        }
+
+        private function retrieveFile($url, $raw = false) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            $data = curl_exec ($ch);
+            curl_close ($ch);
+
+            if ($raw) return $data;
+            $file = tmpfile();
+            fwrite($file, $data);
+            fseek($file, 0);
+            return $file;
+        }
+    }
