@@ -159,6 +159,10 @@
             return file_exists(DYNAMIC_DIR . '/modules/' . $module . '/.pre-core');
         }
 
+        public function updateable($module) {
+            return !(file_exists(DYNAMIC_DIR . '/modules/' . $module . '/.no-update'));
+        }
+
         public function isLoaded($module) {
             return isset(self::$loaded[$module]);
         }
@@ -192,6 +196,32 @@
     }
 
     class ModuleManager {
+        public function moduleSummary($name) {
+            $modules = new Modules;
+            $found = false;
+            $result = (object) array(
+                "module" => $name,
+                "functionNaming" => $modules->prepareFunctionNaming($name),
+                "enabled" => false,
+                "preCore" => false,
+                "loaded" => false,
+                "updateable" => false,
+                "repo" => $this->moduleRepoInfo($name),
+                "local" => $this->moduleLocalInfo($name)
+            );
+
+            if ($modules->exists($name)) {
+                $found = true;
+                $result->enabled = $modules->enabled($name);
+                $result->preCore = $modules->preCore($name);
+                $result->loaded = $modules->isLoaded($name);
+                $result->updateable = $modules->updateable($name);
+            }
+
+            if (!$found && !$repo) return null;
+            return $result;
+        }
+
         public function installModule($name) {
             if (!$this->moduleInstalled($name)) {
                 $module = $this->moduleRepoInfo($name);
@@ -385,6 +415,8 @@
                     $file = fopen(APP_DIR . '/sources/repositories/modules-' . $repository->name . '.json', 'w+');
                     fputs($file, $this->retrieveFile($properties->url, true));
                     fclose($file);
+
+                    $objects->set('modules-repository', $repository->name, 'last-refreshed', time());
                 }
 
                 return json_decode(file_get_contents(APP_DIR . '/sources/repositories/modules-' . $name . '.json'));
@@ -434,6 +466,7 @@
                 fputs($file, $this->retrieveFile($properties->url, true));
                 fclose($file);
 
+                $objects->set('modules-repository', $repository->name, 'last-refreshed', time());
                 return true;
             } else {
                 return false;
@@ -441,12 +474,15 @@
         }
 
         public function refreshRepositories($includeDisabled = false) {
+            $objects = new Objects;
             $repositories = $this->listRepositories();
             foreach($repositories as $repository) {
                 if ($includeDisabled || intval($repository->enabled) == 1) {
                     $file = fopen(APP_DIR . '/sources/repositories/modules-' . $repository->name . '.json', 'w+');
                     fputs($file, $this->retrieveFile($repository->url, true));
                     fclose($file);
+
+                    $objects->set('modules-repository', $repository->name, 'last-refreshed', time());
                 }
             }
         }
