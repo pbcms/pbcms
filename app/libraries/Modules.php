@@ -193,55 +193,47 @@
 
     class ModuleManager {
         public function installModule($name) {
-            $module = $this->moduleRepoInfo($name);
-            if ($module) {
-                $filename = tempnam(sys_get_temp_dir(), 'pbmodule_' . $module->module);
-                $file = fopen($filename, 'w+');
-                fwrite($file, $this->retrieveFile($module->latest, true));
-                fclose($file);
+            if (!$this->moduleInstalled($name)) {
+                $module = $this->moduleRepoInfo($name);
+                if ($module) {
+                    $filename = tempnam(sys_get_temp_dir(), 'pbmodule_' . $module->module);
+                    $file = fopen($filename, 'w+');
+                    fwrite($file, $this->retrieveFile($module->latest, true));
+                    fclose($file);
 
-                $zip = new \ZipArchive();
-                if ($zip->open($filename) === true) {
-                    $root = '';
-                    if ($zip->statIndex(0)['name'] == $module->module . '-' . $module->version . '/') $root = $module->module . '-' . $module->version . '/';
-                    if ($zip->locateName($root . 'pb_entry.php') === false) return -3;
-                    if ($zip->locateName($root . 'module.json') === false) return -4;
+                    $zip = new \ZipArchive();
+                    if ($zip->open($filename) === true) {
+                        $root = '';
+                        if ($zip->statIndex(0)['name'] == $module->module . '-' . $module->version . '/') $root = $module->module . '-' . $module->version . '/';
+                        if ($zip->locateName($root . 'pb_entry.php') === false) return -4;
+                        if ($zip->locateName($root . 'module.json') === false) return -5;
 
-                    mkdir(DYNAMIC_DIR . '/modules/' . $module->module, 775);
-                    fclose(fopen(DYNAMIC_DIR . '/modules/' . $module->module . '/.disabled', 'w+'));
-                    if ($zip->extractTo(DYNAMIC_DIR . '/modules/' . $module->module)) {
-                        if ($root !== '') {
-                            $success = true;
-                            $files = scandir(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root);
-                            foreach ($files as $file) {
-                                if (in_array($file, array(".",".."))) continue;
-                                if (!copy(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root . $file, DYNAMIC_DIR . '/modules/' . $module->module . '/' . $file)) {
-                                    $success = false;
-                                }
-                            }
-
-                            if ($success) {
-                                // https://stackoverflow.com/a/1653776
-                                function deleteDirectory($dir) {
-                                    if (!file_exists($dir)) return true;
-                                    if (!is_dir($dir)) return unlink($dir);
-                                    foreach (scandir($dir) as $item) {
-                                        if ($item == '.' || $item == '..') continue;
-                                        if (!deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) return false;
+                        mkdir(DYNAMIC_DIR . '/modules/' . $module->module, 0775, true);
+                        fclose(fopen(DYNAMIC_DIR . '/modules/' . $module->module . '/.disabled', 'w+'));
+                        if ($zip->extractTo(DYNAMIC_DIR . '/modules/' . $module->module)) {
+                            if ($root !== '') {
+                                $success = true;
+                                $files = scandir(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root);
+                                foreach ($files as $file) {
+                                    if (in_array($file, array(".",".."))) continue;
+                                    if (!copy(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root . $file, DYNAMIC_DIR . '/modules/' . $module->module . '/' . $file)) {
+                                        $success = false;
                                     }
-                                
-                                    return rmdir($dir);
                                 }
 
-                                return (deleteDirectory(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root) ? 1 : -7);
+                                if ($success) {
+                                    return ($this->deleteDirectory(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root) ? 1 : -8);
+                                } else {
+                                    return -7;
+                                }
                             } else {
-                                return -6;
+                                return 1;
                             }
                         } else {
-                            return 1;
+                            return -6;
                         }
                     } else {
-                        return -5;
+                        return -3;
                     }
                 } else {
                     return -2;
@@ -251,12 +243,41 @@
             }
         }
 
-        public function updateModule($name) {
-
+        public function removeModule($name) {
+            if ($this->moduleInstalled($name)) {
+                $this->deleteDirectory(DYNAMIC_DIR . '/modules/' . $name);
+            } else {
+                return -1;
+            }
         }
 
-        public function removeModule($name) {
+        public function updateModule($name, $force = false) {
+            if ($this->moduleInstalled($name)) {
+                $module = $this->moduleRepoInfo($name);
+                if ($module) {
+                    $repo = $this->moduleRepoInfo($name);
+                    $local = $this->moduleLocalInfo($name);
+                    if (!$repo || !$local) return -3;
+                    if (version_compare($local->version, $repo->version) >= 0) return -4;
+                    if (file_exists(DYNAMIC_DIR . '/modules/' . $name . '/.no-update') && $force !== true) return -5;
+                
+                    $modules = new Modules;
+                    $enabled = $modules->enabled($name);
+                    $this->deleteDirectory(DYNAMIC_DIR . '/modules/' . $name);
+                    $this->installModule($name);
+                    if ($enabled) {
+                        $modules->enable($name);
+                    } else {
+                        $modules->disable($name);
+                    }
 
+                    return 1;
+                } else {
+                    return -2;
+                }
+            } else {
+                return -1;
+            }
         }
 
         public function moduleExists($name) {
@@ -288,8 +309,16 @@
             return $module;
         }
 
+        public function moduleLocalInfo($name) {
+            if (file_exists(DYNAMIC_DIR . '/modules/' . $name . '/module.json')) {
+                return (object) json_decode(file_get_contents(DYNAMIC_DIR . '/modules/' . $name . '/module.json'));
+            } else {
+                return null;
+            }
+        }
+
         public function moduleInstalled($name) {
-            return file_exists(DYNAMIC_DIR . '/modules/' . $module . '/pb_entry.php');
+            return file_exists(DYNAMIC_DIR . '/modules/' . $name . '/pb_entry.php');
         }
 
         public function listModules($includeDisabled = false) {
@@ -435,5 +464,17 @@
             fwrite($file, $data);
             fseek($file, 0);
             return $file;
+        }
+
+        // https://stackoverflow.com/a/1653776
+        protected function deleteDirectory($dir) {
+            if (!file_exists($dir)) return true;
+            if (!is_dir($dir)) return unlink($dir);
+            foreach (scandir($dir) as $item) {
+                if ($item == '.' || $item == '..') continue;
+                if (!$this->deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) return false;
+            }
+        
+            return rmdir($dir);
         }
     }
