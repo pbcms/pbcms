@@ -95,7 +95,7 @@
 
         public function load() {
             if ($this->loaded) return false;
-            if (!isset(self::$inmemory[$this->language])) self::$inmemory[$this->language] = JSON::decode(\file_get_contents(APP_DIR . '/sources/languages/' . $this->language . '.json'));
+            if (!isset(self::$inmemory[$this->language])) self::$inmemory[$this->language] = json_decode(\file_get_contents(APP_DIR . '/sources/languages/' . $this->language . '.json'), true);
             if (isset(self::$updates[$this->language])) {
                 self::$inmemory[$this->language] = array_replace_recursive(self::$inmemory[$this->language], self::$updates[$this->language]);
                 unset(self::$updates[$this->language]);
@@ -117,7 +117,7 @@
             if (!$selector) {
                 return self::$inmemory[$this->language];
             } else {
-                $current = self::$inmemory[$this->language];
+                $current = (array) self::$inmemory[$this->language];
                 $selector = explode('.', $selector);
 
                 foreach($selector as $item) {
@@ -138,7 +138,7 @@
             if (in_array($short, $this->accepted())) {
                 return false;
             } else {
-                self::$inmemory[$short] = $data;
+                self::$inmemory[$short] = json_decode(json_encode($data), true);
                 array_push(self::$list, array(
                     "name" => $name,
                     "short" => $short,
@@ -175,9 +175,9 @@
             }
 
             if (isset(self::$inmemory[$lang])) {
-                self::$inmemory[$lang] = array_replace_recursive(self::$inmemory[$lang], $local);
+                self::$inmemory[$lang] = array_replace_recursive(json_decode(json_encode(self::$inmemory[$lang]), true), json_decode(json_encode($local), true));
             } else {
-                self::$updates[$lang] = array_replace_recursive(self::$updates[$lang], $local);
+                self::$updates[$lang] = array_replace_recursive(json_decode(json_encode(self::$updates[$lang]), true), json_decode(json_encode($local), true));
             }
 
             return true;
