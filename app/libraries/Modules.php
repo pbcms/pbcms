@@ -235,12 +235,20 @@
                     if ($zip->open($filename) === true) {
                         $root = '';
                         if ($zip->statIndex(0)['name'] == $module->module . '-' . $module->version . '/') $root = $module->module . '-' . $module->version . '/';
-                        if ($zip->locateName($root . 'pb_entry.php') === false) return -4;
-                        if ($zip->locateName($root . 'module.json') === false) return -5;
+                        if ($zip->locateName($root . 'pb_entry.php') === false) {
+                            unlink($filename);
+                            return -4;
+                        }
+                        
+                        if ($zip->locateName($root . 'module.json') === false) {
+                            unlink($filename);
+                            return -5;
+                        }
 
                         mkdir(DYNAMIC_DIR . '/modules/' . $module->module, 0775, true);
                         fclose(fopen(DYNAMIC_DIR . '/modules/' . $module->module . '/.disabled', 'w+'));
                         if ($zip->extractTo(DYNAMIC_DIR . '/modules/' . $module->module)) {
+                            unlink($filename);
                             if ($root !== '') {
                                 $success = true;
                                 $files = scandir(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root);
@@ -260,6 +268,7 @@
                                 return 1;
                             }
                         } else {
+                            unlink($filename);
                             return -6;
                         }
                     } else {
