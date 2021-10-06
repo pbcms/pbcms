@@ -129,7 +129,8 @@
             if ($obj == NULL) {
                 return false;
             } else {
-                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "object-properties` WHERE `property`='${property}'");
+                $id = $obj->id;
+                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "object-properties` WHERE `object`='${id}' AND `property`='${property}'");
                 if ($res->num_rows > 0) {
                     return $res->fetch_assoc()['value'];
                 } else {
