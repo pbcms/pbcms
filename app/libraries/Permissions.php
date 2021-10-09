@@ -1,6 +1,8 @@
 <?php
     namespace Library;
 
+    use Helper\Validate;
+
     class Permissions {
         private $db = NULL;
         private $filterAllowedProperties = array("id", "target", "targetType", "targetValue", "permission", "granted", "created", "updated");
@@ -105,8 +107,8 @@
             if (count(array_keys(get_object_vars($input))) > 0) {
                 $allowedFilters = array("limit", "offset", "order");
 
-                $filters = (object) Validator::removeUnlisted($allowedFilters, $input);
-                $properties = (object) Validator::removeUnlisted($this->filterAllowedProperties, $input);
+                $filters = (object) Validate::removeUnlisted($allowedFilters, $input);
+                $properties = (object) Validate::removeUnlisted($this->filterAllowedProperties, $input);
 
                 if (count(array_keys(get_object_vars($properties))) > 0) {
                     $sql .= " WHERE";

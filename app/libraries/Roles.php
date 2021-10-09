@@ -179,43 +179,43 @@
         public function grant($role, $permission) {
             $id = $this->roles->getId($role);
             if (!$id) return false;
-            return $this->permission->grant("role", $id, $permission);
+            return $this->permissions->grant("role", $id, $permission);
         }
 
         public function reject($role, $permission) {
             $id = $this->roles->getId($role);
             if (!$id) return false;
-            return $this->permission->reject("role", $id, $permission);
+            return $this->permissions->reject("role", $id, $permission);
         }
 
         public function clear($role, $permission) {
             $id = $this->roles->getId($role);
             if (!$id) return false;
-            return $this->permission->clear("role", $id, $permission);
+            return $this->permissions->clear("role", $id, $permission);
         }
 
         public function check($role, $permission, $extendedResult = false) {
             $id = $this->roles->getId($role);
             if (!$id) return false;
-            return $this->permission->check("role", $id, $permission, $extendedResult);
+            return $this->permissions->check("role", $id, $permission, $extendedResult);
         }
 
         public function list($input, $checkWildcards = true) {
             if (is_numeric($input) || is_string($input)) {
-                $id = $this->roles->getId($role);
+                $id = $this->roles->getId($input);
                 if (!$id) return false;
-                return $this->permission->list(array(
+                return $this->permissions->list(array(
                     "target" => "role:" . $id
                 ));
             } else {
                 if (!isset($input['target']) && !isset($input['targetType'])) $input['targetType'] = 'role';
-                return $this->permission->list($input, $checkWildcards);
+                return $this->permissions->list($input, $checkWildcards);
             }
         }
 
         public function find($role, $permission) {
             $id = $this->roles->getId($role);
             if (!$id) return false;
-            return $this->permission->find("role", $id, $permission);
+            return $this->permissions->find("role", $id, $permission);
         }
     }

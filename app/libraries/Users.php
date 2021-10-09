@@ -484,19 +484,19 @@
         public function grant($user, $permission) {
             $id = $this->users->getId($user);
             if (!$id) return false;
-            return $this->permission->grant("user", $id, $permission);
+            return $this->permissions->grant("user", $id, $permission);
         }
 
         public function reject($user, $permission) {
             $id = $this->users->getId($user);
             if (!$id) return false;
-            return $this->permission->reject("user", $id, $permission);
+            return $this->permissions->reject("user", $id, $permission);
         }
 
         public function clear($user, $permission) {
             $id = $this->users->getId($user);
             if (!$id) return false;
-            return $this->permission->clear("user", $id, $permission);
+            return $this->permissions->clear("user", $id, $permission);
         }
 
         public function check($user, $permission, $extendedResult = false) {
@@ -535,20 +535,20 @@
 
         public function list($input, $checkWildcards = true) {
             if (is_numeric($input) || is_string($input)) {
-                $id = $this->users->getId($user);
+                $id = $this->users->getId($input);
                 if (!$id) return false;
-                return $this->permission->list(array(
+                return $this->permissions->list(array(
                     "target" => "user:" . $id
                 ));
             } else {
                 if (!isset($input['target']) && !isset($input['targetType'])) $input['targetType'] = 'user';
-                return $this->permission->list($input, $checkWildcards);
+                return $this->permissions->list($input, $checkWildcards);
             }
         }
 
         public function find($user, $permission) {
             $id = $this->users->getId($user);
             if (!$id) return false;
-            return $this->permission->find("user", $id, $permission);
+            return $this->permissions->find("user", $id, $permission);
         }
     }
