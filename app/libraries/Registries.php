@@ -37,7 +37,7 @@
 
         public static function exists($action) {
             if (isset(self::$actions[$action])) {
-                return false;
+                return true;
             } else {
                 return false;
             }
