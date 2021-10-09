@@ -111,6 +111,18 @@
                             <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.modules', "Modules"); ?></span>
                         </a>
                     <?php } ?>
+                    <?php if ($userperm->check($this->session->user->id, "role.%")) { ?>
+                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/roles" <?php if ($data['section'] == 'roles') echo 'active'; ?>>
+                            <i data-feather="folder"></i>
+                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.roles', "Roles"); ?></span>
+                        </a>
+                    <?php } ?>
+                    <?php if ($userperm->check($this->session->user->id, "permission.%")) { ?>
+                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/permissions" <?php if ($data['section'] == 'permissions') echo 'active'; ?>>
+                            <i data-feather="shield"></i>
+                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.permissions', "Permissions"); ?></span>
+                        </a>
+                    <?php } ?>
                     <?php if ($userperm->check($this->session->user->id, "object.%")) { ?>
                         <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/objects" <?php if ($data['section'] == 'objects') echo 'active'; ?>>
                             <i data-feather="box"></i>
