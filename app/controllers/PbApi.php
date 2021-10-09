@@ -23,7 +23,9 @@
                 http_response_code(404); 
             }
 
-            if (!$this->__callMethod($params[0])) { 
+            $method = $params[0];
+            array_shift($params);
+            if (!$this->__callMethod($method, $params)) { 
                 $this->__apiError("unknown_method"); 
                 http_response_code(404); 
             }
@@ -56,6 +58,18 @@
         public function Modules($params) {
             $this->__usingApi("Modules");
             require_once APP_DIR . '/api/Modules.php';
+            $this->__execute($params);
+        }
+
+        public function Roles($params) {
+            $this->__usingApi("Roles");
+            require_once APP_DIR . '/api/Roles.php';
+            $this->__execute($params);
+        }
+
+        public function Permissions($params) {
+            $this->__usingApi("Permissions");
+            require_once APP_DIR . '/api/Permissions.php';
             $this->__execute($params);
         }
 
