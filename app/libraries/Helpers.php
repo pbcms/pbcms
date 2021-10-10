@@ -1,6 +1,8 @@
 <?php
     namespace Helper;
 
+    use Library\Controller;
+
     class Query {
         public static function encode($data) {
             $res = '';
@@ -96,108 +98,6 @@
     }
     
     class Request {
-        public static function sessionInfo($fromRefreshToken = false) {
-            if ($fromRefreshToken) {
-                if (isset($_COOKIE['pb-refresh-token'])) {
-                    $token = new \Library\Token;
-                    $decoded = $token->decode('refresh-token', $_COOKIE['pb-refresh-token']);
-                    if ($decoded->success) {
-                        $sessionUUID = $decoded->payload->session;
-                    } else {
-                        return (object) array(
-                            "success" => false,
-                            "error" => $decoded->error,
-                            "message" => "An error occured while decoding the refresh token."
-                        );
-                    }
-                } else {
-                    return (object) array(
-                        "success" => false,
-                        "error" => "missing_refresh_token",
-                        "message" => "No refresh token present."
-                    );
-                }
-            } else {
-                $headers = Header::Authorization();
-                if (!empty($headers)) {
-                    if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
-                        $token = new \Library\Token;
-                        $decoded = $token->decode('access-token', $matches[1]);
-                        if ($decoded->success) {
-                            $sessionUUID = $decoded->payload->session;
-                        } else {
-                            return (object) array(
-                                "success" => false,
-                                "error" => $decoded->error,
-                                "message" => "An error occured while decoding the access token."
-                            );
-                        }
-                    } else {
-                        return (object) array(
-                            "success" => false,
-                            "error" => "invalid_authorization_header",
-                            "message" => "Invalid authorization header present, expecting Bearer token."
-                        );
-                    }
-                } else {
-                    return (object) array(
-                        "success" => false,
-                        "error" => "missing_authorization_header",
-                        "message" => "No authorization header present."
-                    );
-                }
-            }
-            
-            $sessions = new \Library\Sessions;
-            $session = $sessions->info($sessionUUID);
-            if ($session) {
-                if ($session->expired) {
-                    return (object) array(
-                        "success" => false,
-                        "error" => "session_expired",
-                        "message" => "The requested session has since expired."
-                    );
-                } else {
-                    $users = new \Library\Users;
-                    $user = $users->info($session->user);
-
-                    if ($user != NULL) {
-                        if ($user->status == "LOCKED") return (object) array(
-                            "success" => false,
-                            "error" => "user_locked",
-                            "message" => "The user you are trying to request an access token for has been locked by the system or an administrator."
-                        );
-
-                        return (object) array(
-                            "success" => true,
-                            "info" => $session,
-                            "user" => $user
-                        );
-                    } else {
-                        return (object) array(
-                            "success" => false,
-                            "error" => "unknown_user",
-                            "message" => "The user you are trying to request an access token for does not exist anymore."
-                        );
-                    }
-                }
-            } else {
-                return (object) array(
-                    "success" => false,
-                    "error" => "unknown_session",
-                    "message" => "The requested session does not exist."
-                );
-            }
-        }
-        
-        public static function signedin() {
-            return self::sessionInfo(true)->success;
-        }
-
-        public static function authenticated() {
-            return self::sessionInfo(false)->success;
-        }
-
         public static function method($lowercase = false) {
             return ($lowercase ? strtolower($_SERVER['REQUEST_METHOD']) : strtoupper($_SERVER['REQUEST_METHOD']));
         }
@@ -229,7 +129,8 @@
         }
 
         public static function requireAuthentication() {
-            if (!self::authenticated()) {
+            $controller = new Controller;
+            if (!$controller->__model('user')->authenticated()) {
                 ApiResponse::error('not_authenticated', 'You must be authenticated to perform this request.');
                 return false;
             } else {
