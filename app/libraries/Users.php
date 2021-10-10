@@ -218,6 +218,19 @@
         }
 
         public function find($identifier, $byIdAllowed = true) {
+            if (is_numeric($identifier) && intval($identifier) === 0) return (object) array(
+                "id" => 0,
+                "firstname" => "Visitor",
+                "lastname" => null,
+                "fullname" => "Visitor",
+                "email" => null,
+                "username" => null,
+                "password" => null,
+                "status" => null,
+                "created" => null,
+                "updated" => null
+            );
+
             $sql = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "users` WHERE `email`='${identifier}'";
             if ($this->policy->get('usernames-enabled') == '1') {
                 $sql .= " OR `username`='${identifier}'";
@@ -276,6 +289,7 @@
         }
 
         public function update($user, $changes) {
+            if (is_numeric($user) && intval($user) === 0) return false;
             $user = $this->find($user);
             if ($user) {
                 $changes = (object) Validator::removeUnlisted($this->allowed, $changes);
@@ -376,6 +390,7 @@
         }
 
         public function getId($identifier, $byIdAllowed = true) {
+            if (is_numeric($identifier) && intval($identifier) === 0) return 0;
             $sql = "SELECT `id` FROM `" . DATABASE_TABLE_PREFIX . "users` WHERE `email`='${identifier}'";
             if ($this->policy->get('usernames-enabled') == '1') {
                 $sql .= " OR `username`='${identifier}'";
@@ -430,7 +445,7 @@
 
         public function metaSet($user, $name, $value) {
             $user = $this->getId($user);
-            if (!$user) return;
+            if (!$user || $user->id == 0) return;
             if ($this->metaExists($user, $name)) {
                 $this->db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "usermeta` SET `value`='${value}' WHERE `name`='${name}' AND `user`='${user}'");
             } else {
@@ -442,14 +457,14 @@
 
         public function metaDelete($user, $name) {
             $user = $this->getId($user);
-            if (!$user) return;
+            if (!$user || $user->id == 0) return;
             $this->db->query("DELETE FROM `" . DATABASE_TABLE_PREFIX . "usermeta` WHERE `name`='${name}' AND `user`='${user}'");
             $this->db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "users` SET `updated`=CURRENT_TIMESTAMP() WHERE `id`=${user}");
         }
 
         public function purgeMeta($user) {
             $user = $this->getId($user);
-            if (!$user) return;
+            if (!$user || $user->id == 0) return;
             $this->db->query("DELETE FROM `" . DATABASE_TABLE_PREFIX . "usermeta` WHERE `user`='${user}'");
             $this->db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "users` SET `updated`=CURRENT_TIMESTAMP() WHERE `id`=${user}");
         }
