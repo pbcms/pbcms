@@ -81,6 +81,8 @@
                 self::$assetsLoaded = true;
 
                 $assets = new \Library\Assets;
+                $controller = new \Library\Controller;
+
                 $assets->registerBody('script', 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js', array("permanent" => true));
                 $assets->registerBody('script', "
                     const SITE_LOCATION = '" . SITE_LOCATION . "';
@@ -89,7 +91,7 @@
                     });
                 ", array("permanent" => true));
 
-                if (Request::signedin()) {
+                if ($controller->__model('user')->signedin()) {
                     $assets->registerBody('script', "pb-auth.js", array("origin" => "pubfiles", "permanent" => true));
                 }
             }
@@ -103,8 +105,9 @@
             }
 
             private function sessionWorker() {
+                $controller = new \Library\Controller;
                 $sessions = new \Library\Sessions;
-                $session = Request::sessionInfo();
+                $session = $controller->__model('session')->info(true);
                 if ($session->success) {
                     $sessions->refresh($session->info->uuid);
                 }

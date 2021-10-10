@@ -17,7 +17,6 @@
     use Library\Meta;
     use Library\Users;
     use Library\UserPermissions;
-    use Helper\Request;
 
     $meta = new Meta;
     $meta->set('robots', 'index, nofollow');

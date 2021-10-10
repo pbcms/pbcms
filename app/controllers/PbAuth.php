@@ -8,7 +8,11 @@
     use Registry\Auth as Callback;
 
     class PbAuth extends \Library\Controller {
+        private $lang;
+        private $user;
+
         public function __construct() {
+            $this->user = $this->__model('user');
             $this->lang = new Language;
             $this->lang->detectLanguage();
             $this->lang->load();
@@ -19,7 +23,7 @@
         }
 
         public function Signin($params) {
-            if (Request::signedin()) {
+            if ($this->user->signedin()) {
                 Header::Location(SITE_LOCATION . (isset($_GET['followup']) ? $_GET['followup'] : 'pb-dashboard'));
                 die();
             }
@@ -37,7 +41,7 @@
         } 
 
         public function Signup($params) {
-            if (Request::signedin()) {
+            if ($this->user->signedin()) {
                 Header::Location(SITE_LOCATION . (isset($_GET['followup']) ? $_GET['followup'] : 'pb-dashboard'));
                 die();
             }
@@ -55,7 +59,7 @@
         }
 
         public function forgotPassword() {
-            if (Request::signedin()) {
+            if ($this->user->signedin()) {
                 Header::Location(SITE_LOCATION . (isset($_GET['followup']) ? $_GET['followup'] : 'pb-dashboard'));
                 die();
             }

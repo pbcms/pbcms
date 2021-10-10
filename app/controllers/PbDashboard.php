@@ -7,7 +7,7 @@
 
     class PbDashboard extends \Library\Controller {
         public function __construct() {
-            $this->session = Request::sessionInfo(true);
+            $this->session = $this->__model('session')->info(true);
             if (!$this->session->success) {
                 $router = new \Library\Router;
                 $request = $router->documentRequest();
@@ -77,6 +77,22 @@
             $this->__template("pb-dashboard", array(
                 "title" => "modules",
                 "section" => "modules"
+            ));
+        } 
+
+        public function Roles($params) {
+            $this->__view("dashboard/roles");
+            $this->__template("pb-dashboard", array(
+                "title" => "roles",
+                "section" => "roles"
+            ));
+        } 
+
+        public function Permissions($params) {
+            $this->__view("dashboard/permissions");
+            $this->__template("pb-dashboard", array(
+                "title" => "permissions",
+                "section" => "permissions"
             ));
         } 
 

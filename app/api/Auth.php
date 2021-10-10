@@ -188,7 +188,7 @@
     });
 
     $this->__registerMethod('signedin', function() {
-        $session = Request::sessionInfo(true);
+        $session = $this->__model('session')->info(true);
         if ($session->success) {
             Respond::success(array(
                 "result" => true
@@ -200,7 +200,7 @@
     });
 
     $this->__registerMethod('authenticated', function() {
-        $session = Request::sessionInfo(false);
+        $session = $this->__model('session')->info(false);
         if ($session->success) {
             Respond::success(array(
                 "result" => true
