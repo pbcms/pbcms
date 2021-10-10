@@ -498,25 +498,26 @@
 
         public function grant($user, $permission) {
             $id = $this->users->getId($user);
-            if (!$id) return false;
+            var_dump($id);
+            if ($id === false) return false;
             return $this->permissions->grant("user", $id, $permission);
         }
 
         public function reject($user, $permission) {
             $id = $this->users->getId($user);
-            if (!$id) return false;
+            if ($id === false) return false;
             return $this->permissions->reject("user", $id, $permission);
         }
 
         public function clear($user, $permission) {
             $id = $this->users->getId($user);
-            if (!$id) return false;
+            if ($id === false) return false;
             return $this->permissions->clear("user", $id, $permission);
         }
 
         public function check($user, $permission, $extendedResult = false) {
             $id = $this->users->getId($user);
-            if (!$id) return false;
+            if ($id === false) return false;
             $roles = $this->relations->list(array(
                 "type" => 'user:role',
                 "origin" => $id,
@@ -551,7 +552,7 @@
         public function list($input, $checkWildcards = true) {
             if (is_numeric($input) || is_string($input)) {
                 $id = $this->users->getId($input);
-                if (!$id) return false;
+                if ($id === false) return false;
                 return $this->permissions->list(array(
                     "target" => "user:" . $id
                 ));
@@ -563,7 +564,7 @@
 
         public function find($user, $permission) {
             $id = $this->users->getId($user);
-            if (!$id) return false;
+            if ($id === false) return false;
             return $this->permissions->find("user", $id, $permission);
         }
     }
