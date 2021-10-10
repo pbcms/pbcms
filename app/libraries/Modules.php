@@ -16,6 +16,7 @@
             $modules = array();
 
             foreach($scanned as $item) {
+                if (!is_dir(DYNAMIC_DIR . '/modules/' . $item)) continue;
                 if ($this->exists($item)) {
                     switch($type) {
                         case 'all':
