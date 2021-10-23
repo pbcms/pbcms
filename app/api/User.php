@@ -1,9 +1,16 @@
 <?php
-    use Library\User;
-    use Library\UserPermissions;
+    use Helper\Request;
+    use Helper\ApiResponse as Respond;
 
     $this->__registerMethod('create', function() {
+        //if (!Request::requireMethod('post')) die();
+        //if (!Request::requireAuthentication()) die();
 
+        if ($this->user->check('user.create')) {
+            echo 1;
+        } else {
+            echo 2;
+        }
     });
 
     $this->__registerMethod('find', function() {

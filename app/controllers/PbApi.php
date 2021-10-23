@@ -4,7 +4,10 @@
     use Library\Router;
 
     class PbApi extends \Library\ApiController {
+        private $user;
+
         public function __index($params) {
+            $this->user = $this->__model('user');
             $this->__apiError("missing_api");
         }
 
