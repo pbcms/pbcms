@@ -85,8 +85,8 @@
             } else {
                 return (object) array(
                     "success" => false,
-                    "error" => "lacking_information",
-                    "message" => "Certain information required to create your account was not provided.",
+                    "error" => "missing_information",
+                    "message" => 'The following post information is missing from the request: ' . join(',', $missing) . '.',
                     "missing_info" => $missing
                 );
             }
