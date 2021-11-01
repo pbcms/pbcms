@@ -6,8 +6,11 @@
     class PbApi extends \Library\ApiController {
         private $user;
 
-        public function __index($params) {
+        public function __construct() {
             $this->user = $this->__model('user');
+        }
+
+        public function __index($params) {
             $this->__apiError("missing_api");
         }
 
@@ -43,7 +46,7 @@
         public function User($params) {
             $this->__usingApi("User");
             require_once APP_DIR . '/api/User.php';
-            $this->__execute($params);
+            $this->__execute($params, );
         }
 
         public function Language($params) {
