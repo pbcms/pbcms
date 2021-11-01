@@ -17,6 +17,11 @@
     $lang->load();
 
     $this->__registerMethod('create-session', function() {
+
+        $lang = new Language;
+        $lang->detectLanguage();
+        $lang->load();
+
         $required = array("identifier", "password");
         $postdata = Request::parsePost();
 

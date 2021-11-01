@@ -7,7 +7,7 @@
         //if (!Request::requireAuthentication()) die();
 
         if ($this->user->check('user.create')) {
-            echo 1;
+            
         } else {
             echo 2;
         }

@@ -11,18 +11,15 @@
 
     $this->__registerMethod('update', function() {
         $postdata = Request::parsePost();
-        $session = Request::sessionInfo();
-        $permission = new UserPermissions;
         $policies = new Policy;
 
-        if (!$session->success) {
+        if (!$this->user->authenticated()) {
             Respond::error('not_authenticated', "You must be authenticated to perform this request!");
             die();
         }
 
         if (!Request::requireMethod('post')) die();
-
-        if ($permission->check($session->user->id, "policy.update")) {
+        if ($this->user->check("policy.update")) {
             foreach($postdata as $policy => $value) {
                 if ($policies->exists($policy)) {
                     $policies->set($policy, $value);
