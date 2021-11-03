@@ -24,7 +24,7 @@
                     $payload->expirationTime = $expiration;
                 }        
             } else {
-                if ($expiration == NULL) {
+                if ($expiration === NULL) {
                     $expiration = intval($this->policy->get('token-default-expiration'));
                     $payload->exp = time() + $expiration;
                     $payload->expirationTime = $expiration;
