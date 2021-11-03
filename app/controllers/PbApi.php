@@ -2,12 +2,16 @@
     namespace Controller;
 
     use Library\Router;
+    use Library\Language;
 
     class PbApi extends \Library\ApiController {
         private $user;
 
         public function __construct() {
             $this->user = $this->__model('user');
+            $this->lang = new Language;
+            $this->lang->detectLanguage();
+            $this->lang->load();
         }
 
         public function __index($params) {
