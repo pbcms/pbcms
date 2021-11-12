@@ -1,4 +1,10 @@
+//Defined and stored in constant to prevent tempering from potential malicious code.
 const PbAuth = (function() {
+
+    //Token worker is not accessable by external scripts, but is accessable by the PbAuth class since it resides in the same scope.
+    //The token worker makes sure a token is available by the auth class to use. This has been split up to make it harder to access the access token.
+    //If no access token can be retrieved, the user will be redirected to a authentication page.
+
     const TokenWorker = new class TokenWorker {
         #access_token = '';
 
@@ -61,3 +67,6 @@ const PbAuth = (function() {
         }
     }
 })();
+
+//Object is freezed
+Object.freeze(PbAuth);
