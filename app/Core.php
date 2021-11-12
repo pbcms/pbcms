@@ -83,7 +83,10 @@
                 $assets = new \Library\Assets;
                 $controller = new \Library\Controller;
 
+                $assets->registerBody('style', "pb-modal.css", array("origin" => "pubfiles", "permanent" => true));
+
                 $assets->registerBody('script', 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js', array("permanent" => true));
+                $assets->registerBody('script', "pb-modal.js", array("origin" => "pubfiles", "permanent" => true));
                 $assets->registerBody('script', "
                     const SITE_LOCATION = '" . SITE_LOCATION . "';
                     const PB_API = axios.create({

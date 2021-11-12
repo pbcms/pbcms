@@ -50,6 +50,10 @@
         ?>
     </head>
     <body>
+        <div class="modal-container">
+            <div class="modal"></div>
+        </div>
+
         <div class="sidebar">
             <div class="sidebar-inner">
                 <?php
