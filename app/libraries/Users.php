@@ -8,7 +8,7 @@
         private $policy = NULL;
 
         private $required = array("firstname", "lastname", "email", "password");
-        private $allowed = array("firstname", "lastname", "email", "password", "status");
+        private $allowed = array("firstname", "lastname", "email", "password", "username", "status");
         private $filterAllowedProperties = array("id", "firstname", "lastname", "email", "username", "status", "created", "updated");
         private $userStatusses = array("UNVERIFIED", "VERIFIED", "LOCKED");
 
