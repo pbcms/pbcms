@@ -1,15 +1,24 @@
 <?php
     use Helper\Request;
     use Helper\ApiResponse as Respond;
+    use Library\Users;
 
     $this->__registerMethod('create', function() {
-        //if (!Request::requireMethod('post')) die();
-        //if (!Request::requireAuthentication()) die();
+        if (!Request::requireMethod('post')) die();
+        if (!Request::requireAuthentication()) die();
 
         if ($this->user->check('user.create')) {
-            
+            $users = new Users;
+            $postdata = Request::parsePost();
+            $result = $users->create($postdata);
+
+            if ($result->success) {
+                Respond::success($result);
+            } else {
+                Respond::error($result->error, $result);
+            }
         } else {
-            echo 2;
+            Respond::error("missing_privileges", $this->lang->get("messages.api-user.error_missing_privileges", "You are lacking the permission to create a new user."));
         }
     });
 

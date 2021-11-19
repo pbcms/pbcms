@@ -149,6 +149,11 @@
                 "error-unknown_policy": "The configured password reset policy is unknown to this site. We are unable to reset your password at this moment.",
                 "error-unknown_user": "A user identified by {{IDENTIFIER}} does not exist."
             }
+        },
+        "api-user": {
+            "create": {
+                "error-missing_privileges": "You are lacking the permission to create a new user."
+            }
         }
     }
 }

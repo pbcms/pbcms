@@ -144,6 +144,11 @@
             "reset-password": {
 
             }
+        },
+        "api-user": {
+            "create": {
+                "error-missing_privileges": "U mist de rechten om een nieuwe gebruiker te creëeren."
+            }
         }
     }
 }
