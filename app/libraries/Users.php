@@ -218,7 +218,7 @@
         }
 
         public function find($identifier, $byIdAllowed = true) {
-            if (is_numeric($identifier) && intval($identifier) === 0) return (object) array(
+            if (is_numeric($identifier) && intval($identifier) === 0 && $byIdAllowed) return (object) array(
                 "id" => 0,
                 "firstname" => "Visitor",
                 "lastname" => null,
