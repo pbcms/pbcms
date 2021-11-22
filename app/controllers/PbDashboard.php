@@ -1,6 +1,7 @@
 <?php
     namespace Controller;
 
+    use Library\Users;
     use Library\Language;
     use Helper\Header;
     use Helper\Request;
@@ -65,11 +66,38 @@
         } 
 
         public function Users($params) {
-            $this->__view("dashboard/users");
-            $this->__template("pb-dashboard", array(
-                "title" => "users",
-                "section" => "users"
-            ));
+            if (isset($params[0])) {
+                $users = new Users;
+                $user = $users->info(intval($params[0]));
+                if ($user) {
+                    $this->__view("dashboard/view-user", array("user" => $user));
+                    $this->__template("pb-dashboard", array(
+                        "title" => "User - " . $user->fullname,
+                        "section" => "users",
+                        "head" => array(
+                            ['style', 'pb-pages-dashboard-view-user.css', array("origin" => "pubfiles")]
+                        ),
+                        "body" => array(
+                            ['script', 'pb-pages-dashboard-view-user.js', array("origin" => "pubfiles")]
+                        )
+                    ));
+                } else {
+                    $this->__view("dashboard/unknown-user");
+                    $this->__template("pb-dashboard", array(
+                        "title" => "Unknown user",
+                        "section" => "users"
+                    ));
+                }
+            } else {
+                $this->__view("dashboard/users");
+                $this->__template("pb-dashboard", array(
+                    "title" => "users",
+                    "section" => "users",
+                    "body" => array(
+                        ['script', 'pb-pages-dashboard-users.js', array("origin" => "pubfiles")]
+                    )
+                ));
+            }
         } 
 
         public function Modules($params) {

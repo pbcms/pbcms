@@ -1,0 +1,50 @@
+.profile-card .user-overview {
+    display: flex;
+    justify-content: space-between;
+}
+
+.profile-card .user-overview .left {
+    display: flex;
+}
+
+.profile-card .user-overview .profile-picture {
+    width: 100px;
+    padding: 10px 35px 10px 10px;
+}
+
+.profile-card .user-overview .profile-picture img {
+    max-width: 100%;
+}
+
+.profile-card .user-overview .user-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.profile-card .user-overview .user-main h1 {
+    margin-bottom: 5px;
+}
+
+.profile-card .user-overview .user-main .details {
+    margin-bottom: 15px;
+}
+
+.profile-card .user-overview .user-main .details span {
+    color: #444;
+}
+
+.profile-card .user-overview .user-main .details span:not(:last-child)::after {
+    content: '-';
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+.profile-card .user-overview .user-dates {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: right;
+    margin-bottom: 5px;
+    color: #444;
+}
