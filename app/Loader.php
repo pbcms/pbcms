@@ -61,6 +61,7 @@
             require_once 'libraries/Database.php';
             require_once 'libraries/Policy.php';
             require_once 'libraries/Objects.php';
+            require_once 'libraries/Media.php';
             require_once 'libraries/Mailer.php';
             require_once 'libraries/Helpers.php';
             require_once 'libraries/Roles.php';
