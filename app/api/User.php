@@ -158,27 +158,3 @@
             }
         }
     });
-
-    $this->__registerMethod('meta-get', function() {
-
-    });
-
-    $this->__registerMethod('meta-list', function() {
-
-    });
-
-    $this->__registerMethod('meta-exists', function() {
-
-    });
-
-    $this->__registerMethod('meta-set', function() {
-
-    });
-
-    $this->__registerMethod('meta-delete', function() {
-
-    });
-
-    $this->__registerMethod('purge-meta', function() {
-
-    });
