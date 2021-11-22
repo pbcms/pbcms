@@ -33,21 +33,21 @@ const PbModal = (function() {
 
 Object.freeze(PbModal);
 
-PbModal.create({
-    title: "Modal name",
-    message: "This is the modal content.",
-    actions: [
-        {
-            content: "Okay!",
-            magic: "function",
-            action: function() {
-                alert("Cool!");
-            }
-        },
-        {
-            content: "Close",
-            magic: "close",
-            style: "black"
-        }
-    ]
-});
+// PbModal.create({
+//     title: "Modal name",
+//     message: "This is the modal content.",
+//     actions: [
+//         {
+//             content: "Okay!",
+//             magic: "function",
+//             action: function() {
+//                 alert("Cool!");
+//             }
+//         },
+//         {
+//             content: "Close",
+//             magic: "close",
+//             style: "black"
+//         }
+//     ]
+// });

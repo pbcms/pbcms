@@ -51,7 +51,7 @@
     </head>
     <body>
         <div class="modal-container">
-            <div class="modal"></div>
+            <!-- <div class="modal"></div> -->
         </div>
 
         <div class="sidebar">
