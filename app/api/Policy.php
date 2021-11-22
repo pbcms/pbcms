@@ -10,7 +10,7 @@
     $lang->load();
 
     $this->__registerMethod('update', function() {
-        $postdata = Request::parsePost();
+        $postdata = Request::parseBody();
         $policies = new Policy;
 
         if (!$this->user->authenticated()) {
@@ -34,7 +34,7 @@
 
     $this->__registerMethod('set', function() {
         $required = array("policy", "value");
-        $postdata = Request::parsePost();
+        $postdata = Request::parseBody();
         $session = Request::sessionInfo();
         $permission = new UserPermissions;
         $policy = new Policy;
@@ -57,7 +57,7 @@
 
     $this->__registerMethod('get', function() {
         $required = array("policy");
-        $postdata = Request::parsePost();
+        $postdata = Request::parseBody();
         $session = Request::sessionInfo();
         $permission = new UserPermissions;
         $policy = new Policy;
@@ -87,7 +87,7 @@
 
     $this->__registerMethod('exists', function() {
         $required = array("policy");
-        $postdata = Request::parsePost();
+        $postdata = Request::parseBody();
         $session = Request::sessionInfo();
         $permission = new UserPermissions;
         $policy = new Policy;
@@ -113,7 +113,7 @@
 
     $this->__registerMethod('delete', function() {
         $required = array("policy");
-        $postdata = Request::parsePost();
+        $postdata = Request::parseBody();
         $session = Request::sessionInfo();
         $permission = new UserPermissions;
         $policy = new Policy;
@@ -135,7 +135,7 @@
     });
 
     $this->__registerMethod('list', function() {
-        $postdata = Request::parsePost();
+        $postdata = Request::parseBody();
         $session = Request::sessionInfo();
         $permission = new UserPermissions;
         $policy = new Policy;

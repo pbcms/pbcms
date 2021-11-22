@@ -153,6 +153,23 @@
         "api-user": {
             "create": {
                 "error-missing_privileges": "You are lacking the permission to create a new user."
+            },
+            "info": {
+                "error-missing_privileges": "You are lacking the permission to obtain information about a different user."
+            },
+            "list": {
+                "error-missing_privileges": "You are lacking the permission to list users."
+            },
+            "update": {
+                "error-missing_privileges": "You are lacking the permission to update a different user."
+            },
+            "delete": {
+                "error-missing_privileges": "You are lacking the permission to delete a user.",
+                "error-missing_identifier": "You are missing the user identifier in the URL.",
+                "error-self_protection": "You cannot delete your own account from your own session."
+            },
+            "get-id": {
+                "error-missing_privileges": "You are lacking the permission to obtain information about a different user."
             }
         }
     }

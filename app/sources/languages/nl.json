@@ -148,6 +148,23 @@
         "api-user": {
             "create": {
                 "error-missing_privileges": "U mist de rechten om een nieuwe gebruiker te creëeren."
+            },
+            "info": {
+                "error-missing_privileges": "U mist de rechten om informatie over een andere gebruiker op te vragen."
+            },
+            "list": {
+                "error-missing_privileges": "U mist de rechten om een lijst van gebruikers op te vragen."
+            },
+            "update": {
+                "error-missing_privileges": "U mist de rechten om een andere gebruiker aan te vragen."
+            },
+            "delete": {
+                "error-missing_privileges": "U mist de rechten om een gebruiker te verwijderen.",
+                "error-missing_identifier": "De identificatie van de gedoelde gebruiker mist van de URL.",
+                "error-self_protection": "U kunt niet uw eigen gebruikersaccount verwijderen vanuit uw eigen sessie."
+            },
+            "get-id": {
+                "error-missing_privileges": "U mist de rechten om informatie over een andere gebruiker op te vragen."
             }
         }
     }

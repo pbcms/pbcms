@@ -102,6 +102,27 @@
             return ($lowercase ? strtolower($_SERVER['REQUEST_METHOD']) : strtoupper($_SERVER['REQUEST_METHOD']));
         }
 
+        public static function decodeBody() {
+            $body = file_get_contents("php://input");
+            if (!$body || empty($body)) return array();
+
+            $decoded = json_decode($body);
+            if ($decoded && json_last_error() === JSON_ERROR_NONE) {
+                return $decoded;
+            } else if (urlencode(urldecode($body)) === $body) {
+                return urldecode($body);
+            } else {
+                $result = [];
+                self::parse_raw_http_request($result);
+                return $result;
+            }
+        }
+
+        public static function parseBody() {
+            $db = new \Library\Database;
+            return $db->escapeObject(self::decodeBody());
+        }
+
         public static function parsePost() {
             $db = new \Library\Database;
             return $db->escapeObject($_POST);
@@ -145,6 +166,40 @@
             } else {
                 return false;
             }
+        }
+
+
+        //Props to: https://stackoverflow.com/a/5488449
+        public static function parse_raw_http_request(array &$a_data) {
+            // read incoming data
+            $input = file_get_contents('php://input');
+
+            // grab multipart boundary from content type header
+            preg_match('/boundary=(.*)$/', $_SERVER['CONTENT_TYPE'], $matches);
+            $boundary = $matches[1];
+
+            // split content by boundary and get rid of last -- element
+            $a_blocks = preg_split("/-+$boundary/", $input);
+            array_pop($a_blocks);
+
+            // loop data blocks
+            foreach ($a_blocks as $id => $block) {
+                if (empty($block)) continue;
+
+                // you'll have to var_dump $block to understand this and maybe replace \n or \r with a visibile char
+
+                // parse uploaded files
+                if (strpos($block, 'application/octet-stream') !== FALSE) {
+                    // match "name", then everything after "stream" (optional) except for prepending newlines 
+                    preg_match("/name=\"([^\"]*)\".*stream[\n|\r]+([^\n\r].*)?$/s", $block, $matches);
+                // parse all other fields
+                } else { 
+                    // match "name" and optional value in between newline sequences
+                    preg_match('/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s', $block, $matches);
+                }
+
+                $a_data[$matches[1]] = $matches[2];
+            }        
         }
     }
 
