@@ -74,3 +74,27 @@
             Respond::error("missing_identifier", "Did not receive a parameter in the url to identify the media.");
         }
     });
+
+    $this->__registerMethod("create", function($params) {
+        if (!Request::requireMethod("post")) die();
+        if (!Request::requireAuthentication()) die();
+
+        $media = new Media;
+        $postdata = Request::parsePost();
+        if (!isset($_FILES['file'])) {
+            http_response_code(400);
+            Respond::error("missing_file", "Did not receive a file upload with name \"file\".");
+        } else if (!isset($postdata->type)) {
+            http_response_code(400);
+            Respond::error("missing_type", "Did not receive a mediatype through post parameter \"type\".");
+        } else {
+            $res = $media->create($postdata->type, 'mtdev', $_FILES['file']['tmp_name'], explode('.', $_FILES['file']['name'])[count(explode('.', $_FILES['file']['name'])) - 1]);
+            if ($res->success) {
+                unlink($_FILES['file']['tmp_name']);
+                if (isset($postdata->public) && intval($postdata->public) === 0) $media->makePrivate($res->uuid);
+                Respond::success($res);
+            } else {
+                Respond::error($res->error, $res);
+            }
+        }
+    });
