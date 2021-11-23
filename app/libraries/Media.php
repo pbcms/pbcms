@@ -5,7 +5,7 @@
 
     class Media {
         private $db;
-        private $filterAllowedProperties = array("id", "uuid", "ext", "type", "owner");
+        private $filterAllowedProperties = array("id", "uuid", "ext", "type", "owner", "public");
 
         public function __construct() {
             $this->db = new Database;
@@ -90,6 +90,40 @@
             }
         }
 
+        public function makePublic($query) {
+            $info = $this->info($query);
+            if ($info) {
+                $mediaId = $info->id;
+                $this->db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "media` SET `public`='1' WHERE `id`='${mediaId}'");
+                return (object) array(
+                    "success" => true
+                );
+            } else {
+                return (object) array(
+                    "success" => false,
+                    "error" => "unknown_media",
+                    "message" => "The requested media item does not exist."
+                );
+            }
+        }
+
+        public function makePrivate($query) {
+            $info = $this->info($query);
+            if ($info) {
+                $mediaId = $info->id;
+                $this->db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "media` SET `public`='0' WHERE `id`='${mediaId}'");
+                return (object) array(
+                    "success" => true
+                );
+            } else {
+                return (object) array(
+                    "success" => false,
+                    "error" => "unknown_media",
+                    "message" => "The requested media item does not exist."
+                );
+            }
+        }
+
         public function info($query) {
             $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "media` WHERE `id`='${query}' OR `uuid`='${query}'");
             if ($res->num_rows > 0) {
@@ -100,6 +134,7 @@
                 $res->file = $res->uuid . '_100.' . $res->ext;
                 $res->path = DYNAMIC_DIR . '/media/';
                 $res->filepath = DYNAMIC_DIR . '/media/' . $res->uuid . '_100.' . $res->ext;
+                $res->public = (intval($res->public) == 1 ? true : false);
                 return $res;
             } else {
                 return NULL;

@@ -11,8 +11,16 @@
             $media = new Media;
             $info = $media->info(explode('.', $params[0])[0], false);
             if ($info) {
-                Header::ContentType(mime_content_type($info->filepath));
+                if (!$info->public) {
+                    $user = $this->user->info();
+                    if (!(intval($user->id) == intval($info->owner)) && !$this->user->check('media.get.' . $info->uuid)) {
+                        http_response_code(403);
+                        Respond::error("private_media", "You are not allowed to access this private media.");
+                        return;
+                    }
+                }
 
+                Header::ContentType(mime_content_type($info->filepath));
                 if (isset($_GET['size']) || isset($_GET['width']) || isset($_GET['height'])) {
                     $workableImages = ['avif', 'bmp', 'gd2', 'gd2part', 'gd', 'gif', 'jpg', 'jpeg', 'png', 'string', 'tga', 'wbmp', 'webp', 'xbm', 'xpm'];
                     if (in_array($info->ext, $workableImages)) {
@@ -58,6 +66,7 @@
                     print_r(file_get_contents($info->filepath));
                 }
             } else {
+                http_response_code(404);
                 Respond::error("unknown_media", "The requested media does not exist. It might have been deleted by it's owner or a site's administrator.");
             }
         } else {
