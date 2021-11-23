@@ -291,3 +291,22 @@
         $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
+
+    //Props to: https://stackoverflow.com/a/11807179
+    function convertToBytes(string $from): ?int {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+        $number = substr($from, 0, -2);
+        $suffix = strtoupper(substr($from,-2));
+    
+        //B or no suffix
+        if(is_numeric(substr($suffix, 0, 1))) {
+            return preg_replace('/[^\d]/', '', $from);
+        }
+    
+        $exponent = array_flip($units)[$suffix] ?? null;
+        if($exponent === null) {
+            return null;
+        }
+    
+        return $number * (1024 ** $exponent);
+    }
