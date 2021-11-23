@@ -261,8 +261,10 @@
             }
         }
 
-        public function info($query) {
-            $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "media-types` WHERE `id`='${query}' OR `type`='${query}'");
+        public function info($query, $byIdAllowed = true) {
+            $sql = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "media-types` WHERE `type`='${query}'";
+            if ($byIdAllowed) $sql .= " OR `id`='${query}'";
+            $res = $this->db->query($sql);
             if ($res->num_rows > 0) {
                 $res = $res->fetch_assoc();
                 $res['maxSize'] = $res['max-size'];
