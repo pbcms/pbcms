@@ -91,12 +91,7 @@
             $res = $media->create($postdata->type, 'mtdev', $_FILES['file']['tmp_name'], explode('.', $_FILES['file']['name'])[count(explode('.', $_FILES['file']['name'])) - 1]);
             if ($res->success) {
                 unlink($_FILES['file']['tmp_name']);
-<<<<<<< HEAD
                 if (isset($postdata->public) && intval($postdata->public) === 0) $media->makePrivate($res->uuid);
-=======
-                if (isset($postdata->public) && intval($postdata->public) === 0) $res->pubres = $media->makePrivate($res->uuid);
-                $res->postdata = $postdata;
->>>>>>> 00b68b807a73895062bd4d28762e751b0fcbb338
                 Respond::success($res);
             } else {
                 Respond::error($res->error, $res);
