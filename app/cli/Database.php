@@ -165,11 +165,11 @@
 
             $cli->printLine("Options: ");
             $cli->printLine();
-            $cli->printLine("  \e[96m--id\e[39m, \e[96m-i\e[39m                The ID of the targeted migration: \e[90mx\e[39m");
-            $cli->printLine("  \e[96m--migration\e[39m, \e[96m-m\e[39m         The name of the targeted migration: \e[90mx.x.x_x_name-of-migration\e[39m");
-            $cli->printLine("  \e[96m--version\e[39m, \e[96m-v\e[39m           The version of the targeted migration: \e[90mx.x.x\e[39m");
-            $cli->printLine("  \e[96m--task\e[39m, \e[96m-t\e[39m              The task ID of the targeted migration (\e[93mNOT UNIQUE!\e[39m): \e[90mx\e[39m");
-            $cli->printLine("  \e[96m--name\e[39m, \e[96m-n\e[39m              The name of the targeted migration.\e[90mname-of-migration\e[39m");
+            $cli->printLine("  \e[96m--id\e[39m, \e[96m-i\e[39m                The ID of the targeted migration:                     \e[90mx\e[39m");
+            $cli->printLine("  \e[96m--migration\e[39m, \e[96m-m\e[39m         The name of the targeted migration:                   \e[90mx.x.x-x-name_of_migration\e[39m");
+            $cli->printLine("  \e[96m--version\e[39m, \e[96m-v\e[39m           The version of the targeted migration:                \e[90mx.x.x\e[39m");
+            $cli->printLine("  \e[96m--task\e[39m, \e[96m-t\e[39m              The task ID of the targeted migration (\e[93mNOT UNIQUE!\e[39m):  \e[90mx\e[39m");
+            $cli->printLine("  \e[96m--name\e[39m, \e[96m-n\e[39m              The name of the targeted migration:                   \e[90mname_of_migration\e[39m");
             $cli->printLine("  \e[96m--confirm\e[39m               Confirm an action.");
         }
 

@@ -191,10 +191,10 @@
 
             $cli->printLine("Options: ");
             $cli->printLine();
-            $cli->printLine("  \e[96m--name\e[39m, \e[96m-n\e[39m              The name of the policy. \e[90mname-of-policy\e[39m");
-            $cli->printLine("  \e[96m--value\e[39m, \e[96m-v\e[39m             The value of the migration: \e[90mexample-value\e[39m");
-            $cli->printLine("  \e[96m--limit\e[39m, \e[96m-l\e[39m             Limit X amount of result: \e[90mx\e[39m");
-            $cli->printLine("  \e[96m--offset\e[39m, \e[96m-o\e[39m            Skip the first amount of results by X: \e[90mx\e[39m");
+            $cli->printLine("  \e[96m--name\e[39m, \e[96m-n\e[39m              The name of the policy.                 \e[90mname-of-policy\e[39m");
+            $cli->printLine("  \e[96m--value\e[39m, \e[96m-v\e[39m             The value of the migration:             \e[90mexample-value\e[39m");
+            $cli->printLine("  \e[96m--limit\e[39m, \e[96m-l\e[39m             Limit X amount of result:               \e[90mx\e[39m");
+            $cli->printLine("  \e[96m--offset\e[39m, \e[96m-o\e[39m            Skip the first amount of results by X:  \e[90mx\e[39m");
             $cli->printLine("  \e[96m--confirm\e[39m               Confirm an action.");
         }
 
