@@ -5,6 +5,7 @@
 
     class Media {
         private $db;
+        private $filterAllowedProperties = array("id", "uuid", "ext", "type", "owner");
 
         public function __construct() {
             $this->db = new Database;
@@ -26,8 +27,7 @@
                 if (in_array($ext, explode(',', $type->extensions))) {
                     $users = new Users;
                     $user = $users->getId($owner);
-                    print_r($user);
-                    if (!$user) {
+                    if ($user === NULL) {
                         return (object) array(
                             "success" => false,
                             "error" => "unknown_user",
@@ -86,6 +86,111 @@
                     "success" => false,
                     "error" => "unknown_mediatype",
                     "message" => "The requested mediatype does not exist."
+                );
+            }
+        }
+
+        public function info($query) {
+            $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "media` WHERE `id`='${query}' OR `uuid`='${query}'");
+            if ($res->num_rows > 0) {
+                $res = (object) $res->fetch_assoc();
+                $res->id = intval($res->id);
+                $res->type = intval($res->type);
+                $res->owner = intval($res->owner);
+                $res->file = $res->uuid . '.' . $res->ext;
+                $res->path = DYNAMIC_DIR . '/media/';
+                $res->filepath = DYNAMIC_DIR . '/media/' . $res->uuid . '.' . $res->ext;
+                return $res;
+            } else {
+                return NULL;
+            }
+        }
+
+        public function list($input = array()) {
+            $input = (object) $input;
+            $sql = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "media`";
+
+            if (count(array_keys(get_object_vars($input))) > 0) {
+                $allowedFilters = array("limit", "offset", "order");
+
+                $filters = (object) Validator::removeUnlisted($allowedFilters, $input);
+                $properties = (object) Validator::removeUnlisted($this->filterAllowedProperties, $input);
+
+                if (count(array_keys(get_object_vars($properties))) > 0) {
+                    $sql .= " WHERE";
+                    foreach($properties as $key => $value) {
+                        if (array_keys(get_object_vars($properties))[0] !== $key) $sql .= " AND";
+                        $sql .= " `$key`='${value}'";
+                    }
+                }
+
+                if (isset($filters->limit)) $sql .= " LIMIT " . $filters->limit;
+                if (isset($filters->offset)) $sql .= " OFFSET " . $filters->offset;
+                if (isset($filters->order)) $sql .= " ORDER BY `id` " . (strtolower($filters->order) == 'desc' ? "DESC" : "ASC");
+            }
+
+            $res = $this->db->query($sql);
+            if ($res->num_rows > 0) {
+                return (array) $res->fetch_all(MYSQLI_ASSOC);
+            } else {
+                return array();
+            }
+        }
+
+        public function transfer($query, $owner) {
+            $info = $this->info($query);
+            if ($info) {
+                $users = new Users;
+                $user = $users->getId($owner);
+                if ($user === NULL) {
+                    return (object) array(
+                        "success" => false,
+                        "error" => "unknown_user",
+                        "message" => "The targeted user does not exist."
+                    );
+                } else if ($user < 1) {
+                    return (object) array(
+                        "success" => false,
+                        "error" => "invalid_user",
+                        "message" => "The virtual Visitor profile (user 0) cannot hold any media items."
+                    );
+                } else {
+                    $mediaId = $info->id;
+                    $this->db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "media` SET `owner`='${user}' WHERE `id`='${mediaId}'");
+                    return (object) array(
+                        "success" => true
+                    );
+                }
+            } else {
+                return (object) array(
+                    "success" => false,
+                    "error" => "unknown_media",
+                    "message" => "The requested media item does not exist."
+                );
+            }
+        }
+
+        public function delete($query) {
+            $info = $this->info($query);
+            if ($info) {
+                if (!file_exists($info->filepath) || unlink($info->filepath)) {
+                    $mediaId = $info->id;
+                    $this->db->query("DELETE FROM `" . DATABASE_TABLE_PREFIX . "media` WHERE `id`='${mediaId}'");
+                    return (object) array(
+                        "success" => true
+                    );
+                } else {
+                    return (object) array(
+                        "success" => false,
+                        "error" => "failed_file_deletion",
+                        "message" => "The system was unable to delete the media item. This could be due to insufficient permissions."
+                    );
+                }
+            } else {
+                return (object) array(
+                    "success" => false,
+                    "error" => "unknown_media",
+                    "message" => "The requested media item does not exist."
                 );
             }
         }
@@ -201,6 +306,32 @@
                     "success" => false,
                     "error" => "unknown_mediatype",
                     "message" => "The given mediatype does not exist."
+                );
+            }
+        }
+
+        public function delete($query, $force = false) {
+            $info = $this->info($query);
+            if ($info) {
+                $typeId = $info->id;
+                if (!$force) {
+                    $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "media` WHERE `type`='${typeId}'");
+                    if ($res->num_rows > 0) return (object) array(
+                        "success" => false,
+                        "error" => "dependencies_not_cleared",
+                        "message" => "There are still media items that depend on this mediatype."
+                    );
+                }
+
+                $this->db->query("DELETE FROM `" . DATABASE_TABLE_PREFIX . "media-types` WHERE `id`='${typeId}'");
+                return (object) array(
+                    "success" => true
+                );
+            } else {
+                return (object) array(
+                    "success" => false,
+                    "error" => "unknown_media",
+                    "message" => "The requested media item does not exist."
                 );
             }
         }
