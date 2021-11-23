@@ -51,7 +51,7 @@
                             }
 
                             $uuid = \Helper\uuidv4();
-                            $destination = DYNAMIC_DIR . '/media/' . $uuid . '.' . $ext;
+                            $destination = DYNAMIC_DIR . '/media/' . $uuid . '_100.' . $ext;
                             if (copy($source, $destination)) {
                                 $typeId = $type->id;
                                 $this->db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "media` (`uuid`, `ext`, `type`, `owner`) VALUES ('${uuid}', '${ext}', '${typeId}', '${user}')");
@@ -97,9 +97,9 @@
                 $res->id = intval($res->id);
                 $res->type = intval($res->type);
                 $res->owner = intval($res->owner);
-                $res->file = $res->uuid . '.' . $res->ext;
+                $res->file = $res->uuid . '_100.' . $res->ext;
                 $res->path = DYNAMIC_DIR . '/media/';
-                $res->filepath = DYNAMIC_DIR . '/media/' . $res->uuid . '.' . $res->ext;
+                $res->filepath = DYNAMIC_DIR . '/media/' . $res->uuid . '_100.' . $res->ext;
                 return $res;
             } else {
                 return NULL;
@@ -131,7 +131,16 @@
 
             $res = $this->db->query($sql);
             if ($res->num_rows > 0) {
-                return (array) $res->fetch_all(MYSQLI_ASSOC);
+                $list = (array) $res->fetch_all(MYSQLI_ASSOC);
+                $list = array_map(function($item) {
+                    $item->id = intval($item->id);
+                    $item->type = intval($item->type);
+                    $item->owner = intval($item->owner);
+                    $item->file = $item->uuid . '_100.' . $item->ext;
+                    $item->path = DYNAMIC_DIR . '/media/';
+                    $item->filepath = DYNAMIC_DIR . '/media/' . $item->uuid . '_100.' . $item->ext;
+                    return $item;
+                }, $list);
             } else {
                 return array();
             }
@@ -173,19 +182,12 @@
         public function delete($query) {
             $info = $this->info($query);
             if ($info) {
-                if (!file_exists($info->filepath) || unlink($info->filepath)) {
-                    $mediaId = $info->id;
-                    $this->db->query("DELETE FROM `" . DATABASE_TABLE_PREFIX . "media` WHERE `id`='${mediaId}'");
-                    return (object) array(
-                        "success" => true
-                    );
-                } else {
-                    return (object) array(
-                        "success" => false,
-                        "error" => "failed_file_deletion",
-                        "message" => "The system was unable to delete the media item. This could be due to insufficient permissions."
-                    );
-                }
+                array_map('unlink', glob($info->path . $info->uuid . '_*.' . $info->ext));
+                $mediaId = $info->id;
+                $this->db->query("DELETE FROM `" . DATABASE_TABLE_PREFIX . "media` WHERE `id`='${mediaId}'");
+                return (object) array(
+                    "success" => true
+                );
             } else {
                 return (object) array(
                     "success" => false,
