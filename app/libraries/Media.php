@@ -125,7 +125,12 @@
         }
 
         public function info($query) {
-            $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "media` WHERE `id`='${query}' OR `uuid`='${query}'");
+            if (preg_match('/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i', $query)) {
+                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "media` WHERE `uuid`='${query}'");
+            } else {
+                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "media` WHERE `id`='${query}'");
+            }
+            
             if ($res->num_rows > 0) {
                 $res = (object) $res->fetch_assoc();
                 $res->id = intval($res->id);
