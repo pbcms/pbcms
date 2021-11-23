@@ -4,8 +4,90 @@
     use Helper\Validate as Validator;
 
     class Media {
-        public function create() {
-            
+        private $db;
+
+        public function __construct() {
+            $this->db = new Database;
+        }
+
+        public function create($type, $owner, $source, $ext = null) {
+            $mediaTypes = new MediaTypes;
+            $type = $mediaTypes->info($type);
+            if ($type) {
+                if (!$ext) {
+                    $explodedFileName = explode('.', $source);
+                    if (count($explodedFileName) > 1) {
+                        $ext = end($explodedFileName);
+                    } else {
+                        $ext = 'file';
+                    }
+                }
+
+                if (in_array($ext, explode(',', $type->extensions))) {
+                    $users = new Users;
+                    $user = $users->getId($owner);
+                    print_r($user);
+                    if (!$user) {
+                        return (object) array(
+                            "success" => false,
+                            "error" => "unknown_user",
+                            "message" => "The user assigned to the media item does not exist."
+                        );
+                    } else if ($user < 1) {
+                        return (object) array(
+                            "success" => false,
+                            "error" => "invalid_user",
+                            "message" => "The virtual Visitor profile (user 0) cannot hold any media items."
+                        );
+                    } else {
+                        if (file_exists($source)) {
+                            $maxSize = \Helper\convertToBytes($type->maxSize);
+                            if (filesize($source) > $maxSize) {
+                                return (object) array(
+                                    "success" => false,
+                                    "error" => "exceeds_maximum_filesize",
+                                    "message" => "The provided source exceeds the maximum filesize for the requested media type."
+                                );
+                            }
+
+                            $uuid = \Helper\uuidv4();
+                            $destination = DYNAMIC_DIR . '/media/' . $uuid . '.' . $ext;
+                            if (copy($source, $destination)) {
+                                $typeId = $type->id;
+                                $this->db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "media` (`uuid`, `ext`, `type`, `owner`) VALUES ('${uuid}', '${ext}', '${typeId}', '${user}')");
+                                return (object) array(
+                                    "success" => true,
+                                    "uuid" => $uuid
+                                );
+                            } else {
+                                return (object) array(
+                                    "success" => false,
+                                    "error" => "failed_copy",
+                                    "message" => "Failed to copy the source file to the destination."
+                                );
+                            }
+                        } else {
+                            return (object) array(
+                                "success" => false,
+                                "error" => "invalid_file",
+                                "message" => "The given filepath does not exist within the current filesystem."
+                            );
+                        }
+                    }
+                } else {
+                    return (object) array(
+                        "success" => false,
+                        "error" => "invalid_filetype",
+                        "message" => "The requested mediatype does not allow the given filetype."
+                    );
+                }
+            } else {
+                return (object) array(
+                    "success" => false,
+                    "error" => "unknown_mediatype",
+                    "message" => "The requested mediatype does not exist."
+                );
+            }
         }
     }
 
@@ -77,7 +159,10 @@
         public function info($query) {
             $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "media-types` WHERE `id`='${query}' OR `type`='${query}'");
             if ($res->num_rows > 0) {
-                $res = (object) $res->fetch_assoc();
+                $res = $res->fetch_assoc();
+                $res['maxSize'] = $res['max-size'];
+                unset($res['max-size']);
+                $res = (object) $res;
                 $res->id = intval($res->id);
                 return $res;
             } else {
@@ -85,19 +170,21 @@
             }
         }
 
-        public function update($query, $updates) {
-            if (is_array($extensions)) $extensions = join(',', $extensions);
-            $info = $this->find($query);
-            if ($media) {
+        public function update($query, $changes) {
+            $info = $this->info($query);
+            if ($info) {
                 $changes = (object) Validator::removeUnlisted($this->allowed, $changes);
                 if (count(array_keys((array) $changes)) > 0) {
+                    if (isset($changes->extensions) && is_array($changes->extensions)) $changes->extensions = join(',', $changes->extensions);
+
                     $sql = "UPDATE `" . DATABASE_TABLE_PREFIX . "media-types` SET";
                     foreach($changes as $key => $value) {
                         if (array_keys((array) $changes)[0] != $key) $sql .= ",";
+                        if ($key == 'maxSize') $key = 'max-size';
                         $sql .= " `$key`='$value'";
                     }
 
-                    $sql .= " WHERE `id`=" . $media->id;
+                    $sql .= " WHERE `id`=" . $info->id;
                     $res = $this->db->query($sql);
                     return (object) array(
                         "success" => true
