@@ -44,7 +44,11 @@
                 $path = str_replace('../', './', $path);
 
                 if (file_exists(DYNAMIC_DIR . '/modules/' . $module . '/static/' . $path)) {
-                    header("Content-Type: " . mime_content_type(DYNAMIC_DIR . '/modules/' . $module . '/static/' . $path));
+                    $mime = mime_content_type(DYNAMIC_DIR . '/modules/' . $module . '/static/' . $path);
+                    if (explode('.', $path)[count(explode('.', $path)) - 1] == 'css') $mime = 'text/css';
+                    if (explode('.', $path)[count(explode('.', $path)) - 1] == 'js') $mime = 'text/javascript';
+                    
+                    header("Content-Type: " . $mime);
                     print_r(file_get_contents(DYNAMIC_DIR . '/modules/' . $module . '/static/' . $path));
                 } else {
                     $this->__displayError(404, 'not found', 'not found');
