@@ -9,9 +9,9 @@
 
     document.querySelector("a.button.update-policies").addEventListener("click", e => {
         const api = PbAuth.apiInstance();
-        const params = new URLSearchParams();
+        const params = {};
         updatedInputs.forEach(current => {
-            params.append(current.getAttribute('name'), (current.type == 'checkbox' ? (current.checked ? 1 : 0) : current.value));
+            params[current.getAttribute('name')] = (current.type == 'checkbox' ? (current.checked ? 1 : 0) : current.value);
         });
         
         api.post('policy/update', params).then(res => {
