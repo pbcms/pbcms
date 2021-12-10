@@ -98,3 +98,30 @@
             }
         }
     });
+
+    $this->__registerMethod('delete', function($params) {
+        if (isset($params[0])) {
+            $media = new Media;
+            $info = $media->info(explode('.', $params[0])[0], false);
+            if ($info) {
+                $user = $this->user->info();
+                if (!(intval($user->id) == intval($info->owner)) && !$this->user->check('media.delete.' . $info->uuid)) {
+                    http_response_code(403);
+                    Respond::error("missing_privileges", "You are not allowed to delete this media item.");
+                } else {
+                    $res = $media->delete($info->id);
+                    if ($res->success) {
+                        Respond::success($res);
+                    } else {
+                        Respond::error($res->error, $res);
+                    }
+                }
+            } else {
+                http_response_code(404);
+                Respond::error("unknown_media", "The requested media does not exist. It might have been deleted by it's owner or a site's administrator.");
+            }
+        } else {
+            http_response_code(400);
+            Respond::error("missing_identifier", "Did not receive a parameter in the url to identify the media.");
+        }
+    });
