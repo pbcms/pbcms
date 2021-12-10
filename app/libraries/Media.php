@@ -223,6 +223,11 @@
             $info = $this->info($query);
             if ($info) {
                 array_map('unlink', glob($info->path . $info->uuid . '_*.' . $info->ext));
+                Event::trigger("media_deleted", (object) array(
+                    "id" => $info->id,
+                    "uuid" => $info->uuid
+                ));
+
                 $mediaId = $info->id;
                 $this->db->query("DELETE FROM `" . DATABASE_TABLE_PREFIX . "media` WHERE `id`='${mediaId}'");
                 return (object) array(
