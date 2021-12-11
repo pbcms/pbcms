@@ -173,6 +173,7 @@
             if ($res->num_rows > 0) {
                 $list = (array) $res->fetch_all(MYSQLI_ASSOC);
                 $list = array_map(function($item) {
+                    $item = (object) $item;
                     $item->id = intval($item->id);
                     $item->type = intval($item->type);
                     $item->owner = intval($item->owner);
@@ -181,6 +182,8 @@
                     $item->filepath = DYNAMIC_DIR . '/media/' . $item->uuid . '_100.' . $item->ext;
                     return $item;
                 }, $list);
+
+                return (array) $list;
             } else {
                 return array();
             }

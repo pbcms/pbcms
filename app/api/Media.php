@@ -1,5 +1,6 @@
 <?php
     use Library\Media;
+    use Library\Users;
     use Library\MediaTypes;
     use Helper\ApiResponse as Respond;
     use Helper\Request;
@@ -100,6 +101,9 @@
     });
 
     $this->__registerMethod('delete', function($params) {
+        if (!Request::requireMethod("delete")) die();
+        if (!Request::requireAuthentication()) die();
+
         if (isset($params[0])) {
             $media = new Media;
             $info = $media->info(explode('.', $params[0])[0], false);
@@ -124,4 +128,88 @@
             http_response_code(400);
             Respond::error("missing_identifier", "Did not receive a parameter in the url to identify the media.");
         }
+    });
+
+    $this->__registerMethod('transfer', function($params) {
+        if (!Request::requireMethod("patch")) die();
+        if (!Request::requireAuthentication()) die();
+
+        if (isset($params[0])) {
+            $media = new Media;
+            $info = $media->info(explode('.', $params[0])[0], false);
+            if ($info) {
+                $user = $this->user->info();
+                if (!(intval($user->id) == intval($info->owner)) && !$this->user->check('media.transfer.' . $info->uuid)) {
+                    http_response_code(403);
+                    Respond::error("missing_privileges", "You are not allowed to transfer the ownership of this media item.");
+                } else {
+                    $body = (object) Request::parseBody();
+                    if (isset($body->target)) {
+                        $res = $media->transfer($info->id, $body->target);
+                        if ($res->success) {
+                            Respond::success($res);
+                        } else {
+                            Respond::error($res->error, $res);
+                        }
+                    } else {
+                        Respond::error("missing_target", "Did not receive a target to transfer the media item to in the body.");
+                    }
+                }
+            } else {
+                http_response_code(404);
+                Respond::error("unknown_media", "The requested media does not exist. It might have been deleted by it's owner or a site's administrator.");
+            }
+        } else {
+            http_response_code(400);
+            Respond::error("missing_identifier", "Did not receive a parameter in the url to identify the media.");
+        }
+    });
+
+    $this->__registerMethod('info', function($params) {
+        if (!Request::requireAuthentication()) die();
+
+        if (isset($params[0])) {
+            $media = new Media;
+            $info = $media->info(explode('.', $params[0])[0], false);
+            if ($info) {
+                $user = $this->user->info();
+                if (!(intval($user->id) == intval($info->owner)) && !$this->user->check('media.info.' . $info->uuid)) {
+                    http_response_code(403);
+                    Respond::error("missing_privileges", "You are not allowed to information about this media item.");
+                } else {
+                    $res = $media->info($info->id);
+                    if ($res->success) {
+                        Respond::success($res);
+                    } else {
+                        Respond::error($res->error, $res);
+                    }
+                }
+            } else {
+                http_response_code(404);
+                Respond::error("unknown_media", "The requested media does not exist. It might have been deleted by it's owner or a site's administrator.");
+            }
+        } else {
+            http_response_code(400);
+            Respond::error("missing_identifier", "Did not receive a parameter in the url to identify the media.");
+        }
+    });
+
+    $this->__registerMethod('list', function($params) {
+
+        $user = $this->user->info();
+        $filters = (object) Request::parseBody();
+
+        if ((isset($params[0]) && $params[0] == 'all') || isset($filters->owner)) {
+            if (!$this->user->check('media.list.others')) {
+                http_response_code(403);
+                Respond::error("missing_privileges", "You are not allowed to list media items you don't own yourself.");
+                return;
+            }
+        } else {
+            $filters->owner = $user->id;
+        }
+
+        $media = new Media;
+        $res = $media->list($filters);
+        Respond::success(array("list" => $res));
     });
