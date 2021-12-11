@@ -19,6 +19,7 @@
                 $preCoreModules = $modules->list('pre-core');
                 foreach($preCoreModules as $module) $modules->load($module);
                 \Registry\Action::call('register-core-extention');
+                \Registry\Action::call('register-custom-core');
                 \Registry\Event::trigger('pre-core-loaded');
                 
                 require_once 'Core.php';
