@@ -45,7 +45,15 @@
             return $modules;
         }
 
-        public function load($module, $data = array()) {
+        public function load($module, $opt1 = array(), $opt2 = null) {
+            if (is_bool($opt1)) {
+                $force = $opt1;
+                $data = (is_array($opt2) ? $opt2 : array());
+            } else {
+                $data = (is_array($opt1) ? $opt1 : array());
+                $force = (is_bool($opt2) ? $opt2 : false);
+            }
+
             if ($this->exists($module) && !$this->isLoaded($module)) {
                 if ($this->enabled($module) || $force) {
                     require DYNAMIC_DIR . '/modules/' . $module . '/pb_entry.php';
