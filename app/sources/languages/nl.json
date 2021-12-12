@@ -1,0 +1,171 @@
+{
+    "common": {
+        "messages": {
+            "error-unknown_error": "Er is een onbekende fout opgetreden."
+        },
+        "words": {
+            "edit": "bewerken",
+            "warning": "waarschuwing",
+            "save": "opslaan",
+            "cancel": "annuleren"
+        }
+    },
+
+    "pages": {
+        "pb-auth": {
+            "signin": {
+                "title": "Inloggen",
+                "subtitle": "Log in tot uw account.",
+                "description": "Log in tot uw account op {{SITE_TITLE}}",
+                "field-identifier": "E-mail adres",
+                "field-identifier-full": "E-mail adres of gebruikersnaam",
+                "field-password": "Wachtwoord",
+                "box-stay-signedin": "Ingelogd blijven?",
+                "button-continue": "Doorgaan",
+                "link-signup": "Heeft u nog geen account?"
+            },
+            "signup": {
+
+            },
+            "forgot-password": {
+                "title": "Wachtwoord vergeten",
+                "subtitle": "Reset uw wachtwoord.",
+                "description": "Reset uw wachtwoord op {{SITE_TITLE}}",
+                "field-identifier": "E-mail adres",
+                "field-identifier-full": "E-mail adres of gebruikersnaam",
+                "button-send-email": "Verstuur e-mail",
+                "link-signin": "Inloggen"
+            },
+            "reset-password": {
+
+            }
+        },
+        "pb-dashboard": {
+            "policies": {
+                "page-title": "Beleidgeving aanpassen",
+                "page-subtitle": "Pas beleidgeving op uw eigen risico aan. Aanpassingen aan het beleid kan uw website grote schade toebrengen.",
+                "table": {
+                    "column-id": "ID",
+                    "column-name": "Naam",
+                    "column-value": "Waarde (aanpasbaar)"
+                }
+            },
+            "modules": {
+                "page-title": "Modules beheren",
+                "page-subtitle": "Modules voor uw website beheren of installeren.",
+                "table": {
+                    "column-name": "Naam",
+                    "column-enabled": "Ingeschakeld",
+                    "column-pre-core": "Pre-Core",
+                    "column-is-loaded": "Is geladen?"
+                }
+            }
+        }
+    },
+
+    "error-pages": {
+        "error-welcome-page": {
+            "title": "Welkom",
+            "description": "Welkom bij uw nieuwe PBCMS site!",
+            "content-1": "Welkom bij uw nieuwe PBCMS installatie, dit is een korte introductie. <br>Begin met <a href='{{SITE_LOCATION}}pb-auth/signin'>het inloggen tot uw account</a> en met het ontdekken van het dashboard!",
+            "content-2": "Deze pagina wordt enkel getoond omdat deze standaard aan staat zolang er geen thuis-pagina bestaat. U kunt <a href='#'>dit uitschakelen</a> of <a href='#'>een thuis-pagina creëren</a>."
+        },
+        "error-404": {
+            "title": "Pagina niet gevonden",
+            "description": "De opgevraagde pagina bestaat niet."
+        },
+        "error-403": {
+            "title": "Verboden toegang",
+            "description": "U heeft geen toegang tot de opgevraagde pagina."
+        },
+        "error-500": {
+            "title": "Interne server fout",
+            "description": "Er is een interne server fout opgetreden."
+        }
+    },
+
+    "templates": {
+        "pb-portal": {
+            "back-to-site": "Terug naar de site",
+            "powered-by": "Aangedreven door {{LINK}}"
+        },
+        "pb-error": {
+            "subtitle": "Er is een fout opgetreden tijdens het verwerken van uw verzoek.",
+            "powered-by": "Aangedreven door {{LINK}}"
+        },
+        "pb-dashboard": {
+            "dashboard": "Dashboard",
+            "section-titles": {
+                "overview": "Overzicht",
+                "updates": "Updates",
+                "media": "Media",
+                "virtual-paths": "Virtuele paden",
+                "profile": "Profiel",
+                "users": "Gebruikers",
+                "modules": "Modules",
+                "objects": "Objecten",
+                "policies": "Beleidgeving"
+            },
+            "section-categories": {
+                "content": "inhoud",
+                "configuration": "configuratie",
+                "shortcuts": "snelkoppelingen"
+            },
+            "top-bar": {
+                "search-placeholder": "Start met typen om te zoeken."
+            }
+        }
+    },
+    
+    "messages": {
+        "__api-controller": {
+            "__unknown-error": "Er is een fout opgetreden tijdens het ophalen van de foutmelding!",
+            "error-unknown_api": "De opgevraagde API bestaat niet.",
+            "error-missing_api": "Er is geen API opgevraagd.",
+            "error-unknown_method": "De opgevraagde methode bestaat niet voor de opgevraagde API.",
+            "error-missing_method": "Er is geen methode opgevraagd voor de opgevraagde API."
+        },
+        "api-auth": {
+            "create-session": {
+                "error-user_locked": "De gebruiker waarvoor u een sessie probeert te creëeren is vergrendeld door het systeem of een administrator.",
+                "error-token_error": "Er is een fout opgetreden tijdens het creëeren van uw refresh-token.",
+                "error-invalid_password": "Er is een fout wachtwoord opgegeven voor de gebruiker geidentificeerd met {{IDENTIFIER}}.",
+                "error-unknown_user": "Een gebruiker geidentificeerd met {{IDENTIFIER}} bestaat niet."
+            },
+            "access-token": {
+                "error-session_expired": "De aangevraagde sessie is verlopen.",
+                "error-user_locked": "De gebruiker waarvoor u een access-token probeert te creëeren is vergrendeld door het systeem of een administrator.",
+                "error-token_error": "Er is een fout opgetreden tijdens het creëeren van uw access-token.",
+                "error-unknown_user": "De gebruiker waarvoor u een access-token probeert te creëeren bestaat niet meer.",
+                "error-unknown_session": "De aangevraagde sessie bestaat niet.",
+                "error-decode_error": "Er is een fout opgetreden tijdens het ontsleutelen van uw refresh-token.",
+                "error-missing_refresh_token": "Er is geen refresh-token aanwezig."
+            },
+            "reset-password": {
+
+            }
+        },
+        "api-user": {
+            "create": {
+                "error-missing_privileges": "U mist de rechten om een nieuwe gebruiker te creëeren."
+            },
+            "info": {
+                "error-missing_privileges": "U mist de rechten om informatie over een andere gebruiker op te vragen."
+            },
+            "list": {
+                "error-missing_privileges": "U mist de rechten om een lijst van gebruikers op te vragen."
+            },
+            "update": {
+                "error-missing_privileges": "U mist de rechten om een andere gebruiker aan te vragen."
+            },
+            "delete": {
+                "error-missing_privileges": "U mist de rechten om een gebruiker te verwijderen.",
+                "error-missing_identifier": "De identificatie van de gedoelde gebruiker mist van de URL.",
+                "error-self_protection": "U kunt niet uw eigen gebruikersaccount verwijderen vanuit uw eigen sessie."
+            },
+            "get-id": {
+                "error-missing_privileges": "U mist de rechten om informatie over een andere gebruiker op te vragen."
+            }
+        }
+    }
+}

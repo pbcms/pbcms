@@ -1,0 +1,5 @@
+config.php
+dynamic/*/**
+!dynamic/*/.gitkeep
+app/sources/repositories/**
+!app/sources/repositories/.gitkeep

@@ -1,0 +1,22 @@
+<?php
+    namespace DatabaseMigrator;
+
+    class AddDefaultLanguagePolicy__2__0_0_3 {
+        public function up($db) {
+            $res = $db->query("SELECT `value` FROM `" . DATABASE_TABLE_PREFIX . "policies` WHERE `name`='default-language'");
+            if ($res->num_rows == 0) {
+                $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "policies` (`name`, `value`) VALUES ('default-language', 'en')");
+            } else {
+                \Core::PrintLine("Entry for policy \"default-language\" already exists, not overriding it.");
+            }
+        }
+
+        public function down($db) {
+            $res = $db->query("SELECT `value` FROM `" . DATABASE_TABLE_PREFIX . "policies` WHERE `name`='default-language'");
+            if ($res->num_rows == 0 || $res->fetch_assoc()['value'] === 'en') {
+                $db->query("DELETE FROM `" . DATABASE_TABLE_PREFIX . "policies` WHERE `name`='default-language'");
+            } else {
+                \Core::PrintLine("Non-default value for policy \"default-language\" was found, not deleting the entry.");
+            }
+        }
+    }

@@ -1,0 +1,176 @@
+{
+    "common": {
+        "messages": {
+            "error-unknown_error": "An unknown error has occured."
+        },
+        "words": {
+            "edit": "edit",
+            "warning": "warning",
+            "save": "save",
+            "cancel": "cancel"
+        }
+    },
+
+    "pages": {
+        "pb-auth": {
+            "signin": {
+                "title": "Signin",
+                "subtitle": "Signin to your account.",
+                "description": "Sign into your account on {{SITE_TITLE}}",
+                "field-identifier": "E-mail address",
+                "field-identifier-full": "E-mail address or username",
+                "field-password": "Password",
+                "box-stay-signedin": "Stay signed-in?",
+                "button-continue": "Continue",
+                "link-signup": "Don't have an account yet?"
+            },
+            "signup": {
+
+            },
+            "forgot-password": {
+                "title": "Forgot password",
+                "subtitle": "Reset your password.",
+                "description": "Reset your password on {{SITE_TITLE}}",
+                "field-identifier": "E-mail address",
+                "field-identifier-full": "E-mail address or username",
+                "button-send-email": "Send e-mail",
+                "link-signin": "Sign-in"
+            },
+            "reset-password": {
+
+            }
+        },
+        "pb-dashboard": {
+            "policies": {
+                "page-title": "Policy editor",
+                "page-subtitle": "Edit policies on your own risk. Editing policies can greatly damage your website.",
+                "table": {
+                    "column-id": "ID",
+                    "column-name": "Name",
+                    "column-value": "Value (editable)"
+                }
+            },
+            "modules": {
+                "page-title": "Manage modules",
+                "page-subtitle": "Manage or install modules for your website.",
+                "table": {
+                    "column-name": "Name",
+                    "column-enabled": "Enabled",
+                    "column-pre-core": "Pre-Core",
+                    "column-is-loaded": "Is loaded?"
+                }
+            }
+        }
+    },
+
+    "error-pages": {
+        "error-welcome-page": {
+            "title": "Welcome",
+            "description": "Welcome to your new PBCMS site!",
+            "content-1": "Welcome to your new PCBMS instance, this is a small introduction page. <br>Start by <a href='{{SITE_LOCATION}}pb-auth/signin'>signin in to your account</a> and by exploring the dashboard!",
+            "content-2": "This page is only shown because it is enabled by default when no homepage exist. You can <a href='#'>disable it</a> or <a href='#'>create a homepage</a>."
+        },
+        "error-403": {
+            "title": "Forbidden access",
+            "description": "You do not have access to the requested page."
+        },
+        "error-404": {
+            "title": "Page not found",
+            "description": "The requested page does not exist."
+        },
+        "error-500": {
+            "title": "Internal server error",
+            "description": "An internal server error occured."
+        }
+    },
+
+    "templates": {
+        "pb-portal": {
+            "back-to-site": "Back to site",
+            "powered-by": "Powered by {{LINK}}"
+        },
+        "pb-error": {
+            "subtitle": "An error occurred while processing your request.",
+            "powered-by": "Powered by {{LINK}}"
+        },
+        "pb-dashboard": {
+            "dashboard": "Dashboard",
+            "section-titles": {
+                "overview": "Overview",
+                "updates": "Updates",
+                "media": "Media",
+                "virtual-paths": "Virtual paths",
+                "profile": "Profile",
+                "users": "Users",
+                "modules": "Modules",
+                "objects": "Objects",
+                "policies": "Policies"
+            },
+            "section-categories": {
+                "content": "content",
+                "configuration": "configuration",
+                "shortcuts": "shortcuts"
+            },
+            "top-bar": {
+                "search-placeholder": "Start typing to search."
+            }
+        }
+    },
+
+    "messages": {
+        "__api-controller": {
+            "__unknown-error": "An error occured while retrieving the error message!",
+            "error-unknown_api": "The requested API does not exist.",
+            "error-missing_api": "No API was requested.",
+            "error-unknown_method": "The requested method does not exist for the requested API.",
+            "error-missing_method": "No method was requested for the requested API."
+        },
+        "api-auth": {
+            "create-session": {
+                "error-user_locked": "The user you are trying to create a session for has been locked by the system or an administrator.",
+                "error-token_error": "An error occured while creating the refresh-token.",
+                "error-invalid_password": "An invalid password has been provided for the user identified by {{IDENTIFIER}}.",
+                "error-unknown_user": "A user identified by {{IDENTIFIER}} does not exist."
+            },
+            "access-token": {
+                "error-session_expired": "The requested session has since expired.",
+                "error-user_locked": "The user you are trying to request an access token for has been locked by the system or an administrator.",
+                "error-token_error": "An error occured while creating the access-token.",
+                "error-unknown_user": "The user you are trying to request an access token for does not exist anymore.",
+                "error-unknown_session": "The requested session does not exist.",
+                "error-decode_error": "An error occured while decoding the refresh token.",
+                "error-missing_refresh_token": "No refresh token present."
+            },
+            "reset-password": {
+                "error-no_reset_policy": "Unfortunately, the administrator of this site hasn't configured a password reset policy. We are unable to reset your password at this moment.",
+                "error-user_locked": "The user you are trying to reset the password for has been locked by the system or an administrator.",
+                "error-email_error": "An error occured while sending the password reset email.",
+                "error-policy_unavailable": "Unfortunately, the requested policy is currently unavailable. We are unable to reset your password at this moment.",
+                "error-unknown_policy": "The configured password reset policy is unknown to this site. We are unable to reset your password at this moment.",
+                "error-unknown_user": "A user identified by {{IDENTIFIER}} does not exist."
+            }
+        },
+        "api-user": {
+            "create": {
+                "error-missing_privileges": "You are lacking the permission to create a new user."
+            },
+            "info": {
+                "error-missing_privileges": "You are lacking the permission to obtain information about a different user."
+            },
+            "list": {
+                "error-missing_privileges": "You are lacking the permission to list users."
+            },
+            "update": {
+                "error-missing_privileges": "You are lacking the permission to update a different user."
+            },
+            "delete": {
+                "error-missing_privileges": "You are lacking the permission to delete a user.",
+                "error-missing_identifier": "You are missing the user identifier in the URL.",
+                "error-self_protection": "You cannot delete your own account from your own session."
+            },
+            "get-id": {
+                "error-missing_privileges": "You are lacking the permission to obtain information about a different user."
+            }
+        }
+    }
+}
