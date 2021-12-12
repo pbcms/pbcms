@@ -3,3 +3,5 @@ dynamic/*/**
 !dynamic/*/.gitkeep
 app/sources/repositories/**
 !app/sources/repositories/.gitkeep
+
+.phpdoc

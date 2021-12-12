@@ -1,11 +1,23 @@
 <?php
+    /**
+     * Contains the initial Loader class that prepares the request or starts installation.
+     */
+
+    /**
+     * Initiates all library inclusions, makes system definitions, loads pre-core modules and loads the core or starts installation.
+     */
     class Loader {
         private static $initialized = false;
-
+        
         public function __construct() {
             $this->initialize();
         }
-
+        
+        /**
+         * Initializes the request. Prevents itself from running a second time with the static $initialized variable.
+         *
+         * @return void
+         */
         private function initialize() {
             if (!self::$initialized) {
                 self::$initialized = true;
@@ -26,7 +38,12 @@
                 new Core();
             }
         }
-
+        
+        /**
+         * Creates system definitions such as directories, etc.
+         *
+         * @return void
+         */
         private function definitions() {
             define('KB', 1024);
             define('MB', 1048576);
@@ -42,7 +59,12 @@
             define("REQUEST_HTTP_HOST", (isset($_SERVER["HTTP_HOST"]) ? $_SERVER['HTTP_HOST'] : NULL));
             define("REQUEST_BASE", (!REQUEST_PROTOCOL || !REQUEST_HTTP_HOST ? NULL : REQUEST_PROTOCOL . REQUEST_HTTP_HOST));
         }
-
+        
+        /**
+         * Loads the configuration file or starts installation if it doesn't exist.
+         *
+         * @return void
+         */
         private function prepareConfiguration() {
             if (!file_exists(ROOT_DIR . '/config.php')) {
                 require_once APP_DIR . '/libraries/Installation.php';
@@ -52,7 +74,12 @@
             require_once ROOT_DIR . '/config.php';
             if (PBCMS_DEBUG_MODE) ini_set('display_errors', 1);
         }
-
+        
+        /**
+         * Requires all libraries.
+         *
+         * @return void
+         */
         private function requireLibraries() {
             require_once 'libraries/Registries.php';
             require_once 'libraries/JWT.php';
@@ -78,4 +105,5 @@
         }
     }
 
+    // Start the Loader and thus, process the request.
     new Loader();

@@ -16,6 +16,4 @@ This project is still in alpha and under heavy development. Expect API changes t
 
 ## Documentation
 
-As of writing, this project lacks documentation and with over 15334 lines of code at this point I certainly realise I should have made more comments. This is one of the key points that I'm planning to tackle soon, at this point I luckily have most of the aspects of this project laid out in my head. 
-
-I'm planning to start commenting everything and built documentation for the internal APIs with a project like PHPdoc soon enough. It will most likely be released under a docs folder in the repository and I will actively deploy it to my webserver.
+Documentation can be accessed via [docs.pbcms.io](https://docs.pbcms.io) or generated with ``phpDocumentor -d /dir/of/pbcms -t /output/dir/of/docs --ignore dynamic/``.
