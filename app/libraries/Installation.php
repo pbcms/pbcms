@@ -1,35 +1,9 @@
 <?php
     require 'Database.php';
+    require APP_DIR . '/Core.php';
 
     use Library\Database;
     use Library\DatabaseMigrator as Migrator;
-
-    //Add minified core for PrintLine functionality.
-    class Core {
-        public static function Safemode() {
-            return self::$inSafemode;
-        }
-
-        public static function InCli() {
-            return OPERATION_MODE == "CLI";
-        }
-
-        public static function DefaultOperationMode() {
-            return OPERATION_MODE == "DEFAULT";
-        }
-
-        public static function Print($text) {
-            if (self::InCli()) {
-                fwrite(STDOUT, $text);
-            } else {
-                echo $text;
-            }
-        }
-
-        public static function PrintLine($text) {
-            self::Print($text . PHP_EOL);
-        }
-    }
 
     function validateDatabase() {
         if (isset($_POST['DB_HOSTNAME']) && isset($_POST['DB_USERNAME']) && isset($_POST['DB_DATABASE'])) {
