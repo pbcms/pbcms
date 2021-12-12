@@ -195,7 +195,8 @@
     });
 
     $this->__registerMethod('list', function($params) {
-
+        if (!Request::requireAuthentication()) die();
+        
         $user = $this->user->info();
         $filters = (object) Request::parseBody();
 
