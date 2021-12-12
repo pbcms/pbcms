@@ -294,6 +294,7 @@
         public function removeModule($name) {
             if ($this->moduleInstalled($name)) {
                 $this->deleteDirectory(DYNAMIC_DIR . '/modules/' . $name);
+                return 1;
             } else {
                 return -1;
             }
@@ -332,7 +333,8 @@
             $exists = false;
             $modules = $this->listModules();
             foreach($modules as $item) {
-                if ($item['module'] == $name) {
+                $item = (object) $item;
+                if ($item->module == $name) {
                     $exists = true;
                     break;
                 }
@@ -389,6 +391,7 @@
                 $objects->create('modules-repository', $name);
                 $objects->set('modules-repository', $name, 'url', $url);
                 $objects->set('modules-repository', $name, 'enabled', ($enabled ? 1 : 0));
+                return true;
             }
         }
 
