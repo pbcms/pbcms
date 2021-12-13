@@ -100,7 +100,8 @@
                 "lowercase" => boolval(preg_match('@[a-z]@', $password)),
                 "number" => boolval(preg_match('@[0-9]@', $password)),
                 "special" => boolval(preg_match('@[^\w]@', $password)),
-                "length" => strlen($password)
+                "length" => strlen($password),
+                "minimumScore" => 0.0
             );
 
             $passwordPolicies = new PasswordPolicies();
@@ -188,6 +189,7 @@
                         break;
                     case "score":
                         if ($value == NULL) $value = 1;
+                        $data->minimumScore = floatval($value);
                         if (!($data->score >= floatval($value))) {
                             $result = false;
                             array_push($issues, $key);
