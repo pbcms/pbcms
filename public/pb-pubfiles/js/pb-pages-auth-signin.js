@@ -37,7 +37,7 @@
         return {
             identifier: portal.querySelector('input[name=identifier]').value,
             password: portal.querySelector('input[name=password]').value,
-            stay_signedin: (portal.querySelector('input[type=checkbox][name=stay-signedin]').checked ? 1 : 0)
+            stay_signedin: (portal.querySelector('input[type=checkbox][name=stay-signedin]') ? (portal.querySelector('input[type=checkbox][name=stay-signedin]').checked ? 1 : 0) : 0)
         }
     }
 
