@@ -433,7 +433,7 @@
     });
 
     $this->__registerMethod('get-repository', function($params) {
-        //if (!Request::requireAuthentication()) die();
+        if (!Request::requireAuthentication()) die();
 
         if ($this->user->check('module.get-repository')) {
             $moduleManager = new ModuleManager;
@@ -470,7 +470,7 @@
     });
 
     $this->__registerMethod('list-repositories', function($params) {
-        //if (!Request::requireAuthentication()) die();
+        if (!Request::requireAuthentication()) die();
 
         if ($this->user->check('module.list-repositories')) {
             $moduleManager = new ModuleManager;
@@ -483,7 +483,7 @@
     });
 
     $this->__registerMethod('repository-info', function($params) {
-        //if (!Request::requireAuthentication()) die();
+        if (!Request::requireAuthentication()) die();
 
         if ($this->user->check('module.repository-info')) {
             $moduleManager = new ModuleManager;
@@ -505,7 +505,7 @@
     });
 
     $this->__registerMethod('refresh-repository', function($params) {
-        //if (!Request::requireAuthentication()) die();
+        if (!Request::requireAuthentication()) die();
 
         if ($this->user->check('module.refresh-repository')) {
             $moduleManager = new ModuleManager;
@@ -527,7 +527,7 @@
     });
 
     $this->__registerMethod('refresh-repositories', function($params) {
-        //if (!Request::requireAuthentication()) die();
+        if (!Request::requireAuthentication()) die();
 
         if ($this->user->check('module.refresh-repositories')) {
             $moduleManager = new ModuleManager;
