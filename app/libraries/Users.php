@@ -531,7 +531,7 @@
 
             foreach($roles as $role) {
                 $role = (array) $role;
-                $res = $this->permissions->check("role", $role['id'], $permission, true);
+                $res = $this->permissions->check("role", $role[(explode(':', $role['type'])[0] == 'role' ? 'origin' : 'target')], $permission, true);
                 if ($res->grantSize > $grantSize) $grantSize = $res->grantSize;
                 if ($res->rejectSize > $rejectSize) $rejectSize = $res->rejectSize;
             }
