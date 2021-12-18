@@ -396,20 +396,22 @@
         }
 
         public function enableRepository($name) {
-            if ($this->repositoryExists($name)) {
+            if (!$this->repositoryExists($name)) {
                 return false;
             } else {
                 $objects = new Objects;
                 $objects->set('modules-repository', $name, 'enabled', 1);
+                return true;
             }
         }
 
         public function disableRepository($name) {
-            if ($this->repositoryExists($name)) {
+            if (!$this->repositoryExists($name)) {
                 return false;
             } else {
                 $objects = new Objects;
                 $objects->set('modules-repository', $name, 'enabled', 0);
+                return true;
             }
         }
 
@@ -417,6 +419,7 @@
             if ($this->repositoryExists($name)) {
                 $objects = new Objects;
                 $objects->purge('modules-repository', $name);
+                return true;
             } else {
                 return false;
             }
