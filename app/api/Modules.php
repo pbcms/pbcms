@@ -512,7 +512,7 @@
             if (isset($params[0])) {
                 $res = $moduleManager->refreshRepository($params[0]);
                 if ($res) {
-                    Respond::success(array("info" => $res));
+                    Respond::success(array("refreshed" => $res));
                 } else {
                     Respond::error("unknown_repository", "The requested repository could not be found.");
                 }        
