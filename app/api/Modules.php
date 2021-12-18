@@ -91,7 +91,7 @@
     });
 
     $this->__registerMethod('enable', function($params) {
-        // if (!Request::requireAuthentication()) die();
+        if (!Request::requireAuthentication()) die();
 
         if ($this->user->check('module.enable')) {
             if (isset($params[0])) {
@@ -137,7 +137,7 @@
     });
 
     $this->__registerMethod('install', function($params) {
-        // if (!Request::requireAuthentication()) die();
+        if (!Request::requireAuthentication()) die();
 
         if ($this->user->check('module.install')) {
             if (isset($params[0])) {
@@ -207,7 +207,7 @@
     });
 
     $this->__registerMethod('update', function($params) {
-        // if (!Request::requireAuthentication()) die();
+        if (!Request::requireAuthentication()) die();
 
         if ($this->user->check('module.update')) {
             if (isset($params[0])) {
