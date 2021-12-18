@@ -532,11 +532,11 @@
         if ($this->user->check('module.refresh-repositories')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
-                $moduleManager->refreshRepositories($params[0]);
-                Respond::success();       
+                $moduleManager->refreshRepositories($params[0] == 'include-disabled');
+                Respond::success(); 
             } else {
-                http_response_code(400);
-                Respond::error("missing_information", "No repository name was defined in the URL.");
+                $moduleManager->refreshRepositories();
+                Respond::success(); 
             }
         } else {
             http_response_code(403);
