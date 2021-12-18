@@ -29,6 +29,7 @@
     $assets->registerHead('style', 'https://fonts.gstatic.com', array("rel" => "preconnect", "properties" => "crossorigin"));
     $assets->registerHead('style', 'https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap');
     $assets->registerHead('script', 'https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js');
+    $assets->registerHead('script', "pbcms-dashboard.js", array("origin" => "pubfiles"));
     $assets->registerHead('style', "pbcms-dashboard.css", array("origin" => "pubfiles"));
 
     $assets->registerBody('script', "feather.replace();");

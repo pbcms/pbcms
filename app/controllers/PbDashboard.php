@@ -2,6 +2,8 @@
     namespace Controller;
 
     use Library\Users;
+    use Library\Modules;
+    use Library\ModuleManager;
     use Library\Language;
     use Helper\Header;
     use Helper\Request;
@@ -101,11 +103,41 @@
         } 
 
         public function Modules($params) {
-            $this->__view("dashboard/modules");
-            $this->__template("pb-dashboard", array(
-                "title" => "modules",
-                "section" => "modules"
-            ));
+            function getParameter($item, $param, $alternative = null) {
+                $local = ($item->local && isset(((array) $item->local)[$param]) ? ((array) $item->local)[$param] : null);
+                $repo = ($item->repo && isset(((array) $item->repo)[$param]) ? ((array) $item->repo)[$param] : null);
+                return ($local ? $local : ($repo ? $repo : $alternative));
+            }
+
+            if (isset($params[0])) {
+                $modman = new ModuleManager;
+                $module = $modman->moduleSummary($params[0]);
+                if ($module) {
+                    $this->__view("dashboard/view-module", array("module" => $module));
+                    $this->__template("pb-dashboard", array(
+                        "title" => "Module - " . getParameter($module, 'name', $module->module),
+                        "section" => "modules",
+                        "head" => array(
+                            ['style', 'pb-pages-dashboard-view-module.css', array("origin" => "pubfiles")]
+                        ),
+                        "body" => array(
+                            ['script', 'pb-pages-dashboard-view-module.js', array("origin" => "pubfiles")]
+                        )
+                    ));
+                } else {
+                    $this->__view("dashboard/unknown-module");
+                    $this->__template("pb-dashboard", array(
+                        "title" => "Unknown module",
+                        "section" => "modules"
+                    ));
+                }
+            } else {
+                $this->__view("dashboard/modules");
+                $this->__template("pb-dashboard", array(
+                    "title" => "modules",
+                    "section" => "modules"
+                ));
+            }
         } 
 
         public function Roles($params) {
