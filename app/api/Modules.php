@@ -512,7 +512,7 @@
             if (isset($params[0])) {
                 $res = $moduleManager->refreshRepository($params[0]);
                 if ($res) {
-                    Respond::success(array("refreshed" => $res));
+                    Respond::success();
                 } else {
                     Respond::error("unknown_repository", "The requested repository could not be found.");
                 }        
@@ -532,12 +532,8 @@
         if ($this->user->check('module.refresh-repositories')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
-                $res = $moduleManager->refreshRepositories($params[0]);
-                if ($res) {
-                    Respond::success(array("info" => $res));
-                } else {
-                    Respond::error("unknown_repository", "The requested repository could not be found.");
-                }        
+                $moduleManager->refreshRepositories($params[0]);
+                Respond::success();       
             } else {
                 http_response_code(400);
                 Respond::error("missing_information", "No repository name was defined in the URL.");
