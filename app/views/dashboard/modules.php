@@ -54,7 +54,7 @@
     </p>
 </section>
 
-<section class="no-padding">
+<section class="no-padding transparent">
     <table>
         <thead>
             <th>

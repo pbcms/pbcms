@@ -36,11 +36,12 @@
                 $item->type = 'string';
         }
 
+        if ($item->type == 'string' && is_numeric($item->value)) $item->type = 'number';
         $tableContent .= renderRow($item);
     }
 
     function renderRow($item) {
-        $result = '<tr policy-name="' . $item->name . '"><th class="column-id">' . $item->id . '</th><td id="policy-name">' . $item->name . '</td><td class="no-padding">';
+        $result = '<tr policy-name="' . $item->name . '"><th class="column-id">' . $item->id . '</th><td id="policy-name">' . $item->name . '</td><td>';
         switch($item->type) {
             case 'string':
                 $result .= '<input type="text" name="' . $item->name . '" value="' . $item->value . '" placeholder="Enter a value">';
@@ -67,7 +68,7 @@
     </p>
 </section>
 
-<section class="no-padding policy-list">
+<section class="no-padding policy-list transparent">
     <table>
         <thead>
             <th class="column-id">

@@ -366,7 +366,7 @@ html, body {
 
 .content section.no-padding,
 .content .section.no-padding {
-    width: calc(100% - 50px);
+    width: calc(100% - 76px);
     padding: 0px;
 }
 
@@ -378,7 +378,7 @@ html, body {
 .content section.page-introduction,
 .content .section.page-introduction {
     background-color: transparent !important;
-    width: calc(100% - 110px);
+    width: calc(100% - 76px);
     padding: 0px;
     padding-bottom: 15px;
     padding-top: 10px;
@@ -617,44 +617,55 @@ html, body {
 }
 
 .content table {
-    border-collapse: collapse;
     width: 100%;
 }
 
 .content > table,
 .content section > table,
 .content .section > table {
-    border-radius: 10px;
-    overflow: hidden;
+    border-spacing: 0px 15px;
 }
 
 .content table td, 
 .content table th {
     min-height: 40px;
     min-width: 20px;
+    margin-left: 30px;
 }
 
-.content table td:not(.no-padding), 
-.content table th:not(.no-padding) {
-    padding: 8px;
+.content table tbody td, 
+.content table tbody th {
+    height: 40px;
+    padding: 5px 25px 7px 25px;
 }
 
-.content table td.column-id, 
-.content table th.column-id {
-    text-align: left;
-    padding-left: 20px;
-    min-width: 0px;
+.content table thead td, 
+.content table thead th {
+    padding: 0px 25px;
 }
 
-.content table tr { background-color: #fafafa; }
-.content table tr:nth-child(even){ background-color: #e5e5e5; }
-.content table tr:hover { background-color: #d9d9d9; }
+.content table tbody tr {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0px 0px 0px rgb(0 0 0 / 50%), 0 10px 30px rgb(0 0 0 / 10%);
+    height: 40px;
+}
+
+.content table tbody tr th:first-child,
+.content table tbody tr td:first-child {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+.content table tbody tr th:last-child,
+.content table tbody tr td:last-child {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
 
 .content table thead th {
     height: 30px;
     text-align: left;
-    background-color: #111;
-    color: white;
 }
 
 .content table td input, 
