@@ -216,17 +216,17 @@
                 if (isset($params[1])) {
                     if ($params[1] == 'force') {
                         if ($this->user->check('module.update.force')) {
-                            $moduleManager->updateModule($params[0], true);
+                            $res = $moduleManager->updateModule($params[0], true);
                         } else {
                             http_response_code(403);
                             Respond::error("missing_privileges", "You are not allowed to update a module by force.");
                             return;
                         }
                     } else {
-                        $moduleManager->updateModule($params[0]);
+                        $res = $moduleManager->updateModule($params[0]);
                     }
                 } else {
-                    $moduleManager->updateModule($params[0]);
+                    $res = $moduleManager->updateModule($params[0]);
                 }
 
                 switch($res) {
