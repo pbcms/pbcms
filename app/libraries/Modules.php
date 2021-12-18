@@ -227,7 +227,7 @@
                 $result->updateable = $modules->updateable($name);
             }
 
-            if (!$found && !$repo) return null;
+            if (!$found && !$result->repo) return null;
             return $result;
         }
 
