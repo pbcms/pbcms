@@ -142,6 +142,13 @@
             }
         }
 
+        public function configuratorAvailable($module) {
+            if (!$this->exists($module))        return false;
+            if (!$this->enabled($module))       return false;
+            if (!isset(self::$loaded[$module])) return false;
+            return method_exists(self::$loaded[$module], 'configurator');
+        }
+
         public function exists($module) {
             return file_exists(DYNAMIC_DIR . '/modules/' . $module . '/pb_entry.php');
         }
@@ -215,6 +222,7 @@
                 "preCore" => false,
                 "loaded" => false,
                 "updateable" => false,
+                "configuratorAvailable" => false,
                 "repo" => $this->moduleRepoInfo($name),
                 "local" => $this->moduleLocalInfo($name)
             );
@@ -225,6 +233,7 @@
                 $result->preCore = $modules->preCore($name);
                 $result->loaded = $modules->isLoaded($name);
                 $result->updateable = $modules->updateable($name);
+                $result->configuratorAvailable = $modules->configuratorAvailable($name);
             }
 
             if (!$found && !$result->repo) return null;
