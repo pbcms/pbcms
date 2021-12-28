@@ -129,6 +129,7 @@
             "create-session": {
                 "error-user_locked": "The user you are trying to create a session for has been locked by the system or an administrator.",
                 "error-token_error": "An error occured while creating the refresh-token.",
+                "error-invalid_plugin": "You are trying to authenticate a user against the local database while it's provided by external sources.",
                 "error-invalid_password": "An invalid password has been provided for the user identified by {{IDENTIFIER}}.",
                 "error-unknown_user": "A user identified by {{IDENTIFIER}} does not exist."
             },
