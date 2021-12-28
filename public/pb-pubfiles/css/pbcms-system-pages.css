@@ -177,7 +177,8 @@ form.pbcms-installation .sections section[section-name=preloader].current-sectio
     color: green;
 }
 
-.pbcms-system-display button {
+.pbcms-system-display button,
+.pbcms-system-display .button{
     margin-top: 20px;
     background-color: black;
     padding: 8px 20px;
@@ -188,6 +189,7 @@ form.pbcms-installation .sections section[section-name=preloader].current-sectio
     font-size: 16px;
     cursor: pointer;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    text-decoration: none;
 }
 
 .pbcms-system-display .input-fields {
@@ -354,13 +356,30 @@ form.pbcms-installation .sections section[section-name=preloader].current-sectio
     margin-right: 15px;
 }
 
-.pbcms-system-display .input-buttons > a {
+.pbcms-system-display .input-buttons > a:not(.button) {
     color: var(--c-blue-dark);
     margin-top: 16px;
 }
 
-.pbcms-system-display .input-buttons > a:hover {
+.pbcms-system-display .input-buttons > a:not(.button):hover {
     color: var(--c-blue-light);
+}
+
+.pbcms-system-display .alternatives {
+    width: calc(100% - 50px);
+    padding: 15px 25px 18px;
+    margin-top: 25px;
+    background-color: #eaeaea;
+    border-radius: 5px;
+}
+
+.pbcms-system-display .alternatives h4 {
+    font-weight: 100
+}
+
+.pbcms-system-display .alternatives h4 + .input-buttons button,
+.pbcms-system-display .alternatives h4 + .input-buttons .button {
+    margin-top: 15px;
 }
 
 /* ANIMATIONS */

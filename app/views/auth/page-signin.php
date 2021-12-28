@@ -1,11 +1,14 @@
 <?php
     use Library\Policy;
     use Library\Language;
+    use Registry\Event;
 
     $policy = new Policy;
     $lang = new Language;
     $lang->detectLanguage();
     $lang->load();
+
+    $externalProviders = Event::trigger("auth-button-external-provider", array('type' => "signin"));
 ?>
 
 <p class="error"><?php if (isset($_GET['error'])) echo $lang->get('messages.api-auth.access-token.error-' . $_GET['error'], $lang->get('common.messages.error-unknown_error', 'An unknown error has occured.')); ?></p>
@@ -60,3 +63,21 @@
         }
     ?>
 </div>
+
+<?php
+    if (count($externalProviders) > 0) {
+        foreach($externalProviders as $button) {
+            ?>
+                <div class="alternatives">
+                    <h4>
+                        You can also signin with
+                    </h4>
+
+                    <div class="input-buttons">
+                        <?php echo $button; ?>
+                    </div>
+                </div>
+            <?php
+        }
+    }
+?>
