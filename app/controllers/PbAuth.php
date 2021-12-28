@@ -5,7 +5,7 @@
     use Helper\Respond;
     use Helper\Request;
     use Library\Language;
-    use Registry\Auth as Callback;
+    use Registry\Auth as AuthPlugin;
 
     class PbAuth extends \Library\Controller {
         private $lang;
@@ -108,17 +108,17 @@
             Header::Location(SITE_LOCATION);
         }
 
-        public function Callback($params) {
+        public function Plugin($params) {
             if (isset($params[0])) {
-                if (Callback::exists($params[0])) {
-                    Callback::call($params[0], array_slice($params, 1));
+                if (AuthPlugin::exists($params[0])) {
+                    AuthPlugin::call($params[0], array_slice($params, 1));
                 } else {
                     http_response_code(404);
                     $this->__view('auth/auth-options');
                     $this->__template('pb-portal', array(
-                        "title" => "Unknown callback",
-                        "subtitle" => "An unknown callback was requested!",
-                        "description" => "Unknown callback requested!",
+                        "title" => "Unknown plugin",
+                        "subtitle" => "An unknown authentication plugin was requested!",
+                        "description" => "Unknown plugin requested!",
                         "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
                         "meta" => array(
                             "robots" => "noindex, nofollow"
@@ -130,8 +130,8 @@
                 $this->__view('auth/auth-options');
                 $this->__template('pb-portal', array(
                     "title" => "Invalid request",
-                    "subtitle" => "No callback was requested!",
-                    "description" => "No callback requested!",
+                    "subtitle" => "No authentication plugin was requested!",
+                    "description" => "No plugin requested!",
                     "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
                     "meta" => array(
                         "robots" => "noindex, nofollow"
