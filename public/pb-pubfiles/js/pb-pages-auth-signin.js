@@ -15,7 +15,11 @@
                 if (res.data.success == undefined) {
                     portal.querySelector('p.error').innerText = 'An unknown error has occured! (unknown_error)';
                 } else if (res.data.success == false) {
-                    portal.querySelector('p.error').innerText = res.data.message + ' (' + res.data.error + ')';
+                    if (res.data.error == 'invalid_plugin') {
+                        location.href = SITE_LOCATION + 'pb-auth/plugin/' + res.data.plugin;
+                    } else {
+                        portal.querySelector('p.error').innerText = res.data.message + ' (' + res.data.error + ')';
+                    }
                 } else {
                     location.reload();
                 }
