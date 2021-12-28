@@ -7,8 +7,8 @@
         private $db = NULL;
         private $policy = NULL;
 
-        private $required = array("firstname", "lastname", "email", "password");
-        private $allowed = array("firstname", "lastname", "email", "password", "type", "status");
+        private $required = array("firstname", "lastname", "email");
+        private $allowed = array("firstname", "lastname", "email", "type", "status");
         private $filterAllowedProperties = array("id", "firstname", "lastname", "email", "username", "type", "status", "created", "updated");
         private $userStatusses = array("UNVERIFIED", "VERIFIED", "LOCKED");
 
@@ -21,6 +21,12 @@
         }
 
         public function create($user) {
+            $user = (object) $user;
+            if (!isset($user->type) && strtolower($user->type) != 'local') {
+                array_push($this->required, 'password');
+                array_push($this->allowed, 'password');
+            }
+
             $user = Validator::trimObject($user);
             $missing = Validator::listMissing($this->required, $user);
             if (count($missing) == 0) {
@@ -34,15 +40,17 @@
                     "message" => "The provided E-mail address does not validate as an E-mail address."
                 );
 
-                $passvalresult = $this->validatePassword($user->password); 
-                if (!$passvalresult->success) return (object) array(
-                    "success" => false,
-                    "error" => "password_too_weak",
-                    "message" => "The provided password does not qualify the site's password policy.",
-                    "data" => $passvalresult->data,
-                    "factors" => $passvalresult->factors,
-                    "issues" => $passvalresult->issues
-                );
+                if (isset($user->password)) {
+                    $passvalresult = $this->validatePassword($user->password); 
+                    if (!$passvalresult->success) return (object) array(
+                        "success" => false,
+                        "error" => "password_too_weak",
+                        "message" => "The provided password does not qualify the site's password policy.",
+                        "data" => $passvalresult->data,
+                        "factors" => $passvalresult->factors,
+                        "issues" => $passvalresult->issues
+                    );
+                }
 
                 if (isset($user->username)) {
                     if (!$this->validateUsername($user->username)) {
@@ -62,7 +70,8 @@
                     }
                 }
 
-                $user->password = password_hash($user->password, PASSWORD_DEFAULT);
+                if (isset($user->password)) $user->password = password_hash($user->password, PASSWORD_DEFAULT);
+                if (!isset($user->password)) $user->password = '';
                 if ($this->find($user->email, false) == NULL) {
                     $sql = "INSERT INTO `" . DATABASE_TABLE_PREFIX . "users` (";
                     foreach(array_keys((array) $user) as $key) $sql .= "`${key}`, ";
