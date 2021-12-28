@@ -66,18 +66,16 @@
 
 <?php
     if (count($externalProviders) > 0) {
-        foreach($externalProviders as $button) {
-            ?>
-                <div class="alternatives">
-                    <h4>
-                        You can also signin with
-                    </h4>
+        ?>
+            <div class="alternatives">
+                <h4>
+                    You can also signin with
+                </h4>
 
-                    <div class="input-buttons">
-                        <?php echo $button; ?>
-                    </div>
+                <div class="input-buttons">
+                    <?php  foreach($externalProviders as $button) { echo $button; } ?>
                 </div>
-            <?php
-        }
+            </div>
+        <?php
     }
 ?>
