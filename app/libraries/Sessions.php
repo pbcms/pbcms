@@ -104,4 +104,47 @@
         public function delete($uuid) {
             $this->db->query("DELETE FROM `" . DATABASE_TABLE_PREFIX . "sessions` WHERE `uuid`='$uuid'");
         }
+
+        public function setProperty($uuid, $name, $value) {
+            $properties = $this->properties($uuid);
+            if ($properties !== false) {
+                $properties[$name] = $value;
+                $updated = json_encode($properties);
+                $this->db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "sessions` SET `properties`='$updated' WHERE `uuid`='$uuid'");
+                return true;
+            } else {
+                return false;
+            }
+        } 
+
+        public function getProperty($uuid, $name) {
+            $properties = $this->properties($uuid);
+            if ($properties !== false) {
+                return ($properties[$name] ? $properties[$name] : NULL);
+            } else {
+                return false;
+            }
+        } 
+
+        public function deleteProperty($uuid, $name) {
+            $properties = $this->properties($uuid);
+            if ($properties !== false) {
+                unset($properties[$name]);
+                $updated = json_encode($properties);
+                $this->db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "sessions` SET `properties`='$updated' WHERE `uuid`='$uuid'");
+                return true;
+            } else {
+                return false;
+            }
+        } 
+
+        public function properties($uuid) {
+            $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "sessions` WHERE `uuid`='$uuid'");
+            if ($res->num_rows > 0) {
+                $row = (object) $res->fetch_assoc();
+                return (array) json_decode($row->properties);
+            } else {
+                return false;
+            }
+        } 
     }
