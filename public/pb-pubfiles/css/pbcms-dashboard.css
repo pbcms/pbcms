@@ -310,6 +310,32 @@ html, body {
     transition: opacity .1s ease;
 }
 
+.container .control-bar .control-button .control-menu .inner-menu .header {
+    width: calc(100% - 40px);
+    padding: 5px 20px 12px;
+    font-weight: 900;
+    font-size: 20px;
+}
+
+.container .control-bar .control-button .control-menu .inner-menu .items {
+    display: flex;
+    flex-direction: column;
+    padding-top: 5px;
+}
+
+.container .control-bar .control-button .control-menu .inner-menu .items .item {
+    width: calc(100% - 40px);
+    padding: 10px 20px;
+    margin-top: 10px;
+    background-color: #222;
+    border-radius: 5px;
+}
+
+.container .control-bar .control-button .control-menu .inner-menu .items .item a {
+    color: white;
+    text-decoration: none;
+}
+
 .container .content-container {
     height: 100%;
     width: 100%;

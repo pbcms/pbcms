@@ -49,7 +49,7 @@
     }
 ?>
 
-<section class="module-overview">
+<section class="page-introduction">
     <h1>
         <?php echo getParameter($module, 'name', $module->module); ?>
     </h1>
