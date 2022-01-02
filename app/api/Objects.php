@@ -17,7 +17,7 @@
             $missing = Validate::listMissing($required, $body);
             if (count($missing) > 0) {
                 Respond::error('missing_information', array(
-                    "message" => 'The following post information is missing from the request: ' . join(',', $missing) . '.',
+                    "message" => 'The following information is missing from the request: ' . join(',', $missing) . '.',
                     "missing_info" => $missing
                 ));
             } else {
