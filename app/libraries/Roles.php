@@ -1,6 +1,7 @@
 <?php
     namespace Library;
 
+    use Registry\Action;
     use Helper\Validate as Validator;
 
     class Roles {
@@ -219,3 +220,13 @@
             return $this->permissions->find("role", $id, $permission);
         }
     }
+
+    Action::register('external_permission_validator:roles', function($target_type, $target_value, $permission, $extended_result = false) {
+        $perms = new RolePermissions();
+        return $perms->check($target_value, $permission, $extended_result);
+    });
+
+    Action::register('external_permission_list:roles', function($input, $checkWildcards = true) {
+        $perms = new RolePermissions();
+        return $perms->list($input, $checkWildcards);
+    });

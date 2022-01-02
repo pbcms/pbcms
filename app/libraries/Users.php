@@ -1,6 +1,7 @@
 <?php
     namespace Library;
 
+    use Registry\Action;
     use Helper\Validate as Validator;
 
     class Users {
@@ -579,3 +580,13 @@
             return $this->permissions->find("user", $id, $permission);
         }
     }
+
+    Action::register('external_permission_validator:users', function($target_type, $target_value, $permission, $extended_result = false) {
+        $perms = new UserPermissions();
+        return $perms->check($target_value, $permission, $extended_result);
+    });
+
+    Action::register('external_permission_list:users', function($input, $checkWildcards = true) {
+        $perms = new UserPermissions();
+        return $perms->list($input, $checkWildcards);
+    });
