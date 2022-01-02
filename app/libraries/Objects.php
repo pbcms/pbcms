@@ -90,8 +90,9 @@
             }
         }
 
-        public function properties($type, $name = '', $parse = false) {
-            $obj = $this->info($type, $name);
+        public function properties($type, $name = '', $parse = null) {
+            $obj = $this->info($type, (is_bool($name) && $parse == null ? '' : $name));
+            $parse = (is_bool($name) && $parse == null ? $name : ($parse == null ? false : true));
             if ($obj == NULL) {
                 return false;
             } else {
