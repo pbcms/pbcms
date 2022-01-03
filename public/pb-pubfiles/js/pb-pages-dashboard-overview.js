@@ -4,7 +4,7 @@
             if (res.data && res.data.success) {
                 document.querySelector('section.database-migrations .migration-logs').innerHTML = '<br>' + res.data.logs.join('<br>');
             } else {
-                alert(res.message + ' (' + res.error + ')');
+                alert(res.data.message + ' (' + res.data.error + ')');
             }
         });
     });
