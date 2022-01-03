@@ -101,9 +101,9 @@
             $this->__execute($params);
         }
 
-        public function Token($params) {
-            $this->__usingApi("Token");
-            require_once APP_DIR . '/api/Token.php';
+        public function Site($params) {
+            $this->__usingApi("Site");
+            require_once APP_DIR . '/api/Site.php';
             $this->__execute($params);
         }
     }

@@ -31,7 +31,10 @@
             $this->__view("dashboard/overview");
             $this->__template("pb-dashboard", array(
                 "title" => "overview",
-                "section" => "overview"
+                "section" => "overview",
+                "body" => array(
+                    ['script', 'pb-pages-dashboard-overview.js', array("origin" => "pubfiles")]
+                )
             ));
         } 
 

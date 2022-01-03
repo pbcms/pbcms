@@ -738,6 +738,24 @@ html, body {
     margin-top: 0px;
 }
 
+.content .foldable > label {
+    color: -webkit-link;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.content .foldable > input {
+    width: 0px;
+    height: 0px;
+    opacity: 0;
+    display: none;
+    visibility: hidden;
+}
+
+.content .foldable > input:not(:checked) + .foldable-content {
+    display: none;
+}
+
 /* ANIMATIONS */
 
 @-webkit-keyframes rotate {
