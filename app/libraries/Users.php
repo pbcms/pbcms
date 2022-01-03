@@ -240,7 +240,8 @@
                 "password" => null,
                 "status" => null,
                 "created" => null,
-                "updated" => null
+                "updated" => null,
+                "type" => "local"
             );
 
             $sql = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "users` WHERE `email`='${identifier}'";
@@ -257,6 +258,7 @@
                 $res = (object) $res->fetch_assoc();
                 $res->fullname = $res->firstname . ' ' . $res->lastname;
                 $res->id = intval($res->id);
+                if (!isset($res->type)) $res->type = 'local';
                 return $res;
             } else {
                 return NULL;
