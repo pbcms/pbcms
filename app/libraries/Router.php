@@ -8,6 +8,8 @@
         protected static $virtualPath = NULL;
         protected static $currentController;
 
+        protected static $rawController = 'root';
+        protected static $rawMethod = '__index';
         protected static $controller = 'Root';
         protected static $method = '__index';
         protected static $params = [];
@@ -31,12 +33,14 @@
 
         public function refactorRequest($url) {
             if (self::$executed) return false;
-            if (self::$controller == 'PbApi' || self::$controller == 'PbAuth' || self::$controller == 'PbDashboard' || self::$controller == 'PbLoader') {
+            if (self::$controller == 'PbApi' || self::$controller == 'PbAuth' || self::$controller == 'PbDashboard' || self::$controller == 'PbLoader' || self::$controller == 'PbPubfiles') {
                 return false;
             }
             
             self::$preferredLanguage = NULL;
             self::$virtualPath = NULL;
+            self::$rawController = 'root';
+            self::$rawMethod = '__index';
             self::$controller = 'Root';
             self::$method = '__index';
             self::$params = [];
@@ -82,6 +86,8 @@
 
             $virtualPaths = $this->matchVirtualPath();
             if (count($virtualPaths) > 0 && isset($virtualPaths[$virtualIndex])) {
+                self::$rawController = 'root';
+                self::$rawMethod = '__index';
                 self::$controller = 'Root';
                 self::$method = '__index';
                 self::$params = [];
@@ -98,6 +104,8 @@
                 $this->fillProperties($final);
                 $this->processRequest($virtualIndex + 1);
             } else {
+                array_unshift(self::$params, self::$rawMethod);
+                self::$rawMethod = NULL;
                 self::$method = NULL;
                 self::$virtualPath = NULL;
                 self::$preferredLanguage = NULL;
@@ -105,6 +113,8 @@
                 Store::delete('router-preferred-language');
 
                 if (!$this->controllerExists(self::$controller)) {
+                    array_unshift(self::$params, self::$rawController);
+                    self::$rawController = NULL;
                     self::$controller = NULL;
                 }
 
@@ -141,12 +151,14 @@
             foreach($url as $segment) if (substr($segment, 0, 2) == '__') $this->displayError(403);
 
             if ($this->controllerExists($url[$index])) {
+                self::$rawController = $url[$index];
                 self::$controller = $this->prepareFunctionNaming($url[$index]);
                 unset($url[$index]);
                 $index++;
             }
 
             if (count($url) < 1) return;
+            self::$rawMethod = $url[$index];
             self::$method = $this->prepareFunctionNaming($url[$index]);
             unset($url[$index]);
             $index++;
