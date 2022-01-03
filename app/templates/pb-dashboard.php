@@ -17,6 +17,7 @@
     use Library\Meta;
     use Library\Users;
     use Library\UserPermissions;
+    use Library\Policy;
 
     $meta = new Meta;
     $meta->set('robots', 'index, nofollow');
@@ -40,6 +41,14 @@
     $users = new Users;
     $userperm = new UserPermissions;
     $shortcuts = json_decode($users->metaGet($this->session->user->id, 'dashboard-shortcuts'));
+    $userModel = $this->__model("user");
+    $user = $userModel->info();
+
+    $policy = new Policy;
+    $supportLocation = $policy->get('support-location');
+    if (!$supportLocation) $supportLocation = 'https://support.pbcms.io/';
+    $docsLocation = $policy->get('docs-location');
+    if (!$docsLocation) $docsLocation = 'https://docs.pbcms.io/';
 ?>
 
 <!DOCTYPE html>
@@ -207,7 +216,23 @@
 
                     <div class="control-menu">
                         <div class="inner-menu">
-                            help
+                            <div class="header">
+                                <p>
+                                    Help & Support
+                                </p>
+                            </div>
+                            <div class="items">
+                                <div class="item">
+                                    <a href="<?php echo $supportLocation; ?>" target="_blank">
+                                        Support
+                                    </a>
+                                </div>
+                                <div class="item">
+                                    <a href="<?php echo $docsLocation; ?>" target="_blank">
+                                        Documentation
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -224,7 +249,23 @@
 
                     <div class="control-menu">
                         <div class="inner-menu">
-                            content
+                            <div class="header">
+                                <p class="user-fullname">
+                                    <?php echo $user->firstname . ' ' . $user->lastname; ?>
+                                </p>
+                            </div>
+                            <div class="items">
+                                <div class="item">
+                                    <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/profile">
+                                        Profile
+                                    </a>
+                                </div>
+                                <div class="item">
+                                    <a href="<?php echo SITE_LOCATION; ?>pb-auth/signout">
+                                        Signout
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

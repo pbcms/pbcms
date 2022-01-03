@@ -15,7 +15,20 @@
                 if ($this->exists($type, $name)) {
                     return false;
                 } else {
+                    if (!$this->validateNaming($type) || !$this->validateNaming($name)) return false;
                     $this->db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "objects` (`type`, `name`) VALUES ('${type}', '${name}')");
+                    return true;
+                }
+            }
+        }
+
+        public function validateNaming($str) {
+            if (preg_match("/[^A-Za-z0-9-_.]/", $str)) {
+                return false;
+            } else {
+                if (strlen(strval(intval($str))) == strlen($str)) {
+                    return false; //Contains only numbers. Types and Names should not interfere with object IDs.
+                } else {
                     return true;
                 }
             }
@@ -90,8 +103,9 @@
             }
         }
 
-        public function properties($type, $name = '', $parse = false) {
-            $obj = $this->info($type, $name);
+        public function properties($type, $name = '', $parse = null) {
+            $obj = $this->info($type, (is_bool($name) && $parse == null ? '' : $name));
+            $parse = (is_bool($name) && $parse == null ? $name : ($parse == null ? false : true));
             if ($obj == NULL) {
                 return false;
             } else {
