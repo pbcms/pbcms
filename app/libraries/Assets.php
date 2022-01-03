@@ -66,7 +66,7 @@
             foreach($input as $key => $value) {
                 switch($key) {
                     case 'origin':
-                        $allowed = array('remote', 'pubfiles', 'module');
+                        $allowed = array('remote', 'pubfiles', 'module', 'dynamic');
                         if (in_array(explode(':', $value)[0], $allowed)) $asset->origin = $value;
                         break;
                     case 'properties':
@@ -131,6 +131,20 @@
                                 return '<script>alert("Asset \'' . $asset->source . '\' does not exist within pubfiles.");</script>';
                             }
                         }
+
+                        break;
+                    case 'dynamic':
+                        if (file_exists(DYNAMIC_DIR . '/static/' . $asset->source)) {
+                            $obtained_source = file_get_contents(DYNAMIC_DIR . '/static/' . $asset->source);
+                        } else {
+                            if (file_exists(DYNAMIC_DIR . '/static/' . $short_type . '/' . $asset->source)) {
+                                $obtained_source = file_get_contents(DYNAMIC_DIR . '/static/' . $short_type . '/' . $asset->source);
+                            } else {
+                                return '<script>alert("Asset \'' . $asset->source . '\' does not exist within dynamic static.");</script>';
+                            }
+                        }
+
+                        break;
                 }
             }
 
