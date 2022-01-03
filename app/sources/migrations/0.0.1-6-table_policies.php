@@ -2,7 +2,7 @@
     namespace DatabaseMigrator;
 
     class TablePolicies__6__0_0_1 {
-        public function up($db) {
+        public function up($db, $log) {
             $db->query("CREATE TABLE `" . DATABASE_TABLE_PREFIX . "policies` (
                 `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 `name` varchar(128) NOT NULL UNIQUE,
@@ -28,7 +28,7 @@
                 ('allow-stay-signedin', '1');");
         }
 
-        public function down($db) {
+        public function down($db, $log) {
             $db->query("DROP TABLE `" . DATABASE_TABLE_PREFIX . "policies`");
         }
     }

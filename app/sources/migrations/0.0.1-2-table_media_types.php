@@ -2,7 +2,7 @@
     namespace DatabaseMigrator;
 
     class TableMediaTypes__2__0_0_1 {
-        public function up($db) {
+        public function up($db, $log) {
             $db->query("CREATE TABLE`" . DATABASE_TABLE_PREFIX . "media-types` (
                 `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 `type` varchar(500) NOT NULL UNIQUE,
@@ -13,7 +13,7 @@
             $db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "media-types` (`type`, `extensions`, `max-size`) VALUES ('profilepicture', 'jpg,jpeg,png,gif', '2M');");
         }
 
-        public function down($db) {
+        public function down($db, $log) {
             $db->query("DROP TABLE `" . DATABASE_TABLE_PREFIX . "media-types`");
         }
     }

@@ -2,7 +2,7 @@
     namespace DatabaseMigrator;
 
     class UpdateRoleDatabaseNaming__1__0_0_7 {
-        public function up($db) {
+        public function up($db, $log) {
             $resultInPermissionsTable = $db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "permissions` WHERE `target` LIKE 'grp:%'");
             foreach($resultInPermissionsTable->fetch_all(MYSQLI_ASSOC) as $item) {
                 $item = (array) $item;
@@ -28,7 +28,7 @@
             }
         }
 
-        public function down($db) {
+        public function down($db, $log) {
             $resultInPermissionsTable = $db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "permissions` WHERE `target` LIKE 'role:%'");
             foreach($resultInPermissionsTable->fetch_all(MYSQLI_ASSOC) as $item) {
                 $item = (array) $item;

@@ -2,7 +2,7 @@
     namespace DatabaseMigrator;
 
     class TableMedia__1__0_0_1 {
-        public function up($db) {
+        public function up($db, $log) {
             //CREATE MEDIA TABLE
             $db->query("CREATE TABLE `" . DATABASE_TABLE_PREFIX . "media` (
                 `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -15,7 +15,7 @@
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
         }
 
-        public function down($db) {
+        public function down($db, $log) {
             $db->query("DROP TABLE `" . DATABASE_TABLE_PREFIX . "media`");
         }
     }

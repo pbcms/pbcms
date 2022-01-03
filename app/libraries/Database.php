@@ -40,56 +40,39 @@
 
     class DatabaseMigrator {
         private $db;
+        private $shout = true;
+        private $logs = array();
+        private $logger;
 
-        public function __construct() {
+        public function __construct($options = array()) {
             $this->db = new Database;
             $this->createMigrationsTable();
+
+            if (is_array($options)) {
+                foreach($options as $option => $value) {
+                    switch($option) {
+                        case 'shout':
+                            if (is_bool($value)) $this->shout = $value;
+                            break;
+                    }
+                }
+            }
+
+            $this->logger = function($message) {
+                array_push($this->logs, $message);
+                if ($this->shout) \Core::PrintLine($message);
+            };
         }
 
         public function migrate() {
             $this->createMigrationsTable();
             $this->log("Started migrating.");
-
-            $queue = array();
-            $files = glob(dirname(__DIR__) . '/sources/migrations/*.*.*-*-*.php');
-            natsort($files);
-            $processFilePaths = function ($fp) { 
-                $file = basename($fp);
-                $migration = substr($file, 0, -4);
-                $segments = explode('-', $migration);
-                $uppercaseFirst = function ($w) { return ucfirst($w); };
-                return (object) array(
-                    "file" => $file,
-                    "migration" => $migration,
-                    "version" => $segments[0],
-                    "task" => $segments[1],
-                    "name" => $segments[2],
-                    "classname" => str_replace('.', '_', join('', array_map($uppercaseFirst, explode('_', $segments[2]))) . '__' . $segments[1] . '__' . $segments[0])
-                );
-            };
-
-            $files = array_map($processFilePaths, $files);
-            $availableMigrationsCount = count($files);
+            
+            $queue = $this->availableMigrations();
             $queueCount = count($queue);
-            $this->log("Found ${availableMigrationsCount} migration script" . ($availableMigrationsCount == 1 ? '' : 's') . ", ${queueCount} migration" . ($queueCount == 1 ? '' : 's') . " queued.");
-
-            $retrieveMigrationsQuery = "SELECT `migration` FROM `" . DATABASE_TABLE_PREFIX . "migrations`";
-            $retrievedMigrationsRaw = $this->db->query($retrieveMigrationsQuery);
-            $retrievedMigrations = $retrievedMigrationsRaw->fetch_all(MYSQLI_ASSOC);
-            $processRetrievedMigrations = function($row) { return join('-', array_slice(explode('-', $row['migration']), 0, 2)); };
-            $retrievedMigrations = array_map($processRetrievedMigrations, $retrievedMigrations);
-
-            foreach($files as $migration) {
-                if (!in_array($migration->version . '-' . $migration->task, $retrievedMigrations)) {
-                    array_push($queue, $migration);
-                }
-            }
-
-            $queueCount = count($queue);
-            $eliminatedMigrations = $availableMigrationsCount - $queueCount;
-            $this->log("Skipping ${eliminatedMigrations} of the ${availableMigrationsCount} available migration" . ($availableMigrationsCount == 1 ? '' : 's') . ", ${queueCount} migration" . ($queueCount == 1 ? '' : 's') . " queued.");
             
             if ($queueCount > 0) {
+                $this->log("Queued ${queueCount} migration" . ($queueCount == 1 ? '' : 's') . ".");
                 $this->log("Start processing the queue.");
 
                 $updateMigrationsTableQueries = array();
@@ -101,7 +84,7 @@
                     $class = "DatabaseMigrator\\" . $migration->classname;
                     require_once(dirname(__DIR__) . '/sources/migrations/' . $migration->file);
                     $migrator = new $class();
-                    $migrator->up(new Database);
+                    $migrator->up(new Database, $this->logger);
 
                     array_push($updateMigrationsTableQueries, "('$migration->migration', '$migration->version', '$migration->task', '$migration->name')");
                     $this->log("#" . ($i+1) . ": Finished migration for: $migration->name. (VERSION: $migration->version; TASK: $migration->task; TOOK: " . number_format(microtime(true) - $start, 4, '.', '') . "s)");
@@ -237,7 +220,7 @@
                     $class = "DatabaseMigrator\\" . $migration->classname;
                     require_once(dirname(__DIR__) . '/sources/migrations/' . $migration->file);
                     $migrator = new $class();
-                    $migrator->down(new Database);
+                    $migrator->down(new Database, $this->logger);
 
                     $this->log("#" . ($i+1) . ": Finished rollback for: $migration->name. (VERSION: $migration->version; TASK: $migration->task; TOOK: " . number_format(microtime(true) - $start, 4, '.', '') . "s)");
                 }
@@ -314,6 +297,52 @@
             return array_map($translateArrayToObject, $data);
         }
 
+        public function availableMigrations() {
+            $this->createMigrationsTable();
+            $this->log("Searching for available migrations.");
+
+            $available = array();
+            $migrations = glob(dirname(__DIR__) . '/sources/migrations/*.*.*-*-*.php');
+            natsort($migrations);
+
+            $processFilePaths = function ($fp) { 
+                $file = basename($fp);
+                $migration = substr($file, 0, -4);
+                $segments = explode('-', $migration);
+                $uppercaseFirst = function ($w) { return ucfirst($w); };
+                return (object) array(
+                    "file" => $file,
+                    "migration" => $migration,
+                    "version" => $segments[0],
+                    "task" => $segments[1],
+                    "name" => $segments[2],
+                    "classname" => str_replace('.', '_', join('', array_map($uppercaseFirst, explode('_', $segments[2]))) . '__' . $segments[1] . '__' . $segments[0])
+                );
+            };
+
+            $migrations = array_map($processFilePaths, $migrations);
+            $migrationCount = count($migrations);
+            $availableCount = count($available);
+            $this->log("Found ${migrationCount} migration script" . ($migrationCount == 1 ? '' : 's') . ".");
+
+            $retrieveMigratedQuery = "SELECT `migration` FROM `" . DATABASE_TABLE_PREFIX . "migrations`";
+            $retrievedMigratedRaw = $this->db->query($retrieveMigratedQuery);
+            $retrievedMigrated = $retrievedMigratedRaw->fetch_all(MYSQLI_ASSOC);
+            $processRetrievedMigrated = function($row) { return join('-', array_slice(explode('-', $row['migration']), 0, 2)); };
+            $retrievedMigrated = array_map($processRetrievedMigrated, $retrievedMigrated);
+
+            foreach($migrations as $migration) {
+                if (!in_array($migration->version . '-' . $migration->task, $retrievedMigrated)) {
+                    array_push($available, $migration);
+                }
+            }
+
+            $availableCount = count($available);
+            $eliminatedMigrations = $migrationCount - $availableCount;
+            $this->log("Eliminated ${eliminatedMigrations} of the ${migrationCount} migration" . ($migrationCount == 1 ? '' : 's') . ", ${availableCount} migration" . ($availableCount == 1 ? '' : 's') . " available to be executed.");
+            return $available;
+        }
+
         public function getLastVersion() {
             $this->createMigrationsTable();
             $res = $this->db->query("SELECT `version` FROM `" . DATABASE_TABLE_PREFIX . "migrations` ORDER BY `version` DESC LIMIT 1");
@@ -328,7 +357,12 @@
             $this->db->query("CREATE TABLE IF NOT EXISTS `" . DATABASE_TABLE_PREFIX . "migrations` (`id` INT AUTO_INCREMENT PRIMARY KEY, `migration` VARCHAR(500) UNIQUE, `version` VARCHAR(16), `task` INT, `name` VARCHAR(450), `created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP) ENGINE=INNODB;");
         }
     
-        private function log($message) {
-            \Core::PrintLine('[' . date("Y-m-d H:i:s") . '] ~ ' . $message);
+        private function log($message, $appendTimestamp = true) {
+            if ($appendTimestamp) $message = '[' . date("Y-m-d H:i:s") . '] ~ ' . $message;
+            ($this->logger)($message);
+        }
+
+        public function retrieveLogs() {
+            return $this->logs;
         }
     }

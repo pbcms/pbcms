@@ -2,7 +2,7 @@
     namespace DatabaseMigrator;
 
     class TableRoles__8__0_0_1 {
-        public function up($db) {
+        public function up($db, $log) {
             $db->query("CREATE TABLE `" . DATABASE_TABLE_PREFIX . "roles` (
                 `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 `name` varchar(32) NOT NULL,
@@ -16,7 +16,7 @@
                 ('Administrator', 'An administrator can manage and control every aspect of the website.', 1);");
         }
 
-        public function down($db) {
+        public function down($db, $log) {
             $db->query("DROP TABLE `" . DATABASE_TABLE_PREFIX . "roles`");
         }
     }

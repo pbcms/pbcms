@@ -2,7 +2,7 @@
     namespace DatabaseMigrator;
 
     class TableObjects__3__0_0_1 {
-        public function up($db) {
+        public function up($db, $log) {
             $db->query("CREATE TABLE `" . DATABASE_TABLE_PREFIX . "objects` (
                 `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 `type` varchar(1024) NOT NULL,
@@ -15,7 +15,7 @@
                 ('pb-password', 'policies');");
         }
 
-        public function down($db) {
+        public function down($db, $log) {
             $db->query("DROP TABLE `" . DATABASE_TABLE_PREFIX . "objects`");
         }
     }
