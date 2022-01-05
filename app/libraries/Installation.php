@@ -190,6 +190,10 @@
                 fwrite($configfile, $configtemplate);
                 fclose($configfile);
 
+                try {
+                    chmod(ROOT_DIR . '/config.php', 644);
+                } catch(e) {}
+
                 print_r(json_encode(array(
                     "success" => true,
                     "migration_logs" => $migrationlogs
