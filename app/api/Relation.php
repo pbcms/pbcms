@@ -101,7 +101,7 @@
     });
 
     $this->__registerMethod('list', function($params) {
-        //if (!Request::requireAuthentication()) die();
+        if (!Request::requireAuthentication()) die();
 
         if ($this->user->check('relation.list')) {
             $body = Request::parseBody();
