@@ -109,9 +109,9 @@
             $this->__execute($params);
         }
 
-        public function Session($params) {
-            $this->__usingApi("Session");
-            require_once APP_DIR . '/api/Session.php';
+        public function Relation($params) {
+            $this->__usingApi("Relation");
+            require_once APP_DIR . '/api/Relation.php';
             $this->__execute($params);
         }
 
