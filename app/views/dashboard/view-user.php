@@ -6,7 +6,7 @@
     <div class="user-overview">
         <div class="left">
             <div class="profile-picture">
-                <img src="<?php echo SITE_LOCATION; ?>/pb-pubfiles/img/generic/default-user-black.png" alt="<?php echo $user->firstname; ?>'s profile picture.">
+                <img src="<?php echo $user->picture->url; ?>" alt="<?php echo $user->firstname; ?>'s profile picture.">
             </div>
             <div class="user-main">
                 <h1>
