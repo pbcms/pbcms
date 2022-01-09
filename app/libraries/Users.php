@@ -238,6 +238,10 @@
                 "email" => null,
                 "username" => null,
                 "password" => null,
+                "picture" => (object) array(
+                    "path" => "/pb-pubfiles/img/generic/default-user-black.png",
+                    "url" => SITE_LOCATION . "pb-pubfiles/img/generic/default-user-black.png"
+                ),
                 "status" => null,
                 "created" => null,
                 "updated" => null,
@@ -259,6 +263,21 @@
                 $res->fullname = $res->firstname . ' ' . $res->lastname;
                 $res->id = intval($res->id);
                 if (!isset($res->type)) $res->type = 'local';
+
+                $picture = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "media` WHERE `owner`='" . $res->id . "' ORDER BY `id` DESC");
+                if ($picture->num_rows > 0) {
+                    $picture = (object) $picture->fetch_assoc();
+                    $res->picture = (object) array(
+                        "path" => "/pb-pubfiles/media/" . $picture->uuid . '.' . $picture->ext,
+                        "url" => SITE_LOCATION . "pb-pubfiles/media/" . $picture->uuid . '.' . $picture->ext
+                    );
+                } else {
+                    $res->picture = (object) array(
+                        "path" => "/pb-pubfiles/img/generic/default-user-black.png",
+                        "url" => SITE_LOCATION . "pb-pubfiles/img/generic/default-user-black.png"
+                    );
+                }
+
                 return $res;
             } else {
                 return NULL;
