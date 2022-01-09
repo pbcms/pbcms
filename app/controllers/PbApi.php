@@ -120,4 +120,10 @@
             require_once APP_DIR . '/api/Site.php';
             $this->__execute($params);
         }
+
+        public function VirtualPath($params) {
+            $this->__usingApi("VirtualPath");
+            require_once APP_DIR . '/api/VirtualPath.php';
+            $this->__execute($params);
+        }
     }
