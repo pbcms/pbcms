@@ -89,7 +89,7 @@
             http_response_code(400);
             Respond::error("missing_type", "Did not receive a mediatype through post parameter \"type\".");
         } else {
-            $res = $media->create($postdata->type, 'mtdev', $_FILES['file']['tmp_name'], explode('.', $_FILES['file']['name'])[count(explode('.', $_FILES['file']['name'])) - 1]);
+            $res = $media->create($postdata->type, $this->user->info()->id, $_FILES['file']['tmp_name'], explode('.', $_FILES['file']['name'])[count(explode('.', $_FILES['file']['name'])) - 1]);
             if ($res->success) {
                 unlink($_FILES['file']['tmp_name']);
                 if (isset($postdata->public) && intval($postdata->public) === 0) $media->makePrivate($res->uuid);
