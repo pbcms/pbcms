@@ -87,6 +87,7 @@
             require_once 'libraries/Assets.php';
             require_once 'libraries/Controller.php';
             require_once 'libraries/Database.php';
+            require_once 'libraries/VirtualPath.php';
             require_once 'libraries/Policy.php';
             require_once 'libraries/Objects.php';
             require_once 'libraries/Media.php';
