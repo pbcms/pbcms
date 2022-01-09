@@ -26,4 +26,10 @@
                 $this->__displayError($error);
             }
         }
+
+        public function Media($params, $unlockKey) {
+            $router = new Router;
+            $router->refactorRequest('/pb-api/media/get/' . join('/', $params), $unlockKey);
+            $router->executeRequest();
+        }
     }
