@@ -1,6 +1,7 @@
 <?php
     namespace Controller;
 
+    use Registry\Action;
     use Library\Router;
     use Library\Language;
 
@@ -20,8 +21,21 @@
 
         public function __error($error) {
             if ($error == 404) {
-                http_response_code(404);
-                $this->__apiError("unknown_api");
+                $router = new Router;
+                $request = $router->documentRequest();
+                $method = $request->params[0];
+                if (Action::exists('external_api_method:' . $method)) {
+                    $using = function($name) { $this->__usingApi($name); };
+                    $register = function($name, $func) { $this->__registerMethod($name, $func); };
+                    Action::call('external_api_method:' . $method, $using, $register);
+
+                    $params = $request->params;
+                    array_shift($params);
+                    $this->__execute($params);
+                } else {
+                    http_response_code(404);
+                    $this->__apiError("unknown_api");
+                }
             } else {
                 $this->__displayError($error);
             }
@@ -50,7 +64,7 @@
         public function User($params) {
             $this->__usingApi("User");
             require_once APP_DIR . '/api/User.php';
-            $this->__execute($params, );
+            $this->__execute($params);
         }
 
         public function Language($params) {
