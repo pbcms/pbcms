@@ -14,13 +14,15 @@
         protected static $method = '__index';
         protected static $params = [];
         protected static $url = '/';
-        protected $db;
+        protected static $db;
 
         private static $executed = false;
         private static $initialized = false;
+        private static $rewriteUnlockKey;
 
         public function __construct($url = '') {
-            $this->db = new Database;
+            if (!self::$rewriteUnlockKey) self::$rewriteUnlockKey = \Helper\uuidv4();
+            if (!self::$db) self::$db = new Database;
             if (!self::$initialized) {
                 self::$initialized = true;
                 if (isset($_GET['url'])) self::$url = $_GET['url'];
@@ -31,10 +33,10 @@
             }
         }
 
-        public function refactorRequest($url) {
+        public function refactorRequest($url, $unlockKey = null) {
             if (self::$executed) return false;
             if (self::$controller == 'PbApi' || self::$controller == 'PbAuth' || self::$controller == 'PbDashboard' || self::$controller == 'PbLoader' || self::$controller == 'PbPubfiles') {
-                return false;
+                if (self::$rewriteUnlockKey !== $unlockKey) return false;
             }
             
             self::$preferredLanguage = NULL;
@@ -129,13 +131,22 @@
             }
 
             if (!self::$method) {
-                if (method_exists(self::$currentController, '__error')) {
-                    self::$currentController->__error(404);
+                if (method_exists(self::$currentController, '__error')) { 
+                    if (self::$controller == 'PbApi' || self::$controller == 'PbAuth' || self::$controller == 'PbDashboard' || self::$controller == 'PbLoader' || self::$controller == 'PbPubfiles') {
+                        self::$currentController->__error(404, self::$rewriteUnlockKey);
+                    } else {
+                        self::$currentController->__error(404);
+                    }
+                    
                 } else {
                     $this->displayError(404);
                 }
             } else {
-                self::$currentController->{$this->prepareFunctionNaming(self::$method)}(self::$params);
+                if (self::$controller == 'PbApi' || self::$controller == 'PbAuth' || self::$controller == 'PbDashboard' || self::$controller == 'PbLoader' || self::$controller == 'PbPubfiles') {
+                    self::$currentController->{$this->prepareFunctionNaming(self::$method)}(self::$params, self::$rewriteUnlockKey);
+                } else {
+                    self::$currentController->{$this->prepareFunctionNaming(self::$method)}(self::$params);
+                }
             }
             
             self::$executed = true;
@@ -188,7 +199,7 @@
                 }
             }
 
-            $result = $this->db->query($sql);
+            $result = self::$db->query($sql);
             $fetched = $result->fetch_all(MYSQLI_ASSOC);
 
             usort($fetched, function($a, $b) {
@@ -220,7 +231,7 @@
                 $sql .= " AND `lang`='${lang}'";
             }
 
-            $result = $this->db->query($sql);
+            $result = self::$db->query($sql);
             $fetched = $result->fetch_all(MYSQLI_ASSOC);
 
             usort($fetched, function($a, $b) {
