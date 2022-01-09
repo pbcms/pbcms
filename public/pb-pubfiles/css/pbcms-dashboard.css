@@ -83,6 +83,7 @@ html, body {
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
+    scroll-behavior: auto;
 }
 
 .sidebar-options::-webkit-scrollbar { width: 18px; }
