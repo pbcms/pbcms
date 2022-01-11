@@ -310,3 +310,28 @@
     
         return $number * (1024 ** $exponent);
     }
+
+    //Props to: https://stackoverflow.com/a/7775949
+    function copyRecursive($source, $destination, $overwrite = true) {
+        $destination = (substr($destination, -1) == '/' ? $destination : $destination . '/');
+        $success = true;
+        if (!file_exists($destination) || !is_dir($destination)) {
+            if (!is_dir($destination)) unlink($destination);
+            if (!mkdir($destination, 0775)) $success = false;
+        }
+        
+        foreach ($iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST) as $item ) {
+            $target = $destination . $iterator->getSubPathname();
+            if ($item->isDir()) {
+                if (!file_exists($target) || !is_dir($target)) {
+                    if (file_exists($target) && !is_dir($target)) unlink($target);
+                    if (!mkdir($target, 0775)) $success = false;
+                }
+            } else {
+                if (file_exists($target) && $overwrite) unlink($target);
+                if (!copy($item, $target)) $success = false;
+            }
+        }
+
+        return $success;
+    }

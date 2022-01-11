@@ -263,21 +263,12 @@
                             return -5;
                         }
 
-                        mkdir(DYNAMIC_DIR . '/modules/' . $module->module, 0775, true);
+                        if (!file_exists(DYNAMIC_DIR . '/modules/' . $module->module)) mkdir(DYNAMIC_DIR . '/modules/' . $module->module, 0775, true);
                         fclose(fopen(DYNAMIC_DIR . '/modules/' . $module->module . '/.disabled', 'w+'));
                         if ($zip->extractTo(DYNAMIC_DIR . '/modules/' . $module->module)) {
                             unlink($filename);
                             if ($root !== '') {
-                                $success = true;
-                                $files = scandir(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root);
-                                foreach ($files as $file) {
-                                    if (in_array($file, array(".",".."))) continue;
-                                    if (!copy(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root . $file, DYNAMIC_DIR . '/modules/' . $module->module . '/' . $file)) {
-                                        $success = false;
-                                    }
-                                }
-
-                                if ($success) {
+                                if (!\Helper\copyRecursive(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root, DYNAMIC_DIR . '/modules/' . $module->module . '/')) {
                                     return ($this->deleteDirectory(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root) ? 1 : -8);
                                 } else {
                                     return -7;
