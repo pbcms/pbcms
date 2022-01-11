@@ -138,7 +138,13 @@
                 $this->__view("dashboard/modules");
                 $this->__template("pb-dashboard", array(
                     "title" => "modules",
-                    "section" => "modules"
+                    "section" => "modules",
+                    "head" => array(
+                        ['style', 'pb-pages-dashboard-modules.css', array("origin" => "pubfiles")]
+                    ),
+                    "body" => array(
+                        ['script', 'pb-pages-dashboard-modules.js', array("origin" => "pubfiles")]
+                    )
                 ));
             }
         } 

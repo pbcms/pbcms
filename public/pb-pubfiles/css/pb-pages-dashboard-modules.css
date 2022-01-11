@@ -10,3 +10,11 @@ section.actions a {
 section.actions a:not(:last-child) {
     margin-right: 20px;
 }
+
+section.table-modules.show-available-modules .installed-modules {
+    display: none;
+}
+
+section.table-modules:not(.show-available-modules) .available-modules {
+    display: none;
+}

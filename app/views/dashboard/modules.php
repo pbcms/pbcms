@@ -54,8 +54,14 @@
     </p>
 </section>
 
-<section class="no-padding transparent">
-    <table>
+<section class="actions transparent no-padding">
+    <a show-available-modules>
+        Install new module
+    </a>
+</section>
+
+<section class="table-modules no-padding transparent">
+    <table class="installed-modules">
         <thead>
             <th>
                 <?php echo $this->lang->get("pages.pb-dashboard.modules.table.column-name", "Name"); ?>
@@ -86,6 +92,31 @@
             <?php
                 echo $tableContent;
             ?>
+        </tbody>
+    </table>
+    <table class="available-modules">
+        <thead>
+            <th>
+                <?php echo $this->lang->get("pages.pb-dashboard.modules.table.column-name", "Name"); ?>
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                Author
+            </th>
+            <th>
+                Version
+            </th>
+            <th>
+                License
+            </th>
+            <th>
+                Actions
+            </th>
+        </thead>
+        <tbody>
+            
         </tbody>
     </table>
 </section>

@@ -58,6 +58,18 @@
     </p>
 </section>
 
+<section class="actions transparent no-padding">
+    <a enable-module="<?php echo $module->module; ?>">
+        Enable
+    </a>
+    <a disable-module="<?php echo $module->module; ?>">
+        Disable
+    </a>
+    <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/module-config/<?php echo $module->module; ?>">
+        Open configurator
+    </a>
+</section>
+
 <section class="module-config no-padding transparent">
     <table>
         <thead>
