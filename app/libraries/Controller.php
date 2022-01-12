@@ -40,6 +40,17 @@
                 include_once APP_DIR . '/templates/' . $template . '.php';
                 return;
             }
+            
+            if (explode(':', $template)[0] == 'module' && isset(explode(':', $template)[1]) && isset(explode(':', $template)[2])) {
+                $requestedModule = explode(':', $template)[1];
+                $modules = new Modules;
+                if ($modules->isLoaded($requestedModule)) {
+                    if (file_exists(DYNAMIC_DIR . '/modules/' . $requestedModule . '/templates/' . explode(':', $template)[2] . '.php')) {
+                        include_once DYNAMIC_DIR . '/modules/' . $requestedModule . '/templates/' . explode(':', $template)[2] . '.php';
+                        return;
+                    }
+                }
+            }
 
             $policy = new Policy;
             $templateProvider = $policy->get('default-template-provider');
