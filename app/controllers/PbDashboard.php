@@ -7,6 +7,7 @@
     use Library\Language;
     use Helper\Header;
     use Helper\Request;
+    use Registry\Store;
 
     class PbDashboard extends \Library\Controller {
         public function __construct() {
@@ -21,6 +22,16 @@
             $this->lang = new Language();
             $this->lang->detectLanguage();
             $this->lang->load();
+
+            
+        }
+
+        private function __useTemplate() {
+            if (Store::get('pb-dashboard-template')) {
+                return Store::get('pb-dashboard-template');
+            } else {
+                return 'pb-dashboard';
+            }
         }
 
         public function __index($params) {
@@ -29,7 +40,7 @@
 
         public function Overview($params) {
             $this->__view("dashboard/overview");
-            $this->__template("pb-dashboard", array(
+            $this->__template($this->__useTemplate(), array(
                 "title" => "overview",
                 "section" => "overview",
                 "body" => array(
@@ -40,7 +51,7 @@
 
         public function Updates($params) {
             $this->__view("dashboard/updates");
-            $this->__template("pb-dashboard", array(
+            $this->__template($this->__useTemplate(), array(
                 "title" => "updates",
                 "section" => "updates"
             ));
@@ -48,7 +59,7 @@
 
         public function Media($params) {
             $this->__view("dashboard/media");
-            $this->__template("pb-dashboard", array(
+            $this->__template($this->__useTemplate(), array(
                 "title" => "media",
                 "section" => "media"
             ));
@@ -56,7 +67,7 @@
 
         public function VirtualPaths($params) {
             $this->__view("dashboard/virtual-paths");
-            $this->__template("pb-dashboard", array(
+            $this->__template($this->__useTemplate(), array(
                 "title" => "virtual-paths",
                 "section" => "virtual-paths"
             ));
@@ -64,7 +75,7 @@
 
         public function Profile($params) {
             $this->__view("dashboard/profile");
-            $this->__template("pb-dashboard", array(
+            $this->__template($this->__useTemplate(), array(
                 "title" => "profile",
                 "section" => "profile"
             ));
@@ -76,7 +87,7 @@
                 $user = $users->info(intval($params[0]));
                 if ($user) {
                     $this->__view("dashboard/view-user", array("user" => $user));
-                    $this->__template("pb-dashboard", array(
+                    $this->__template($this->__useTemplate(), array(
                         "title" => "User - " . $user->fullname,
                         "section" => "users",
                         "head" => array(
@@ -88,14 +99,14 @@
                     ));
                 } else {
                     $this->__view("dashboard/unknown-user");
-                    $this->__template("pb-dashboard", array(
+                    $this->__template($this->__useTemplate(), array(
                         "title" => "Unknown user",
                         "section" => "users"
                     ));
                 }
             } else {
                 $this->__view("dashboard/users");
-                $this->__template("pb-dashboard", array(
+                $this->__template($this->__useTemplate(), array(
                     "title" => "users",
                     "section" => "users",
                     "body" => array(
@@ -117,7 +128,7 @@
                 $module = $modman->moduleSummary($params[0]);
                 if ($module) {
                     $this->__view("dashboard/view-module", array("module" => $module));
-                    $this->__template("pb-dashboard", array(
+                    $this->__template($this->__useTemplate(), array(
                         "title" => "Module - " . getParameter($module, 'name', $module->module),
                         "section" => "modules",
                         "head" => array(
@@ -129,14 +140,14 @@
                     ));
                 } else {
                     $this->__view("dashboard/unknown-module");
-                    $this->__template("pb-dashboard", array(
+                    $this->__template($this->__useTemplate(), array(
                         "title" => "Unknown module",
                         "section" => "modules"
                     ));
                 }
             } else {
                 $this->__view("dashboard/modules");
-                $this->__template("pb-dashboard", array(
+                $this->__template($this->__useTemplate(), array(
                     "title" => "modules",
                     "section" => "modules",
                     "head" => array(
@@ -151,7 +162,7 @@
 
         public function Roles($params) {
             $this->__view("dashboard/roles");
-            $this->__template("pb-dashboard", array(
+            $this->__template($this->__useTemplate(), array(
                 "title" => "roles",
                 "section" => "roles"
             ));
@@ -159,7 +170,7 @@
 
         public function Permissions($params) {
             $this->__view("dashboard/permissions");
-            $this->__template("pb-dashboard", array(
+            $this->__template($this->__useTemplate(), array(
                 "title" => "permissions",
                 "section" => "permissions"
             ));
@@ -167,7 +178,7 @@
 
         public function Objects($params) {
             $this->__view("dashboard/objects");
-            $this->__template("pb-dashboard", array(
+            $this->__template($this->__useTemplate(), array(
                 "title" => "objects",
                 "section" => "objects"
             ));
@@ -175,7 +186,7 @@
 
         public function Policies($params) {
             $this->__view("dashboard/policies");
-            $this->__template("pb-dashboard", array(
+            $this->__template($this->__useTemplate(), array(
                 "title" => "policies",
                 "section" => "policies",
                 "body" => array(
@@ -193,13 +204,13 @@
                     echo $res->error;
                 }
 
-                $this->__template("pb-dashboard", array(
+                $this->__template($this->__useTemplate(), array(
                     "title" => "module - " . $params[0],
                     "section" => "module-config-" . $params[0]
                 ));
             } else {
                 echo 'No module requested.';
-                $this->__template("pb-dashboard", array(
+                $this->__template($this->__useTemplate(), array(
                     "title" => "unknown module" . $params,
                     "section" => "module-config-" . $params[0]
                 ));
