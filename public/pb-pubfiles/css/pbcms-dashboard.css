@@ -19,6 +19,15 @@
               user-select: none;
 }
 
+.selectable {
+    -webkit-touch-callout: all;
+      -webkit-user-select: all; 
+       -khtml-user-select: all;
+         -moz-user-select: all;
+          -ms-user-select: all;
+              user-select: all;
+}
+
 html, body {
     width: 100%;
     height: 100vh;
