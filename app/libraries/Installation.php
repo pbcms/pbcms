@@ -192,7 +192,7 @@
 
                 try {
                     chmod(ROOT_DIR . '/config.php', 644);
-                } catch(e) {}
+                } catch(Exception $e) {}
 
                 print_r(json_encode(array(
                     "success" => true,
