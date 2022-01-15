@@ -191,7 +191,7 @@
                 fclose($configfile);
 
                 try {
-                    chmod(ROOT_DIR . '/config.php', 644);
+                    chmod(ROOT_DIR . '/config.php', 0640);
                 } catch(Exception $e) {}
 
                 print_r(json_encode(array(
