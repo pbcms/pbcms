@@ -1,7 +1,7 @@
 <?php
     namespace Controller;
 
-    use Registry\Action;
+    use Registry\Api;
     use Library\Router;
     use Library\Language;
 
@@ -24,10 +24,10 @@
                 $router = new Router;
                 $request = $router->documentRequest();
                 $method = $request->params[0];
-                if (Action::exists('external_api_method:' . $method)) {
+                if (Api::exists($method)) {
                     $using = function($name) { $this->__usingApi($name); };
                     $register = function($name, $func) { $this->__registerMethod($name, $func); };
-                    Action::call('external_api_method:' . $method, $using, $register);
+                    Api::call($method, $using, $register);
 
                     $params = $request->params;
                     array_shift($params);
