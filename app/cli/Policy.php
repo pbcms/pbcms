@@ -95,9 +95,9 @@
 
                     foreach($list as $item) {
                         $item = (object) $item;
-                        if (strlen(strval($item->id)) > $longest->id) $longest->id = strlen(strval($item->id)) + 2;
-                        if (strlen(strval($item->name)) > $longest->name) $longest->name = strlen(strval($item->name)) + 2;
-                        if (strlen(strval($item->value)) > $longest->value) $longest->value = strlen(strval($item->value)) + 2;
+                        if (strlen(strval($item->id)) + 2 > $longest->id) $longest->id = strlen(strval($item->id)) + 2;
+                        if (strlen(strval($item->name)) + 2 > $longest->name) $longest->name = strlen(strval($item->name)) + 2;
+                        if (strlen(strval($item->value)) + 2 > $longest->value) $longest->value = strlen(strval($item->value)) + 2;
                     }
 
                     $cli->printLine(str_replace(' ', '=', join("+", array(
