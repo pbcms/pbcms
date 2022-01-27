@@ -420,6 +420,12 @@ html, body {
     padding-top: 10px;
 }
 
+.content section.page-introduction.columns,
+.content .section.page-introduction.columns {
+    display: flex;
+    justify-content: space-between;
+}
+
 .content section.page-introduction h1,
 .content .section.page-introduction h1 {
     font-size: 30px;
