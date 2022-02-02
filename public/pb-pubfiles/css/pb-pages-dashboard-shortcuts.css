@@ -1,0 +1,25 @@
+.new-shortcut form input {
+    width: calc(50% - 63px);
+    height: 20px;
+    background-color: #eee;
+    padding: 12px 24px;
+    border: none;
+    margin: none;
+    outline: none;
+    margin-top: 20px;
+    margin-right: 25px;
+    border-radius: 5px;
+}
+
+.new-shortcut form input.full-width {
+    width: calc(100% - 48px);
+}
+
+.new-shortcut form input:last-child,
+.new-shortcut form input.full-width {
+    margin-right: 0px;
+}
+
+section.existing-shortcuts table tbody tr td svg {
+    margin-top: 5px;
+}
