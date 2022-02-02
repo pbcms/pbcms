@@ -5,19 +5,21 @@
      * Description: This template is used for dashboard pages.
      * 
      * ==== REQUIRED DATA ATTRIBUTES ====
-     * - title;         The title of the page. "Dashboard - " will be appended before the given title.
-     * - section;       The section in the sidebar to be activated.
+     * - title;             The title of the page. "Dashboard - " will be appended before the given title.
+     * - section;           The section in the sidebar to be activated.
      *  
      * ==== OPTIONAL DATA ATTRIBUTES ====
-     * - meta;          Additional meta tags to be included by the Meta Batch definition.
-     * - head;          Additional head assets to be included by the Assets Batch function definition. (eg. styles)
-     * - body;          Additional body assets to be included by the Assets Batch function definition. (eg. scripts)
+     * - meta;              Additional meta tags to be included by the Meta Batch definition.
+     * - head;              Additional head assets to be included by the Assets Batch function definition. (eg. styles)
+     * - body;              Additional body assets to be included by the Assets Batch function definition. (eg. scripts)
+     * - backup_section;    Backup section if section defined in section does not exist.
      */
 
     use Library\Meta;
     use Library\Users;
     use Library\UserPermissions;
     use Library\Policy;
+    use Registry\Event;
 
     $meta = new Meta;
     $meta->set('robots', 'index, nofollow');
@@ -49,6 +51,122 @@
     if (!$supportLocation) $supportLocation = 'https://support.pbcms.io/';
     $docsLocation = $policy->get('docs-location');
     if (!$docsLocation) $docsLocation = 'https://docs.pbcms.io/';
+
+    if (!isset($data['backup_section'])) $data['backup_section'] = null;
+    $sidebarItems = (object) array(
+        "no_category" => array(
+            [
+                "title" => $this->lang->get('templates.pb-dashboard.section-titles.overview', "Overview"),
+                "section" => "overview",
+                "icon" => "disc"
+            ],
+            [
+                "title" => $this->lang->get('templates.pb-dashboard.section-titles.updates', "Updates"),
+                "section" => "updates",
+                "icon" => "refresh-cw",
+                "permissions" => ["site.administration.perform-updates", "module.update"]
+            ]
+        ),
+        "content" => array(
+            [
+                "title" => $this->lang->get('templates.pb-dashboard.section-titles.media', "Media"),
+                "section" => "media",
+                "icon" => "image"
+            ],
+            [
+                "title" => $this->lang->get('templates.pb-dashboard.section-titles.virtual-paths', "Virtual paths"),
+                "section" => "virtual-paths",
+                "icon" => "list",
+                "permissions" => ["router.virtual-path.list"]
+            ]
+        ),
+        "configuration" => array(
+            [
+                "title" => $this->lang->get('templates.pb-dashboard.section-titles.profile', "Profile"),
+                "section" => "profile",
+                "icon" => "user"
+            ],
+            [
+                "title" => $this->lang->get('templates.pb-dashboard.section-titles.users', "Users"),
+                "section" => "users",
+                "icon" => "users",
+                "permissions" => ["user.list"]
+            ],
+            [
+                "title" => $this->lang->get('templates.pb-dashboard.section-titles.modules', "Modules"),
+                "section" => "modules",
+                "icon" => "package",
+                "permissions" => ["module.list"]
+            ],
+            [
+                "title" => $this->lang->get('templates.pb-dashboard.section-titles.roles', "Roles"),
+                "section" => "roles",
+                "icon" => "folder",
+                "permissions" => ["role.list"]
+            ],
+            [
+                "title" => $this->lang->get('templates.pb-dashboard.section-titles.permissions', "Permissions"),
+                "section" => "permissions",
+                "icon" => "shield",
+                "permissions" => ["permission.list"]
+            ],
+            [
+                "title" => $this->lang->get('templates.pb-dashboard.section-titles.policies', "Policies"),
+                "section" => "policies",
+                "icon" => "book",
+                "permissions" => ["policy.list"]
+            ]
+        ),
+        "other" => array(
+
+        )
+    );
+
+    function parseCategoryItems($category, $user, $activeSection = null, $backupSection = null) {
+        $result = "";
+        foreach($category as $item) {
+            //alert-octagon
+            if (isset($item['permissions'])) {
+                $passed = false;
+                foreach($item['permissions'] as $permission) {
+                    if ($user->check($permission)) $passed = true;
+                }
+
+                if (!$passed) continue;
+            }
+
+            if (!isset($item['url'])) $item['url'] = $item['section'];
+            $active = ($activeSection == $item['section'] ? " active" : "");
+            $backup = ($backupSection == $item['section'] ? " backup-active" : "");
+
+            $result .= '<a href="' . SITE_LOCATION . 'pb-dashboard/' . $item['url'] . '"' . $active . $backup . ">";
+            $result .= '<i data-feather="' . $item['icon'] . '"></i>';
+            $result .= '<span>' . $item['title'] . '</span>';
+            $result .= '</a>';
+        }
+
+        return $result;
+    }
+
+    function printCategory($name, $category, $user, $activeSection = null, $backupSection = null) {
+        $items = parseCategoryItems($category, $user, $activeSection, $backupSection);
+        if (!empty($items)) {
+            echo '<h6 class="category">' . $name . '</h6>';
+            echo $items;
+        }
+    }
+
+    foreach(Event::trigger('dashboard-sidebar-item') as $item) {
+        $item = (array) $item;
+        if (!isset($item['category'])) $item['category'] = 'other';
+        if (isset($item['title']) && isset($item['section']) && isset($item['icon'])) {
+            if (isset($sidebarItems->{$item['category']})) {
+                array_push($sidebarItems->{$item['category']}, $item);
+            } else {
+                array_push($sidebarItems->other, $item);
+            }
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -75,85 +193,15 @@
                 ?>
 
                 <div class="sidebar-top-branding">
-                    <img src="<?php echo SITE_LOCATION; ?>pb-pubfiles/img/pb-logos/full-dark.png" alt="PBCMS Logo (Full, Dark)">
+                    <img src="<?=SITE_LOCATION?>pb-pubfiles/img/pb-logos/full-dark.png" alt="PBCMS Logo (Full, Dark)">
                 </div>
 
                 <div class="sidebar-options">
-                    <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/overview" <?php if ($data['section'] == 'overview') echo 'active'; ?>>
-                        <i data-feather="disc"></i>
-                        <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.overview', "Overview"); ?></span>
-                    </a>
-                    
-                    <?php if ($userperm->check($this->session->user->id, "site.administration.perform-updates")) { ?>
-                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/updates" <?php if ($data['section'] == 'updates') echo 'active'; ?>>
-                            <i data-feather="refresh-cw"></i>
-                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.updates', "Updates"); ?></span>
-                        </a>
-                    <?php } ?>
+                    <?php echo parseCategoryItems($sidebarItems->no_category, $userModel, $data['section'], $data['backup_section']); ?>
+                    <?php printCategory($this->lang->get('templates.pb-dashboard.section-categories.content', 'content'), $sidebarItems->content, $userModel, $data['section'], $data['backup_section']); ?>
+                    <?php printCategory($this->lang->get('templates.pb-dashboard.section-categories.configuration', 'configuration'), $sidebarItems->configuration, $userModel, $data['section'], $data['backup_section']); ?>
 
-                    <h6 class="category">
-                        <?php echo $this->lang->get('templates.pb-dashboard.section-categories.content'); ?>
-                    </h6>
-                    <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/media" <?php if ($data['section'] == 'media') echo 'active'; ?>>
-                        <i data-feather="image"></i>
-                        <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.media', "Media"); ?></span>
-                    </a>
-                    <?php if ($userperm->check($this->session->user->id, "router.virtual-path.%")) { ?>
-                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/virtual-paths"  <?php if ($data['section'] == 'virtual-paths') echo 'active'; ?>>
-                            <i data-feather="list"></i>
-                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.virtual-paths', "Virtual paths"); ?></span>
-                        </a>
-                    <?php } ?>
-
-                    <h6 class="category">
-                        <?php echo $this->lang->get('templates.pb-dashboard.section-categories.configuration'); ?>
-                    </h6>
-                    <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/profile" <?php if ($data['section'] == 'profile') echo 'active'; ?>>
-                        <i data-feather="user"></i>
-                        <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.profile', "Profile"); ?></span>
-                    </a>
-                    <?php if ($userperm->check($this->session->user->id, "user.%.other")) { ?>
-                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/users" <?php if ($data['section'] == 'users') echo 'active'; ?>>
-                            <i data-feather="users"></i>
-                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.users', "Users"); ?></span>
-                        </a>
-                    <?php } ?>
-                    <?php if ($userperm->check($this->session->user->id, "module.%")) { ?>
-                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/modules" <?php if ($data['section'] == 'modules') echo 'active'; ?>>
-                            <i data-feather="package"></i>
-                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.modules', "Modules"); ?></span>
-                        </a>
-                    <?php } ?>
-                    <?php if ($userperm->check($this->session->user->id, "role.%")) { ?>
-                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/roles" <?php if ($data['section'] == 'roles') echo 'active'; ?>>
-                            <i data-feather="folder"></i>
-                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.roles', "Roles"); ?></span>
-                        </a>
-                    <?php } ?>
-                    <?php if ($userperm->check($this->session->user->id, "permission.%")) { ?>
-                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/permissions" <?php if ($data['section'] == 'permissions') echo 'active'; ?>>
-                            <i data-feather="shield"></i>
-                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.permissions', "Permissions"); ?></span>
-                        </a>
-                    <?php } ?>
-                    <?php if ($userperm->check($this->session->user->id, "object.%")) { ?>
-                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/objects" <?php if ($data['section'] == 'objects') echo 'active'; ?>>
-                            <i data-feather="box"></i>
-                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.objects', "Objects"); ?></span>
-                        </a>
-                    <?php } ?>
-                    <?php if ($userperm->check($this->session->user->id, "policy.%")) { ?>
-                        <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/policies" <?php if ($data['section'] == 'policies') echo 'active'; ?>>
-                            <i data-feather="book"></i>
-                            <span><?php echo $this->lang->get('templates.pb-dashboard.section-titles.policies', "Policies"); ?></span>
-                        </a>
-                    <?php } ?>
-
-
-
-                    <h6 class="category">
-                        <?php echo $this->lang->get('templates.pb-dashboard.section-categories.shortcuts', "Shortcuts"); ?> - <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/shortcuts"><?php echo $this->lang->get('common.words.edit', "Edit"); ?></a>
-                    </h6>
+                    <h6 class="category"><?php echo $this->lang->get('templates.pb-dashboard.section-categories.shortcuts', "shortcuts"); ?> - <a href="<?=SITE_LOCATION?>pb-dashboard/shortcuts"><?php echo $this->lang->get('common.words.edit', "Edit"); ?></a></h6>
                     <?php
                         if (!$shortcuts || count($shortcuts) < 1) {
                             ?>
@@ -194,6 +242,8 @@
                             }
                         }
                     ?>
+
+                    <?php printCategory($this->lang->get('templates.pb-dashboard.section-categories.other', 'other'), $sidebarItems->other, $userModel, $data['section'], $data['backup_section']); ?>
                 </div>
                 <div class="sidebar-footer">
                     <p>&copy; <a href="https://pbcms.io" target="_blank">PBCMS Project</a> <?php echo date("Y"); ?></p>
@@ -256,12 +306,12 @@
                             </div>
                             <div class="items">
                                 <div class="item">
-                                    <a href="<?php echo SITE_LOCATION; ?>pb-dashboard/profile">
+                                    <a href="<?=SITE_LOCATION?>pb-dashboard/profile">
                                         Profile
                                     </a>
                                 </div>
                                 <div class="item">
-                                    <a href="<?php echo SITE_LOCATION; ?>pb-auth/signout">
+                                    <a href="<?=SITE_LOCATION?>pb-auth/signout">
                                         Signout
                                     </a>
                                 </div>
