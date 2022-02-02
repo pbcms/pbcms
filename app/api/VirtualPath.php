@@ -10,7 +10,7 @@
         if (!Request::requireMethod('post')) die();
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('router.create-virtual-path')) {
+        if ($this->user->check('router.virtual-path.create')) {
             $body = Request::parseBody();
             $required = array('path', 'target', 'lang');
             $missing = Validate::listMissing($required, $body);
@@ -37,7 +37,7 @@
         if (!Request::requireMethod('delete')) die();
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('router.delete-virtual-path')) {
+        if ($this->user->check('router.virtual-path.delete')) {
             $vPaths = new VirtualPath;
             if (isset($params[0])) {
                 $res = $vPaths->delete(intval($params[0]));
@@ -71,7 +71,7 @@
     $this->__registerMethod('find', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('router.find-virtual-path')) {
+        if ($this->user->check('router.virtual-path.find')) {
             $vPaths = new VirtualPath;
             if (isset($params[0])) {
                 $res = $vPaths->find(intval($params[0]));
@@ -103,7 +103,7 @@
     $this->__registerMethod('list', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('router.list-virtual-path')) {
+        if ($this->user->check('router.virtual-path.list')) {
             $body = Request::parseBody();
             $vPaths = new VirtualPath;
             Respond::success(array(
