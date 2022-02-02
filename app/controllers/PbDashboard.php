@@ -5,6 +5,7 @@
     use Library\Modules;
     use Library\ModuleManager;
     use Library\Language;
+    use Library\Policy;
     use Helper\Header;
     use Helper\Request;
     use Registry\Store;
@@ -23,7 +24,18 @@
             $this->lang->detectLanguage();
             $this->lang->load();
 
-            
+            $this->user = $this->__model('user');
+            if (!$this->user->check('site.dashboard')) {
+                $policy = new Policy;
+                $alternative = $policy->get('alternative-dashboard');
+                if ($alternative) {
+                    if (substr($alternative, 0, 1) == '/') $alternative = substr($alternative, 1);
+                    Header::Location(SITE_LOCATION . $alternative);
+                    die();
+                } else {
+                    $this->__displayError(403);
+                }
+            }
         }
 
         private function __useTemplate() {
@@ -195,6 +207,20 @@
             ));
         }
 
+        public function Shortcuts($params) {
+            $this->__view("dashboard/shortcuts");
+            $this->__template($this->__useTemplate(), array(
+                "title" => "shortcuts",
+                "section" => "shortcuts",
+                "head" => array(
+                    ['style', 'pb-pages-dashboard-shortcuts.css', array("origin" => "pubfiles")]
+                ),
+                "body" => array(
+                    ['script', 'pb-pages-dashboard-shortcuts.js', array("origin" => "pubfiles")]
+                )
+            ));
+        }
+
         public function ModuleConfig($params) {
             $modules = new \Library\Modules();
 
@@ -206,13 +232,15 @@
 
                 $this->__template($this->__useTemplate(), array(
                     "title" => "module - " . $params[0],
-                    "section" => "module-config-" . $params[0]
+                    "section" => "module-config-" . $params[0],
+                    "backup_section" => "modules"
                 ));
             } else {
                 echo 'No module requested.';
                 $this->__template($this->__useTemplate(), array(
                     "title" => "unknown module" . $params,
-                    "section" => "module-config-" . $params[0]
+                    "section" => "module-config-" . $params[0],
+                    "backup_section" => "modules"
                 ));
             }
         }
