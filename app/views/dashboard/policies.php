@@ -41,7 +41,7 @@
     }
 
     function renderRow($item) {
-        $result = '<tr policy-name="' . $item->name . '"><th class="column-id">' . $item->id . '</th><td id="policy-name">' . $item->name . '</td><td>';
+        $result = '<tr policy-name="' . $item->name . '" id="' . $item->name . '"><th class="column-id">' . $item->id . '</th><td id="policy-name">' . $item->name . '</td><td>';
         switch($item->type) {
             case 'string':
                 $result .= '<input type="text" name="' . $item->name . '" value="' . $item->value . '" placeholder="Enter a value">';
