@@ -163,3 +163,59 @@
             }
         }
     }
+
+    class Dashboard {
+        private static $sections = array();
+        private static $categories = array(
+            "no_category" => array(),
+            "content" => array(),
+            "configuration" => array(),
+            "other" => array()
+        );
+    
+        public static function register($section, $options) {
+            if (isset(self::$sections[$section])) {
+                return false;
+            } else {
+                $options = (array) $options;
+                $options['section'] = $section;
+                $category = (isset($options['category']) ? $options['category'] : 'no_category');
+                if (!isset(self::$sections[$category])) $category = 'other';
+                $options['category'] = $category;
+
+                self::$sections[$section] = $options;
+                array_push(self::$categories[$category], $section);
+                return true;
+            }
+
+            
+        }
+    
+        public static function get($section) {
+            if (isset(self::$sections[$section])) {
+                $callback = self::$sections[$section];
+                $arguments = func_get_args();
+                array_shift($arguments);
+                
+                if (count($arguments) > 0) {
+                    return call_user_func_array($callback, $arguments);
+                } else {
+                    return call_user_func($callback);
+                }
+            } else {
+                return false;
+            }
+        }
+
+        public static function list($category = null) {
+            return self::$sections;
+        }
+
+        public static function exists($section) {
+            if (isset(self::$sections[$section])) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
