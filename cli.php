@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
     define("OPERATION_MODE", "CLI");
     require_once(__DIR__ . '/app/Loader.php');
