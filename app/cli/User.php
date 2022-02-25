@@ -20,6 +20,7 @@
             }
 
             switch($this->arg->details) {
+                case "info":
                 case "find":
                     if (isset($options['identifier'])) {
                         $res = $users->find($options['identifier'], $options['by_id_allowed']);
@@ -37,6 +38,64 @@
                             $cli->printLine("  Status:          \e[96m" . $res->status . "\e[39m");
                             $cli->printLine("  Created:         \e[96m" . $res->created . "\e[39m");
                             $cli->printLine("  Updated:         \e[96m" . $res->updated . "\e[39m");
+
+                            if ($this->arg->details == 'info') {
+                                $cli->printLine(" ");
+                                $cli->printLine("  Meta details");
+                                $cli->printLine(" ");
+
+                                $meta = $users->metaList($res->id);
+
+                                $longest = (object) array(
+                                    "name" => 6,
+                                    "value" => 7
+                                );
+
+                                foreach($meta as $item) {
+                                    if (strlen($item['name']) + 2 > $longest->name) $longest->name = strlen($item['name']) + 2;
+                                    if (strlen($item['value']) + 2 > $longest->value) $longest->value = strlen($item['value']) + 2;
+                                }
+
+                                if ($longest->name > 70) $longest->name = 70;
+                                if ($longest->value > 70) $longest->value = 70;
+
+                                $cli->printLine(str_replace(' ', '=', join("+", array(
+                                    "",
+                                    $this->createColumn("=", $longest->name),
+                                    $this->createColumn("=", $longest->value),
+                                    ""
+                                ))));
+
+                                $cli->printLine(join("|", array(
+                                    "",
+                                    $this->createColumn("Name", $longest->name),
+                                    $this->createColumn("Value", $longest->value),
+                                    ""
+                                )));
+
+                                $cli->printLine(str_replace(' ', '=', join("+", array(
+                                    "",
+                                    $this->createColumn("=", $longest->name),
+                                    $this->createColumn("=", $longest->value),
+                                    ""
+                                ))));
+
+                                foreach($meta as $item) {
+                                    $cli->printLine(join("|", array(
+                                        "",
+                                        $this->createColumn((strlen($item['name']) > 68 ? substr($item['name'], 0, 65) . '...' : $item['name']), $longest->name),
+                                        $this->createColumn((strlen($item['value']) > 68 ? substr($item['value'], 0, 65) . '...' : $item['value']), $longest->value),
+                                        ""
+                                    )));
+                
+                                    $cli->printLine(str_replace(' ', '-', join("+", array(
+                                        "",
+                                        $this->createColumn("-", $longest->name),
+                                        $this->createColumn("-", $longest->value),
+                                        ""
+                                    ))));
+                                }
+                            }
                         }
                     } else {
                         $cli->printLine("Missing \e[96m--identifier\e[39m or \e[96m-i\e[39m option.");
@@ -156,6 +215,9 @@
                             ""
                         ))));
                     }
+
+                    break;
+                case "create":
 
                     break;
                 case "help":
