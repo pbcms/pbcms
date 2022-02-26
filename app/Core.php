@@ -1,4 +1,5 @@
 <?php
+    use Registry\Dashboard;
     use Registry\Event;
     use Library\Router;
     use Library\Policy;
@@ -37,6 +38,9 @@
                     self::$loaded = true;
                     $this->definedVariables();
                     $this->sessionWorker();
+
+                    //Initialize dashboard registry.
+                    Dashboard::initialize();
     
                     $modules = new Modules;
                     $router = new Router;

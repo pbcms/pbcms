@@ -26,6 +26,7 @@
                 $this->definitions();
                 $this->prepareConfiguration();
                 $this->requireLibraries();
+                $this->requireSources();
 
                 $modules = new \Library\Modules();
                 $preCoreModules = $modules->list('pre-core');
@@ -103,6 +104,15 @@
             require_once 'libraries/Router.php';
             require_once 'libraries/Modules.php';
             require_once 'libraries/Cli.php';
+        }
+
+        /**
+         * Require scripts from sources.
+         * 
+         * @return void
+         */
+        private function requireSources() {
+            require_once 'sources/dashboard-sidebar.php';
         }
     }
 
