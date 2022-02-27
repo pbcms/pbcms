@@ -60,7 +60,7 @@
     </a>
 </section>
 
-<section class="table-modules no-padding transparent">
+<section class="table-modules no-margin overflow-scroll transparent">
     <table class="installed-modules">
         <thead>
             <th>

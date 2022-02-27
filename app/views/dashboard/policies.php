@@ -68,7 +68,7 @@
     </p>
 </section>
 
-<section class="no-padding policy-list transparent">
+<section class="no-margin overflow-scroll policy-list transparent">
     <table>
         <thead>
             <th class="column-id">

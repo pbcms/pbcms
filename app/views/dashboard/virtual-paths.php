@@ -24,7 +24,7 @@
     </p>
 </section>
 
-<section class="no-padding transparent">
+<section class="no-margin overflow-scroll transparent">
     <table>
         <thead>
             <th>

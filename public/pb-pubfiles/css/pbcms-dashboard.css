@@ -216,7 +216,7 @@ html, body {
 }
 
 .container {
-    width: 100%;
+    width: calc(100% - 300px);
     height: calc(100vh);
     display: flex;
     flex-direction: column;
@@ -365,7 +365,7 @@ html, body {
 .container .content {
     height: 100%;
     width: 100%;
-    overflow-y: scroll;
+    overflow: auto;
 }
 
 .container .content::-webkit-scrollbar {
@@ -392,9 +392,9 @@ html, body {
 
 .content section,
 .content .section {
-    width: calc(100% - 137px);
+    width: calc(100% - 147px);
     padding: 20px 30px;
-    margin: 20px 35px 10px 45px;
+    margin: 20px 45px 10px 45px;
     background-color: white;
     border-radius: 10px;
     position: relative;
@@ -406,9 +406,66 @@ html, body {
     padding: 0px;
 }
 
+.content section.no-margin,
+.content .section.no-margin {
+    width: calc(100% - 86px);
+    padding: 20px 45px 10px 45px;
+    margin: 0px;
+}
+
 .content section.transparent,
 .content .section.transparent {
     background-color: transparent !important;
+}
+
+.content section.overflow-scroll,
+.content .section.overflow-scroll {
+    overflow-x: auto;
+}
+
+.content section::-webkit-scrollbar,
+.content .section::-webkit-scrollbar { 
+    width: 18px; 
+    height: 18px;
+}
+
+.content section::-webkit-scrollbar-track,
+.content .section::-webkit-scrollbar-track { 
+    background: #f0f0f0; 
+}
+
+.content section::-webkit-scrollbar-thumb,
+.content .section::-webkit-scrollbar-thumb { 
+    border: 6px solid #f0f0f0;
+    background-clip: padding-box;
+    border-radius: 9999px;
+    background: #555;
+}
+
+.content section::-webkit-scrollbar-thumb:hover
+.content .section::-webkit-scrollbar-thumb:hover {
+    border: 5px solid #f0f0f0; 
+    background-clip: padding-box;
+    border-radius: 9999px;
+    background: #666; 
+}
+
+.content section::-webkit-scrollbar-button:single-button:horizontal:decrement {
+    height: 18px;
+    width: 40px;
+    background-position: 60% 4px;
+    background-repeat: no-repeat;
+    background-size: 10px auto;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left"><polyline points="15 18 9 12 15 6"></polyline></svg>');
+}
+
+.content section::-webkit-scrollbar-button:single-button:horizontal:increment {
+    height: 18px;
+    width: 40px;
+    background-position: 40% 4px;
+    background-repeat: no-repeat;
+    background-size: 10px auto;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>');
 }
 
 .content section.page-introduction,
@@ -660,6 +717,7 @@ html, body {
 
 .content table {
     width: 100%;
+    margin-bottom: 10px;
 }
 
 .content > table,

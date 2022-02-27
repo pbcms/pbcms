@@ -36,7 +36,7 @@
 <?php
     if (count($shortcuts) > 0) {
         ?>
-            <section class="no-padding transparent existing-shortcuts">
+            <section class="no-margin overflow-scroll transparent existing-shortcuts">
                 <table>
                     <thead>
                         <tr>
