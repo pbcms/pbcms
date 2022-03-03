@@ -63,22 +63,22 @@
 <section class="table-modules no-margin overflow-scroll transparent">
     <table class="installed-modules">
         <thead>
-            <th>
+            <th class="medium">
                 <?php echo $this->lang->get("pages.pb-dashboard.modules.table.column-name", "Name"); ?>
             </th>
-            <th>
+            <th class="bigger">
                 Description
             </th>
-            <th>
+            <th class="medium">
                 Author
             </th>
-            <th>
+            <th class="smaller">
                 Version
             </th>
             <th>
                 In Repository
             </th>
-            <th>
+            <th class="smaller">
                 <?php echo $this->lang->get("pages.pb-dashboard.modules.table.column-enabled", "Enabled"); ?>
             </th>
             <th>

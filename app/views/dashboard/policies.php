@@ -71,7 +71,7 @@
 <section class="no-margin overflow-scroll policy-list transparent">
     <table>
         <thead>
-            <th class="column-id">
+            <th class="column-id smaller">
                 <?php echo $this->lang->get("pages.pb-dashboard.policies.table.column-id", "ID"); ?>
             </th>
             <th>

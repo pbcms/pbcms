@@ -31,7 +31,7 @@
 <section class="no-margin transparent overflow-scroll">
     <table>
         <thead>
-            <th>
+            <th class="smaller">
                 ID
             </th>
             <th>

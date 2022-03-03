@@ -27,7 +27,7 @@
 <section class="no-margin overflow-scroll transparent">
     <table>
         <thead>
-            <th>
+            <th class="smaller">
                 ID
             </th>
             <th>
