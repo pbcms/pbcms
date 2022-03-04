@@ -93,6 +93,10 @@
             return self::$detected;
         }
 
+        public static function defaultLanguage() {
+            return self::$defaultLang;
+        }
+
         public function setLanguage($language, $fallback = NULL) {
             if ($this->loaded) return false;
             $fallback = $fallback ? (in_array($fallback, $this->accepted()) ? $fallback : $this->language) : $this->language;
