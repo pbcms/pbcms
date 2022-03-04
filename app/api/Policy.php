@@ -19,11 +19,9 @@
         }
 
         if (!Request::requireMethod('post')) die();
-        if ($this->user->check("policy.update")) {
+        if ($this->user->check("policy.set")) {
             foreach($postdata as $policy => $value) {
-                if ($policies->exists($policy)) {
-                    $policies->set($policy, $value);
-                }
+                $policies->set($policy, $value);
             }
 
             Respond::success();
