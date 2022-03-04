@@ -25,9 +25,10 @@
                 
                 $this->definitions();
                 $this->prepareConfiguration();
-                $this->loadLibraries();
+                $this->loadHelpers();
                 $this->loadSources();
                 $this->loadRegistries();
+                $this->loadLibraries();
 
                 $modules = new \Library\Modules();
                 $preCoreModules = $modules->list('pre-core');
@@ -83,7 +84,6 @@
          * @return void
          */
         private function loadLibraries() {
-            require_once 'libraries/Registries.php';
             require_once 'libraries/JWT.php';
             require_once 'libraries/Meta.php';
             require_once 'libraries/Assets.php';
@@ -94,7 +94,6 @@
             require_once 'libraries/Objects.php';
             require_once 'libraries/Media.php';
             require_once 'libraries/Mailer.php';
-            require_once 'libraries/Helpers.php';
             require_once 'libraries/Roles.php';
             require_once 'libraries/Users.php';
             require_once 'libraries/Relations.php';
@@ -105,6 +104,24 @@
             require_once 'libraries/Router.php';
             require_once 'libraries/Modules.php';
             require_once 'libraries/Cli.php';
+        }
+
+        /**
+         * Require registries from sources.
+         * 
+         * @return void
+         */
+        private function loadHelpers() {
+            require_once 'helpers/__.php';
+            require_once 'helpers/ApiResponse.php';
+            require_once 'helpers/Header.php';
+            require_once 'helpers/Json.php';
+            require_once 'helpers/Query.php';
+            require_once 'helpers/Random.php';
+            require_once 'helpers/Request.php';
+            require_once 'helpers/Respond.php';
+            require_once 'helpers/SEO.php';
+            require_once 'helpers/Validate.php';
         }
 
         /**
