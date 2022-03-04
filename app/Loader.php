@@ -25,8 +25,9 @@
                 
                 $this->definitions();
                 $this->prepareConfiguration();
-                $this->requireLibraries();
-                $this->requireSources();
+                $this->loadLibraries();
+                $this->loadSources();
+                $this->loadRegistries();
 
                 $modules = new \Library\Modules();
                 $preCoreModules = $modules->list('pre-core');
@@ -81,7 +82,7 @@
          *
          * @return void
          */
-        private function requireLibraries() {
+        private function loadLibraries() {
             require_once 'libraries/Registries.php';
             require_once 'libraries/JWT.php';
             require_once 'libraries/Meta.php';
@@ -111,9 +112,24 @@
          * 
          * @return void
          */
-        private function requireSources() {
+        private function loadSources() {
             require_once 'sources/dashboard-sidebar.php';
             require_once 'sources/default-permissions.php';
+        }
+
+        /**
+         * Require registries from sources.
+         * 
+         * @return void
+         */
+        private function loadRegistries() {
+            require_once 'registries/Action.php';
+            require_once 'registries/Api.php';
+            require_once 'registries/Auth.php';
+            require_once 'registries/Dashboard.php';
+            require_once 'registries/Event.php';
+            require_once 'registries/PermissionHints.php';
+            require_once 'registries/Store.php';
         }
     }
 
