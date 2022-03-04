@@ -113,6 +113,7 @@
          */
         private function requireSources() {
             require_once 'sources/dashboard-sidebar.php';
+            require_once 'sources/default-permissions.php';
         }
     }
 

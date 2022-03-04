@@ -173,5 +173,94 @@
                 "error-missing_privileges": "You are lacking the permission to obtain information about a different user."
             }
         }
+    },
+
+    "permission-hints": {
+        "site.migrate-database":            "Execute and list unfinished database migrations.",
+        "site.core.update":                 "Update the PBCMS installation",
+
+
+        "media.get.%":                      "Permit user to retrieve media item by UUID. Replace '%' with UUID of media.",
+        "media.delete.%":                   "Permit user to delete media item by UUID. Replace '%' with UUID of media.",
+        "media.transfer.%":                 "Permit user to transfer media item by UUID. Replace '%' with UUID of media.",
+        "media.info.%":                     "Permit user to retrieve info about media item by UUID. Replace '%' with UUID of media.",
+        "media.list.others":                "List media items of users other than themselves.",
+
+
+        "object.create":                    "Create a system object.",
+        "object.exists":                    "Check if system object exists.",
+        "object.info":                      "Retrieve info about system object.",
+        "object.list":                      "List system objects.",
+        "object.properties":                "List system object properties.",
+        "object.purge":                     "Purge a system object and all it's properties.",
+        "object.get-property":              "Retrieve a system object's property.",
+        "object.property-exists":           "Check if system object has a property.",
+        "object.set-property":              "Set a system object's property.",
+        "object.delete-property":           "Delete a system object's property.",
+
+
+        "policy.set":                       "Set a policy's value.",
+        "policy.get":                       "Get a policy's value.",
+        "policy.exists":                    "Check if a policy exists.",
+        "policy.delete":                    "Delete a policy.",
+        "policy.list":                      "List all policies.",
+
+
+        "relation.create":                  "Create a relation.",
+        "relation.delete":                  "Delete a relation.",
+        "relation.find":                    "Find a relation.",
+        "relation.list":                    "List relations.",
+
+
+        "role.create":                      "Create a role.",
+        "role.find":                        "Find a role.",
+        "role.list":                        "List roles.",
+        "role.update":                      "Update a role.",
+        "role.delete":                      "Delete a role.",
+        "role.get-id":                      "Get the system ID of a role.",
+
+
+        "user.create":                      "Create a new user.",
+        "user.info":                        "Retrieve information about a user other than themselves.",
+        "user.list":                        "List users.",
+        "user.update":                      "Update a user other than themselves.",
+        "user.delete":                      "Delete a user.",
+        "user.get-id":                      "Get the system ID of a user.",
+
+
+        "router.virtual-path.create":       "Create a virtual path.",
+        "router.virtual-path.delete":       "Delete a virtual path.",
+        "router.virtual-path.find":         "Find a virtual path.",
+        "router.virtual-path.list":         "List virtual paths.",
+
+
+        "permission.grant":                 "Grant a permission.",
+        "permission.reject":                "Reject a permission.",
+        "permission.clear":                 "Clear a permission.",
+        "permission.check":                 "Check if a permission is permitted.",
+        "permission.list":                  "List permission.",
+        "permission.find":                  "Find a permission.",
+        "permission.hints":                 "Retrieve and search through permission hints.",
+
+                
+        "modules.list":                     "List remote and local modules.",
+        "modules.exists":                   "Check if a remote or local module exists.",
+        "modules.installed":                "Check if a module is installed.",
+        "modules.enable":                   "Enable a module.",
+        "modules.disable":                  "Disable a module.",
+        "modules.install":                  "Install a module.",
+        "modules.summary":                  "Retrieve a module's summary.",
+        "modules.update":                   "Update a module.",
+        "modules.remove":                   "Remove a module.",
+        "modules.info":                     "Retrieve information about a module, as stated by developer.",
+        "modules.add-repository":           "Add a new module repository.",
+        "modules.enable-repository":        "Enable a module repository.",
+        "modules.disable-repository":       "Disable a module repository.",
+        "modules.remove-repository":        "Remove a module repository.",
+        "modules.get-repository":           "List modules in a repository.",
+        "modules.list-repositories":        "List module repositories.",
+        "modules.repository-info":          "Retrieve information about a repository.",
+        "modules.refresh-repository":       "Refresh a module repository.",
+        "modules.refresh-repositories":     "Refresh all module repositories."
     }
 }

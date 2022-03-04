@@ -33,7 +33,7 @@
                     "title" => $lang->get('templates.pb-dashboard.section-titles.updates', "Updates"),
                     "section" => "updates",
                     "icon" => "refresh-cw",
-                    "permissions" => ["site.administration.perform-updates", "modules.update"],
+                    "permissions" => ["site.core.update", "modules.update"],
                     "category" => "no_category"
                 ],
                 [

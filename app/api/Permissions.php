@@ -1,6 +1,7 @@
 <?php
 
     use Registry\Action;
+    use Registry\PermissionHints;
     use Library\Permissions;
     use Helper\ApiResponse as Respond;
     use Helper\Request;
@@ -184,5 +185,29 @@
             }
         } else {
             Respond::error('missing_privileges', "You are not allowed to find permissions.");
+        }
+    });
+
+    $this->__registerMethod('hints', function($params) {
+        if (!Request::requireMethod('get')) die();
+        if (!Request::requireAuthentication()) die();
+
+        if ($this->user->check('permission.hints')) {
+            if (count($params) > 1) {
+                $extendedSearch = strpos($params[1], 'extended-search');
+                Respond::success(array(
+                    "result" => PermissionHints::search($params[0], $extendedSearch)
+                ));
+            } else if (count($params) > 0) {
+                Respond::success(array(
+                    "result" => PermissionHints::search($params[0])
+                ));
+            } else {
+                Respond::success(array(
+                    "result" => PermissionHints::list()
+                ));
+            }
+        } else {
+            Respond::error('missing_privileges', "You are not allowed to retrieve permission hints.");
         }
     });

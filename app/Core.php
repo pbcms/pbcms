@@ -1,4 +1,5 @@
 <?php
+    use Registry\PermissionHints;
     use Registry\Dashboard;
     use Registry\Event;
     use Library\Language;
@@ -41,7 +42,8 @@
                     $this->sessionWorker();
                     $this->languageWorker();
 
-                    //Initialize dashboard registry.
+                    //Initialize registries.
+                    PermissionHints::initialize();
                     Dashboard::initialize();
     
                     $modules = new Modules;
