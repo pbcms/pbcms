@@ -94,7 +94,7 @@
         }
 
         public static function defaultLanguage() {
-            return self::$defaultLang;
+            return self::$defaultlang;
         }
 
         public function setLanguage($language, $fallback = NULL) {
