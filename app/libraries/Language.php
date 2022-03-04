@@ -12,17 +12,23 @@
         protected static $list = array();
         private static $inmemory = array();
         private static $updates = array();
+        private static $detected = null;
 
-        public function __construct($preflang = '') {
+        public function __construct($manual = false) {
+            if (count(self::$list) == 0) self::$list = JSON::decode(\file_get_contents(APP_DIR . '/sources/languages/list.json'));
             if (!self::$defaultlang) {
                 $policy = new Policy;
                 self::$defaultlang = $policy->get('default-language');
                 if (!self::$defaultlang) self::$defaultlang = 'en';
             }
 
-            $this->language = self::$defaultlang;
-            if (count(self::$list) == 0) self::$list = JSON::decode(\file_get_contents(APP_DIR . '/sources/languages/list.json'));
-            $this->setLanguage($preflang);
+            if ($manual || !self::$detected) {
+                $this->language = self::$defaultlang;
+                if (is_string($manual)) $this->setLanguage($manual);
+            } else {
+                $this->language = self::$detected;
+                $this->load();
+            }
         }
 
         public function accepted() {
@@ -42,7 +48,7 @@
             return self::$defaultlang;
         }
 
-        public function detectLanguage($stockDetection = false) {
+        public function detectLanguage($stockDetection = false, $overwriteDetected = false) {
             if ($this->loaded) return false;
             if (Action::exists('detect_language') && !$stockDetection) {
                 $res = Action::call('detect_language');
@@ -77,7 +83,14 @@
                 if ($sources->router) $this->setLanguage($sources->router);
             }
 
-            $this->saveLanguage();
+            if (!self::$detected || $overwriteDetected) {
+                self::$detected = $this->selected();
+                $this->saveLanguage();
+            }
+        }
+
+        public static function detectedLanguage() {
+            return self::$detected;
         }
 
         public function setLanguage($language, $fallback = NULL) {
