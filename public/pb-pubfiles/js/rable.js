@@ -120,11 +120,13 @@ function processElementAttributes(el, eventTransporter) {
                                 const data = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
                                 const scopeData = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveScopeData', { detail: { resolve } })));
                                 node.addEventListener(processedName[1], e => {
-                                    let keys = Object.keys(data);
+                                    const localData = {...data};
+                                    localData.event = e;
+                                    let keys = Object.keys(localData);
                                     keys.push(attribute.value);
-                                    let runner = Function.apply(data, keys);
+                                    let runner = Function.apply(localData, keys);
                                     try {
-                                        runner.apply(scopeData, Object.values(data));
+                                        runner.apply(scopeData, Object.values(localData));
                                     } catch(e) {
                                         console.error(e);
                                     }
@@ -235,6 +237,7 @@ function processElementAttributes(el, eventTransporter) {
                                     data[attribute.value] = node.checked;
                                 });
                             }
+                            break;
                         case 'if':
                             eventTransporter.dispatchEvent(new CustomEvent('registerListener', {
                                 detail: {
@@ -247,7 +250,6 @@ function processElementAttributes(el, eventTransporter) {
                                         let runner = Function.apply({}, keys);
                                         try {
                                             let res = runner.apply(scopeData, Object.values(data));
-                                            console.log(res);
                                             if (res) {
                                                 node.style.display = null;
                                             } else {
@@ -260,6 +262,7 @@ function processElementAttributes(el, eventTransporter) {
                                     }
                                 }
                             }));
+                            break;
                         case 'class':
                             if (!processedName[1]) {
                                 console.error("No class defined!");
@@ -277,7 +280,6 @@ function processElementAttributes(el, eventTransporter) {
                                         let runner = Function.apply({}, keys);
                                         try {
                                             let res = runner.apply(scopeData, Object.values(data));
-                                            console.log(res);
                                             if (res) {
                                                 node.classList.add(className);
                                             } else {
@@ -290,6 +292,7 @@ function processElementAttributes(el, eventTransporter) {
                                     }
                                 }
                             }));
+                            break;
                     }
                 }
             });
