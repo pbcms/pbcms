@@ -189,7 +189,7 @@ function processElementAttributes(el, eventTransporter) {
                             }));
                             break;
                         case 'value':
-                            if (node.nodeName.toLowerCase() == 'input' || node.nodeName.toLowerCase() == 'textarea') {
+                            if (typeof node.value == 'string') {
                                 const data = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
                                 eventTransporter.dispatchEvent(new CustomEvent('registerListener', {
                                     detail: {
@@ -221,6 +221,75 @@ function processElementAttributes(el, eventTransporter) {
                                 });
                             }
                             break;
+                        case 'checked':
+                            if (typeof node.checked == 'boolean') {
+                                const data = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
+                                eventTransporter.dispatchEvent(new CustomEvent('registerListener', {
+                                    detail: {
+                                        type: 'data:updated',
+                                        listener: async () => node.checked = data[attribute.value]
+                                    }
+                                }));
+
+                                node.addEventListener('input', e => {
+                                    data[attribute.value] = node.checked;
+                                });
+                            }
+                        case 'if':
+                            eventTransporter.dispatchEvent(new CustomEvent('registerListener', {
+                                detail: {
+                                    type: 'data:updated',
+                                    listener: async () => {
+                                        const data = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
+                                        const scopeData = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveScopeData', { detail: { resolve } })));
+                                        let keys = Object.keys(data);
+                                        keys.push('return ' + attribute.value);
+                                        let runner = Function.apply({}, keys);
+                                        try {
+                                            let res = runner.apply(scopeData, Object.values(data));
+                                            console.log(res);
+                                            if (res) {
+                                                node.style.display = null;
+                                            } else {
+                                                node.style.display = 'none';
+                                            }
+                                        } catch(e) {
+                                            console.error(e);
+                                            node.style.display = 'none';
+                                        }
+                                    }
+                                }
+                            }));
+                        case 'class':
+                            if (!processedName[1]) {
+                                console.error("No class defined!");
+                                return;
+                            }
+                            const className = processedName[1];
+                            eventTransporter.dispatchEvent(new CustomEvent('registerListener', {
+                                detail: {
+                                    type: 'data:updated',
+                                    listener: async () => {
+                                        const data = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
+                                        const scopeData = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveScopeData', { detail: { resolve } })));
+                                        let keys = Object.keys(data);
+                                        keys.push('return ' + attribute.value);
+                                        let runner = Function.apply({}, keys);
+                                        try {
+                                            let res = runner.apply(scopeData, Object.values(data));
+                                            console.log(res);
+                                            if (res) {
+                                                node.classList.add(className);
+                                            } else {
+                                                node.classList.remove(className);
+                                            }
+                                        } catch(e) {
+                                            console.error(e);
+                                            node.style.display = 'none';
+                                        }
+                                    }
+                                }
+                            }));
                     }
                 }
             });
