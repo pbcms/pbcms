@@ -176,7 +176,10 @@
             $this->__view("dashboard/roles");
             $this->__template($this->__useTemplate(), array(
                 "title" => "roles",
-                "section" => "roles"
+                "section" => "roles",
+                "body" => array(
+                    ['script', 'pb-pages-dashboard-roles.js', array("origin" => "pubfiles", "properties" => 'type="module"')]
+                )
             ));
         } 
 
@@ -184,7 +187,10 @@
             $this->__view("dashboard/permissions");
             $this->__template($this->__useTemplate(), array(
                 "title" => "permissions",
-                "section" => "permissions"
+                "section" => "permissions",
+                "body" => array(
+                    ['script', 'pb-pages-dashboard-permissions.js', array("origin" => "pubfiles", "properties" => 'type="module"')]
+                )
             ));
         } 
 
