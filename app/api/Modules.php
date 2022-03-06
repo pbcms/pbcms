@@ -10,7 +10,7 @@
     $this->__registerMethod('list', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.list')) {
+        if ($this->user->check('modules.list')) {
             $modules = new Modules;
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
@@ -33,7 +33,7 @@
     $this->__registerMethod('list-repository-modules', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.list')) {
+        if ($this->user->check('modules.list')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0]) && $params[0] == 'include-disabled') {
                 $list = $moduleManager->listModules(true);
@@ -51,7 +51,7 @@
     $this->__registerMethod('exists', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.exists')) {
+        if ($this->user->check('modules.exists')) {
             if (isset($params[0])) {
                 $modules = new Modules;
                 $moduleManager = new ModuleManager;
@@ -73,7 +73,7 @@
     $this->__registerMethod('installed', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.installed')) {
+        if ($this->user->check('modules.installed')) {
             if (isset($params[0])) {
                 $moduleManager = new ModuleManager;
 
@@ -93,7 +93,7 @@
     $this->__registerMethod('enable', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.enable')) {
+        if ($this->user->check('modules.enable')) {
             if (isset($params[0])) {
                 $modules = new Modules;
                 if ($modules->exists($params[0])) {
@@ -116,7 +116,7 @@
     $this->__registerMethod('disable', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.disable')) {
+        if ($this->user->check('modules.disable')) {
             if (isset($params[0])) {
                 $modules = new Modules;
                 if ($modules->exists($params[0])) {
@@ -139,7 +139,7 @@
     $this->__registerMethod('install', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.install')) {
+        if ($this->user->check('modules.install')) {
             if (isset($params[0])) {
                 $moduleManager = new ModuleManager;
                 switch($moduleManager->installModule($params[0])) {
@@ -187,7 +187,7 @@
     $this->__registerMethod('summary', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.summary')) {
+        if ($this->user->check('modules.summary')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
                 $res = $moduleManager->moduleSummary($params[0]);
@@ -209,13 +209,13 @@
     $this->__registerMethod('update', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.update')) {
+        if ($this->user->check('modules.update')) {
             if (isset($params[0])) {
                 $moduleManager = new ModuleManager;
 
                 if (isset($params[1])) {
                     if ($params[1] == 'force') {
-                        if ($this->user->check('module.update.force')) {
+                        if ($this->user->check('modules.update.force')) {
                             $res = $moduleManager->updateModule($params[0], true);
                         } else {
                             http_response_code(403);
@@ -265,7 +265,7 @@
     $this->__registerMethod('remove', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.remove')) {
+        if ($this->user->check('modules.remove')) {
             if (isset($params[0])) {
                 $moduleManager = new ModuleManager;
 
@@ -293,7 +293,7 @@
     $this->__registerMethod('module-repository-info', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.info')) {
+        if ($this->user->check('modules.info')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
                 $res = $moduleManager->moduleRepoInfo($params[0]);
@@ -315,7 +315,7 @@
     $this->__registerMethod('module-local-info', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.info')) {
+        if ($this->user->check('modules.info')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
                 $res = $moduleManager->moduleLocalInfo($params[0]);
@@ -341,7 +341,7 @@
         $body = (object) Request::parseBody();
         $required = array("name", "url");
 
-        if ($this->user->check('module.add-repository')) {
+        if ($this->user->check('modules.add-repository')) {
             $moduleManager = new ModuleManager;
             $missing = Validate::listMissing($required, $body);
             if (count($missing) > 0) {
@@ -369,7 +369,7 @@
     $this->__registerMethod('enable-repository', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.enable-repository')) {
+        if ($this->user->check('modules.enable-repository')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
                 $res = $moduleManager->enableRepository($params[0]);
@@ -391,7 +391,7 @@
     $this->__registerMethod('disable-repository', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.disable-repository')) {
+        if ($this->user->check('modules.disable-repository')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
                 $res = $moduleManager->disableRepository($params[0]);
@@ -413,7 +413,7 @@
     $this->__registerMethod('remove-repository', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.remove-repository')) {
+        if ($this->user->check('modules.remove-repository')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
                 $res = $moduleManager->removeRepository($params[0]);
@@ -435,12 +435,12 @@
     $this->__registerMethod('get-repository', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.get-repository')) {
+        if ($this->user->check('modules.get-repository')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
                 if (isset($params[1])) {
                     if ($params[1] == 'force-refresh') {
-                        if ($this->user->check('module.refresh-repository')) {
+                        if ($this->user->check('modules.refresh-repository')) {
                             $res = $moduleManager->getRepository($params[0], true);
                         } else {
                             http_response_code(403);
@@ -472,7 +472,7 @@
     $this->__registerMethod('list-repositories', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.list-repositories')) {
+        if ($this->user->check('modules.list-repositories')) {
             $moduleManager = new ModuleManager;
             $res = $moduleManager->listRepositories();
             Respond::success(array("repositories" => $res));
@@ -485,7 +485,7 @@
     $this->__registerMethod('repository-info', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.repository-info')) {
+        if ($this->user->check('modules.repository-info')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
                 $res = $moduleManager->repositoryInfo($params[0]);
@@ -507,7 +507,7 @@
     $this->__registerMethod('refresh-repository', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.refresh-repository')) {
+        if ($this->user->check('modules.refresh-repository')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
                 $res = $moduleManager->refreshRepository($params[0]);
@@ -529,7 +529,7 @@
     $this->__registerMethod('refresh-repositories', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('module.refresh-repositories')) {
+        if ($this->user->check('modules.refresh-repositories')) {
             $moduleManager = new ModuleManager;
             if (isset($params[0])) {
                 $moduleManager->refreshRepositories($params[0] == 'include-disabled');

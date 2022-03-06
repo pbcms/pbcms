@@ -1,8 +1,15 @@
 <?php
     namespace Library;
 
+    use Library\Language;
+
     class Modules {
         private static $loaded = array();
+        private static $lang = null;
+
+        public function __construct() {
+            if (!self::$lang) self::$lang = new Language();
+        }
 
         public function initialize($data = array()) {
             $modules = $this->list('enabled');
@@ -56,6 +63,19 @@
 
             if ($this->exists($module) && !$this->isLoaded($module)) {
                 if ($this->enabled($module) || $force) {
+                    $defLang = Language::defaultLanguage();
+                    $knownLang = Language::detectedLanguage();
+
+                    if (file_exists(DYNAMIC_DIR . '/modules/' . $module . '/lang/' . $defLang . '.json')) {
+                        $content = json_decode(file_get_contents(DYNAMIC_DIR . '/modules/' . $module . '/lang/' . $defLang . '.json'));
+                        self::$lang->update($defLang, "module." . $module, $content);
+                    } 
+
+                    if ($knownLang != $defLang && file_exists(DYNAMIC_DIR . '/modules/' . $module . '/lang/' . $knownLang . '.json')) {
+                        $content = json_decode(file_get_contents(DYNAMIC_DIR . '/modules/' . $module . '/lang/' . $knownLang . '.json'));
+                        self::$lang->update($knownLang, "module." . $module, $content);
+                    } 
+
                     require DYNAMIC_DIR . '/modules/' . $module . '/pb_entry.php';
                     $class = 'Module\\' . $this->prepareFunctionNaming($module);
                     self::$loaded[$module] = new $class($data);

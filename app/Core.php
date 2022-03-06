@@ -1,6 +1,8 @@
 <?php
+    use Registry\PermissionHints;
     use Registry\Dashboard;
     use Registry\Event;
+    use Library\Language;
     use Library\Router;
     use Library\Policy;
     use Library\Modules;
@@ -38,8 +40,10 @@
                     self::$loaded = true;
                     $this->definedVariables();
                     $this->sessionWorker();
+                    $this->languageWorker();
 
-                    //Initialize dashboard registry.
+                    //Initialize registries.
+                    PermissionHints::initialize();
                     Dashboard::initialize();
     
                     $modules = new Modules;
@@ -179,6 +183,14 @@
                 $session = $controller->__model('session')->info(true);
                 if ($session->success) {
                     $sessions->refresh($session->info->uuid);
+                }
+            }
+
+            private function languageWorker() {
+                if (!Language::detectedLanguage()) {
+                    $lang = new Language(true);
+                    $lang->detectLanguage(false, true);
+                    $lang->load();
                 }
             }
         }

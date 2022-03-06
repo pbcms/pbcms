@@ -277,7 +277,7 @@
     $this->__registerMethod('delete', function($params) {
         if (!Request::requireAuthentication()) die();
 
-        if ($this->user->check('object.get-property')) {
+        if ($this->user->check('object.delete-property')) {
             $objects = new Objects();
             if (isset($params[2])) {
                 $type = $params[0];

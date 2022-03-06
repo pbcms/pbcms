@@ -168,5 +168,94 @@
                 "error-missing_privileges": "U mist de rechten om informatie over een andere gebruiker op te vragen."
             }
         }
+    },
+
+    "permission-hints": {
+        "site.migrate-database":            "Onvoltooide databasemigraties uitvoeren en weergeven.",
+        "site.core.update":                 "De PBCMS-installatie bijwerken",
+
+
+        "media.get.%":                      "Sta de gebruiker toe om media-items op te halen via een UUID. Vervang '%' door UUID van media.",
+        "media.delete.%":                   "Sta de gebruiker toe om media-item te verwijderen via een UUID. Vervang '%' door UUID van media.",
+        "media.transfer.%":                 "Sta de gebruiker toe om media-item over te dragen via een UUID. Vervang '%' door UUID van media.",
+        "media.info.%":                     "Sta de gebruiker toe om informatie over een media-item op te halen via een UUID. Vervang '%' door UUID van media.",
+        "media.list.others":                "Maak een lijst met media-items van andere gebruikers.",
+
+
+        "object.create":                    "Maak een systeemobject.",
+        "object.exists":                    "Controleer of een systeemobject bestaat.",
+        "object.info":                      "Informatie over een systeemobject ophalen.",
+        "object.list":                      "Systeemobjecten weergeven.",
+        "object.properties":                "Maak een lijst met eigenschappen van een systeemobject.",
+        "object.purge":                     "Een systeemobject en alle eigenschappen ervan verwijderen.",
+        "object.get-property":              "Haal een eigenschap van een systeemobject op.",
+        "object.property-exists":           "Controleer of het systeemobject een bepaalde eigenschap heeft.",
+        "object.set-property":              "Stel een bepaald eigenschap van een systeemobject in.",
+        "object.delete-property":           "Verwijder een bepaald eigenschap van een systeemobject.",
+
+
+        "policy.set":                       "Stel de waarde van een beleid in.",
+        "policy.get":                       "Verkrijg de waarde van een beleid.",
+        "policy.exists":                    "Controleer of een beleid bestaat.",
+        "policy.delete":                    "Een beleid verwijderen.",
+        "policy.list":                      "Maak een lijst van alle beleidsregelingen.",
+
+
+        "relation.create":                  "Maak een relatie.",
+        "relation.delete":                  "Verwijder een relatie.",
+        "relation.find":                    "Zoek een relatie.",
+        "relation.list":                    "Relaties opsommen.",
+
+
+        "role.create":                      "Maak een rol.",
+        "role.find":                        "Zoek een rol.",
+        "role.list":                        "Rollen weergeven.",
+        "role.update":                      "Pas een rol aan.",
+        "role.delete":                      "Een rol verwijderen.",
+        "role.get-id":                      "Haal de systeem-ID van een rol op.",
+
+
+        "user.create":                      "Maak een nieuwe gebruiker.",
+        "user.info":                        "Haal informatie op over een andere gebruiker.",
+        "user.list":                        "Gebruikers in de lijst weergeven.",
+        "user.update":                      "Werk een andere gebruiker bij.",
+        "user.delete":                      "Een gebruiker verwijderen.",
+        "user.get-id":                      "Haal de systeem-ID van een gebruiker op.",
+
+
+        "router.virtual-path.create":       "Maak een virtueel pad.",
+        "router.virtual-path.delete":       "Een virtueel pad verwijderen.",
+        "router.virtual-path.find":         "Zoek een virtueel pad.",
+        "router.virtual-path.list":         "Verkrijg een lijst van virtuele paden.",
+
+
+        "permission.grant":                 "Een permissie toewijzen.",
+        "permission.reject":                "Een permissie weigeren.",
+        "permission.clear":                 "Een permissie wissen.",
+        "permission.check":                 "Controleer of een permissie is toegestaan.",
+        "permission.list":                  "Verkrijg een lijst van permissies.",
+        "permission.find":                  "Zoek een permissie.",
+        "permission.hints":                 "Verkrijg een lijst van permissie-hints en doorzoek deze.",
+
+
+        "modules.list":                     "Verkrijg een lijst van externe en lokale modules.",
+        "modules.exists":                   "Controleer of een externe of lokale module bestaat.",
+        "modules.installed":                "Controleer of een module is geïnstalleerd.",
+        "modules.enable":                   "Schakel een module in.",
+        "modules.disable":                  "Schakel een module uit.",
+        "modules.install":                  "Installeer een module.",
+        "modules.summary":                  "Haal de samenvatting van een module op.",
+        "modules.update":                   "Een module bijwerken.",
+        "modules.remove":                   "Verwijder een module.",
+        "modules.info":                     "Haal informatie over een module op, zoals aangegeven door de ontwikkelaar.",
+        "modules.add-repository":           "Voeg een nieuwe modulelijst toe.",
+        "modules.enable-repository":        "Schakel een modulelijst in.",
+        "modules.disable-repository":       "Schakel een modulelijst uit.",
+        "modules.remove-repository":        "Verwijder een modulelijst.",
+        "modules.get-repository":           "Verkrijg een lijst van modules in een modulelijst.",
+        "modules.list-repositories":        "Verkrijg een lijst van modulelijsten.",
+        "modules.repository-info":          "Haal informatie op over een modulelijst.",
+        "modules.refresh-repository":       "Vernieuw een modulelijst.",
+        "modules.refresh-repositories":     "Vernieuw alle modulelijsten."
     }
 }

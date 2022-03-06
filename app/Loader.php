@@ -25,8 +25,10 @@
                 
                 $this->definitions();
                 $this->prepareConfiguration();
-                $this->requireLibraries();
-                $this->requireSources();
+                $this->loadHelpers();
+                $this->loadSources();
+                $this->loadRegistries();
+                $this->loadLibraries();
 
                 $modules = new \Library\Modules();
                 $preCoreModules = $modules->list('pre-core');
@@ -81,8 +83,7 @@
          *
          * @return void
          */
-        private function requireLibraries() {
-            require_once 'libraries/Registries.php';
+        private function loadLibraries() {
             require_once 'libraries/JWT.php';
             require_once 'libraries/Meta.php';
             require_once 'libraries/Assets.php';
@@ -93,7 +94,6 @@
             require_once 'libraries/Objects.php';
             require_once 'libraries/Media.php';
             require_once 'libraries/Mailer.php';
-            require_once 'libraries/Helpers.php';
             require_once 'libraries/Roles.php';
             require_once 'libraries/Users.php';
             require_once 'libraries/Relations.php';
@@ -107,12 +107,46 @@
         }
 
         /**
+         * Require registries from sources.
+         * 
+         * @return void
+         */
+        private function loadHelpers() {
+            require_once 'helpers/__.php';
+            require_once 'helpers/ApiResponse.php';
+            require_once 'helpers/Header.php';
+            require_once 'helpers/Json.php';
+            require_once 'helpers/Query.php';
+            require_once 'helpers/Random.php';
+            require_once 'helpers/Request.php';
+            require_once 'helpers/Respond.php';
+            require_once 'helpers/SEO.php';
+            require_once 'helpers/Validate.php';
+        }
+
+        /**
          * Require scripts from sources.
          * 
          * @return void
          */
-        private function requireSources() {
+        private function loadSources() {
             require_once 'sources/dashboard-sidebar.php';
+            require_once 'sources/default-permissions.php';
+        }
+
+        /**
+         * Require registries from sources.
+         * 
+         * @return void
+         */
+        private function loadRegistries() {
+            require_once 'registries/Action.php';
+            require_once 'registries/Api.php';
+            require_once 'registries/Auth.php';
+            require_once 'registries/Dashboard.php';
+            require_once 'registries/Event.php';
+            require_once 'registries/PermissionHints.php';
+            require_once 'registries/Store.php';
         }
     }
 
