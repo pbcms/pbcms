@@ -104,6 +104,50 @@ function processTextNodes(el, eventTransporter) {
 }
 
 function processElementAttributes(el, eventTransporter) {
+    const logic_if = [];
+    var latestif = 0;
+
+    // IF - ELSEIF - ELSE
+    eventTransporter.dispatchEvent(new CustomEvent('registerListener', {
+        detail: {
+            type: 'data:updated',
+            listener: async () => {
+                for(var i = 0; i < logic_if.length; i++) {
+                    var prevRes = false;
+                    const logic = logic_if[i];
+
+                    for(var j = 0; j < logic.length; j++) {
+                        const block = logic[j];
+                        if (!prevRes) {
+                            if (block.validator) {
+                                const data = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
+                                const scopeData = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveScopeData', { detail: { resolve } })));
+                                let keys = Object.keys(data);
+                                keys.push('return ' + block.validator);
+                                let runner = Function.apply({}, keys);
+                                try {
+                                    prevRes = runner.apply(scopeData, Object.values(data));
+                                    if (prevRes) {
+                                        block.node.style.display = null;
+                                    } else {
+                                        block.node.style.display = 'none';
+                                    }
+                                } catch(e) {
+                                    console.error(e);
+                                    block.node.style.display = 'none';
+                                }
+                            } else {
+                                block.node.style.display = null;
+                            }
+                        } else {
+                            block.node.style.display = 'none';
+                        }
+                    }
+                }
+            }
+        }
+    }));
+
     let nodes = el.childNodes;
     nodes.forEach(node => {
         if (node.childNodes.length > 0) processElementAttributes(node, eventTransporter);
@@ -239,29 +283,34 @@ function processElementAttributes(el, eventTransporter) {
                             }
                             break;
                         case 'if':
-                            eventTransporter.dispatchEvent(new CustomEvent('registerListener', {
-                                detail: {
-                                    type: 'data:updated',
-                                    listener: async () => {
-                                        const data = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
-                                        const scopeData = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveScopeData', { detail: { resolve } })));
-                                        let keys = Object.keys(data);
-                                        keys.push('return ' + attribute.value);
-                                        let runner = Function.apply({}, keys);
-                                        try {
-                                            let res = runner.apply(scopeData, Object.values(data));
-                                            if (res) {
-                                                node.style.display = null;
-                                            } else {
-                                                node.style.display = 'none';
-                                            }
-                                        } catch(e) {
-                                            console.error(e);
-                                            node.style.display = 'none';
-                                        }
-                                    }
-                                }
-                            }));
+                            if (logic_if[latestif]) latestif++;
+                            logic_if[latestif] = [];
+                            logic_if[latestif].push({
+                                node: node,
+                                validator: attribute.value
+                            });
+                            break;
+                        case 'elseif':
+                        case 'else-if':
+                            if (!logic_if[latestif]) {
+                                console.error("If statement should start with if block!");
+                            } else {
+                                logic_if[latestif].push({
+                                    node: node,
+                                    validator: attribute.value
+                                });
+                            }
+                            break;
+                        case 'else':
+                            if (!logic_if[latestif]) {
+                                console.error("If statement should start with if block!");
+                            } else {
+                                logic_if[latestif].push({
+                                    node: node
+                                });
+
+                                latestif++;
+                            }
                             break;
                         case 'class':
                             if (!processedName[1]) {
