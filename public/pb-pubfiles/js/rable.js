@@ -315,9 +315,35 @@ function processElementAttributes(el, eventTransporter) {
                         case 'class':
                             if (!processedName[1]) {
                                 console.error("No class defined!");
-                                return;
+                            } else {
+                                const className = processedName[1];
+                                eventTransporter.dispatchEvent(new CustomEvent('registerListener', {
+                                    detail: {
+                                        type: 'data:updated',
+                                        listener: async () => {
+                                            const data = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
+                                            const scopeData = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveScopeData', { detail: { resolve } })));
+                                            let keys = Object.keys(data);
+                                            keys.push('return ' + attribute.value);
+                                            let runner = Function.apply({}, keys);
+                                            try {
+                                                let res = runner.apply(scopeData, Object.values(data));
+                                                if (res) {
+                                                    node.classList.add(className);
+                                                } else {
+                                                    node.classList.remove(className);
+                                                }
+                                            } catch(e) {
+                                                console.error(e);
+                                                node.style.display = 'none';
+                                            }
+                                        }
+                                    }
+                                }));
                             }
-                            const className = processedName[1];
+                            break;
+                        case 'bind':
+                            const attrName = processedName[1];
                             eventTransporter.dispatchEvent(new CustomEvent('registerListener', {
                                 detail: {
                                     type: 'data:updated',
@@ -329,11 +355,7 @@ function processElementAttributes(el, eventTransporter) {
                                         let runner = Function.apply({}, keys);
                                         try {
                                             let res = runner.apply(scopeData, Object.values(data));
-                                            if (res) {
-                                                node.classList.add(className);
-                                            } else {
-                                                node.classList.remove(className);
-                                            }
+                                            node.setAttribute(attrName, res);
                                         } catch(e) {
                                             console.error(e);
                                             node.style.display = 'none';
