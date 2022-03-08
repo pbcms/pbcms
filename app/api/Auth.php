@@ -149,9 +149,14 @@
                     $content = str_replace("{{RESET_LINK}}", SITE_LOCATION . 'pb-auth/reset-password/' . $uuid, $content);
                     $content = str_replace("{{SITE_LOCATION}}", SITE_LOCATION, $content);
 
-                    $res = $mailer->send($info->email, SITE_TITLE . ": Request to reset your password.", $content, array(
-                        'Mime-Version' => '1.0',
-                        'Content-Type' => 'text/html;charset=UTF-8'
+                    $res = $mailer->send(array(
+                        "recipient" => $info->email, 
+                        "subject" => SITE_TITLE . ": Request to reset your password.", 
+                        "message" => $content, 
+                        "headers" => array(
+                            'Mime-Version' => '1.0',
+                            'Content-Type' => 'text/html;charset=UTF-8'
+                        )
                     ));
                                 
                     if ($res) {
