@@ -156,7 +156,10 @@
                         "headers" => array(
                             'Mime-Version' => '1.0',
                             'Content-Type' => 'text/html;charset=UTF-8'
-                        )
+                        ),
+
+                        //Optimal options for common mailer plugins.
+                        "isHTML" => true
                     ));
                                 
                     if ($res) {
