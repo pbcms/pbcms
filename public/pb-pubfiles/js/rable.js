@@ -183,15 +183,19 @@ function processElementAttributes(el, eventTransporter) {
     
                             break;
                         case 'for':
+                            const forIdentifier = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
                             const parentNode = node.parentNode;
                             const clonedNode = node.cloneNode(true);
                             clonedNode.removeAttribute(attribute.name);
+
                             node.doNotProcessTextNodes = true;
+                            node.forIdentifier = forIdentifier;
+                            node.forMasterNode = true;
+                            
                             eventTransporter.dispatchEvent(new CustomEvent('registerListener', {
                                 detail: {
                                     type: 'data:updated',
                                     listener: async () => {
-                                        const replacementNodes = [];
                                         const data = await new Promise(resolve => eventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
                                         const asloop = (res => (res.length > 0 ? res[0].slice(1, 4) : null))([...attribute.value.matchAll(/^(.*)\sas\s(.*)\s\=\>\s(.*)$/g)]),
                                               inloop = (res => (res.length > 0 ? res[0].slice(1, 3) : null))([...attribute.value.matchAll(/^(.*)\sin\s(.*)$/g)]);
@@ -209,7 +213,18 @@ function processElementAttributes(el, eventTransporter) {
                                             return;
                                         }
 
-                                        parentNode.innerHTML = '';
+                                        var lastNode = null;
+                                        var masterNode = null;
+                                        [...parentNode.children].forEach(el => {
+                                            if (el.forIdentifier == forIdentifier) {
+                                                if (el.forMasterNode) {
+                                                    masterNode = el;
+                                                } else {
+                                                    el.parentNode.removeChild(el);
+                                                }
+                                            }
+                                        });
+
                                         if (typeof data[target] == 'object') {
                                             const keys = Object.keys(data[target]);
                                             const values = Object.values(data[target]);
@@ -227,7 +242,20 @@ function processElementAttributes(el, eventTransporter) {
 
                                                 processElementAttributes(replacementNode, temporaryEventTransporter);
                                                 processTextNodes(replacementNode, temporaryEventTransporter);
-                                                parentNode.appendChild(replacementNode);
+                                                replacementNode.forIdentifier = forIdentifier;
+
+                                                if (lastNode) {
+                                                    parentNode.insertBefore(replacementNode, (processedName.includes('reverse') || processedName.includes('reversed') ? lastNode : lastNode.nextSibling));
+                                                    lastNode = replacementNode;
+                                                } else {
+                                                    replacementNode.forMasterNode = true;
+                                                    lastNode = replacementNode;
+                                                    if (masterNode) {
+                                                        parentNode.replaceChild(replacementNode, masterNode);
+                                                    } else {
+                                                        parentNode.appendChild(replacementNode);
+                                                    }
+                                                }
                                             }
                                         } else {
                                             console.error("Targeted data-item is not a valid object.");
