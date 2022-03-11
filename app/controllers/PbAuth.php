@@ -77,10 +77,12 @@
         }
 
         public function ResetPassword($params) {
-
-
             if (Request::method() == "POST") {
-                if (!isset($params[0])) Respond::error("missing_verifier", "The password reset verifier is missing from your request.");
+                if (!isset($params[0])) {
+                    Respond::error("missing_verifier", "The password reset verifier is missing from your request.");
+                } else {
+
+                }
             } else {
                 if (!isset($params[0])) {
                     $this->__view('auth/page-reset-password-error', array(
@@ -93,12 +95,15 @@
                         "copyright" => "&copy; " . SITE_TITLE . " " . date("Y")
                     ));
                 } else {
-                    
                     $this->__view('auth/page-reset-password');
-                    $this->__template('pb-error', array(
+                    $this->__template('pb-portal', array(
                         "title" => "Reset your password",
+                        "subtitle" => "Password reset procedure.",
                         "description" => "Reset your password.",
-                        "copyright" => "&copy; " . SITE_TITLE . " " . date("Y")
+                        "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
+                        "body" => array(
+                            ['script', 'pb-pages-auth-reset-password.js', array("origin" => "pubfiles", "properties" => "type=\"module\"")]
+                        )
                     ));
                 }
             }

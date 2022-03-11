@@ -117,7 +117,7 @@
         }
     });
 
-    $this->__registerMethod('reset-password', function() {
+    $this->__registerMethod('reset-password', function($params) {
         $policy = new Policy;
         $resetPolicy = $policy->get("password-reset-policy");
         if ($resetPolicy == "NONE") {
@@ -126,10 +126,10 @@
         }
 
         $required = array("identifier");
-        $postdata = Request::parsePost();
+        $postdata = Request::parseBody();
 
         if (!Request::requireMethod('post')) die();
-        if (!Request::requireData($required)) die();
+        if (!Request::requireData($required, $postdata)) die();
 
         $users = new Users;
         $info = $users->find($postdata->identifier, false);
@@ -142,34 +142,60 @@
 
             switch($resetPolicy) {
                 case "EMAIL": 
-                    $uuid = \Helper\uuidv4();
-                    $users->metaSet($info->id, "password-reset-identifier", time() . ":" . $uuid);
-                    $mailer = new Mailer;
-                    $content = file_get_contents(APP_DIR . '/sources/templates/password-reset-email.template.html');
-                    $content = str_replace("{{RESET_LINK}}", SITE_LOCATION . 'pb-auth/reset-password/' . $uuid, $content);
-                    $content = str_replace("{{SITE_LOCATION}}", SITE_LOCATION, $content);
+                    if (!isset($params[0])) {
+                        $uuid = \Helper\uuidv4();
+                        $users->metaSet($info->id, "password-reset-identifier", time() . ":" . $uuid);
+                        $mailer = new Mailer;
+                        $content = file_get_contents(APP_DIR . '/sources/templates/password-reset-email.template.html');
+                        $content = str_replace("{{RESET_LINK}}", SITE_LOCATION . 'pb-auth/reset-password/' . $uuid, $content);
+                        $content = str_replace("{{SITE_LOCATION}}", SITE_LOCATION, $content);
 
-                    $res = $mailer->send(array(
-                        "recipient" => $info->email, 
-                        "subject" => SITE_TITLE . ": Request to reset your password.", 
-                        "message" => $content, 
-                        "headers" => array(
-                            'Mime-Version' => '1.0',
-                            'Content-Type' => 'text/html;charset=UTF-8'
-                        ),
+                        $res = $mailer->send(array(
+                            "recipient" => $info->email, 
+                            "subject" => SITE_TITLE . ": Request to reset your password.", 
+                            "message" => $content, 
+                            "headers" => array(
+                                'Mime-Version' => '1.0',
+                                'Content-Type' => 'text/html;charset=UTF-8'
+                            ),
 
-                        //Optimal options for common mailer plugins.
-                        "isHTML" => true
-                    ));
-                                
-                    if ($res) {
-                        Respond::success(array(
-                            "res" => $res,
-                            "email" => $info->email,
-                            "content" => $content
+                            //Optimal options for common mailer plugins.
+                            "isHTML" => true
                         ));
-                    } else {
-                        Respond::error("email_error", $this->lang->get('messages.api-auth.reset-password.error-email_error', "An error occured while sending the password reset email."));
+                                    
+                        if ($res) {
+                            Respond::success(array(
+                                "res" => $res,
+                                "email" => $info->email,
+                                "content" => $content
+                            ));
+                        } else {
+                            Respond::error("email_error", $this->lang->get('messages.api-auth.reset-password.error-email_error', "An error occured while sending the password reset email."));
+                        }
+                    } else if ($params[0] == 'validate-request') {
+                        $storedVerification = $users->metaGet($info->id, "password-reset-identifier");
+                        if ($storedVerification) {
+                            $timeStarted = explode(':', $storedVerification)[0];
+                            $storedVerification = explode(':', $storedVerification)[1];
+                            $timespan = intval($policy->get('password-reset-timespan'));
+                            if (!$timespan || !is_int($timespan)) $timespan = 600;
+                            
+                            if (($timeStarted + $timespan) < time()) {
+                                if (isset($postdata->verification)) {
+                                    if ($postdata->verification === $storedVerification) {
+                                        Respond::success();
+                                    } else {
+                                        Respond::error("invalid_reset_verification", "The provided reset verification token does not match the stored token.");
+                                    }
+                                } else {
+                                    Respond::error("missing_reset_verification", "Missing the reset verification token from the postdata.");
+                                }
+                            } else {
+                                Respond::error("request_expired", "The password reset request has expired.");
+                            }
+                        } else {
+                            Respond::error("no_reset_available", "No password reset has yet been initialized for this user or it has already been completed.");
+                        }
                     }
 
                     break;
@@ -248,10 +274,10 @@
     $this->__registerMethod('validate-password', function() {
         $users = new Users;
         $required = array("password");
-        $postdata = Request::parsePost();
+        $postdata = Request::parseBody();
 
         if (!Request::requireMethod('post')) die();
-        if (!Request::requireData($required)) die();
+        if (!Request::requireData($required, $postdata)) die();
 
         if (isset($postdata->policy)) {
             $res = $users->validatePassword($postdata->password, $postdata->policy);

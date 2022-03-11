@@ -8,14 +8,12 @@
     $lang->load();
 ?>
 
-<p class="error"><?php if (isset($_GET['error'])) echo $lang->get('messages.api-auth.access-token.error-' . $_GET['error'], $lang->get('common.messages.error-unknown_error', 'An unknown error has occured.')); ?></p>
+<p class="error">{{errorMessage}}</p>
 
-<p>
-    For security, please identify yourself one more time.
-</p>
+<p>{{taskMessage}}</p>
 
-<div class="input-field">
-    <input type="text" name="identifier" placeholder=" " required>
+<div class="input-field" :if="progress == 0">
+    <input type="text" placeholder=" " :value="identifier" required>
     <span>
         <?php 
             if (intval($policy->get('usernames-enabled')) == 1) {
@@ -28,20 +26,37 @@
     <ul class="error-list"></ul>
 </div>
 
-<div class="input-field">
-    <input type="password" name="password" placeholder=" " required>
+<div class="input-field" :if="progress == 1" :class:red-border="passwordErrors.length > 0">
+    <input type="text" placeholder=" " :value="password" @input="passwordInputHandler(0)" required>
     <span>
-        <?php echo $lang->get("pages.pb-auth.signin.field-password", "Password"); ?>
+        New password
+    </span>
+    <ul class="error-list">
+        <li :for="e in passwordErrors">
+            {{e}}
+        </li>
+        <ul>
+        <li :for="e in passwordSubErrors">
+            {{e}}
+        </li>
+        </ul>
+    </ul>
+</div>
+
+<div class="input-field" :if="progress == 1">
+    <input type="text" placeholder=" " :value="passwordVerification" @input="passwordInputHandler(1)" required>
+    <span>
+        Verify new password
     </span>
     <ul class="error-list"></ul>
 </div>
 
 <div class="input-buttons">
-    <button type="submit" class="process-section">
-    <?php echo $lang->get("pages.pb-auth.signin.button-continue", "Continue"); ?>
+    <button type="button" class="process-section" @click="funcContinue()">
+        <?php echo $lang->get("pages.pb-auth.signin.button-continue", "Continue"); ?>
     </button>
 
-    <a href="<?php echo SITE_LOCATION; ?>pb-auth/signup">
-        <?php echo $lang->get("pages.pb-auth.signin.link-signup", "Don't have an account yet?"); ?>
+    <a href="<?php echo SITE_LOCATION; ?>pb-auth/signin">
+        <?php echo "Cancel and signin"; ?>
     </a>
 </div>
