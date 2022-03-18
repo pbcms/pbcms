@@ -228,7 +228,7 @@
         }
 
         public function ModuleConfig($params) {
-            $modules = new \Library\Modules();
+            $modules = new Modules;
 
             if (isset($params[0])) {
                 $res = $modules->loadConfigurator($params[0], array_slice($params, 1));
