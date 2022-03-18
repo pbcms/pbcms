@@ -191,6 +191,7 @@ function processElementAttributes(el, eventTransporter) {
                             node.doNotProcessTextNodes = true;
                             node.forIdentifier = forIdentifier;
                             node.forMasterNode = true;
+                            node.style.display = 'none';
                             
                             eventTransporter.dispatchEvent(new CustomEvent('registerListener', {
                                 detail: {

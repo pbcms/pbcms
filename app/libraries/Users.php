@@ -10,6 +10,7 @@
 
         private $required = array("firstname", "lastname", "email");
         private $allowed = array("firstname", "lastname", "email", "type", "status");
+        private $updateAllowed = array("firstname", "lastname", "email", "type", "status", "password");
         private $filterAllowedProperties = array("id", "firstname", "lastname", "email", "username", "type", "status", "created", "updated");
         private $userStatusses = array("UNVERIFIED", "VERIFIED", "LOCKED");
 
@@ -325,7 +326,7 @@
             if (is_numeric($user) && intval($user) === 0) return false;
             $user = $this->find($user);
             if ($user) {
-                $changes = (object) Validator::removeUnlisted($this->allowed, $changes);
+                $changes = (object) Validator::removeUnlisted($this->updateAllowed, $changes);
                 if (count(array_keys((array) $changes)) > 0) {
                     if (isset($changes->status) && !in_array($user->status, $this->userStatusses)) unset($user->status);
                     if (isset($changes->email)) {
