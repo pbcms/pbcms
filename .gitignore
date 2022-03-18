@@ -1,8 +1,13 @@
 config.php
+
 dynamic/*
 dynamic/*/**
 !dynamic/*/.gitkeep
+
 app/sources/repositories/**
 !app/sources/repositories/.gitkeep
 
-.phpdoc
+public/*
+!public/pb-pubfiles
+!public/.htaccess
+!public/index.php
