@@ -3,6 +3,9 @@
      * Contains the initial Loader class that prepares the request or starts installation.
      */
 
+    use \Registry\Action;
+    use \Registry\Event;
+
     /**
      * Initiates all library inclusions, makes system definitions, loads pre-core modules and loads the core or starts installation.
      */
@@ -33,9 +36,9 @@
                 $modules = new \Library\Modules();
                 $preCoreModules = $modules->list('pre-core');
                 foreach($preCoreModules as $module) $modules->load($module);
-                \Registry\Action::call('register-core-extention');
-                \Registry\Action::call('register-custom-core');
-                \Registry\Event::trigger('pre-core-loaded');
+                Action::call('register-core-extention');
+                Action::call('register-custom-core');
+                Event::trigger('pre-core-loaded');
                 
                 require_once 'Core.php';
                 new Core();
