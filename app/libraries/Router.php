@@ -2,8 +2,12 @@
     namespace Library;
 
     use Registry\Store;
+    use Registry\Route;
+    use Helper\Random;
 
     class Router {
+        protected static $systemControllers = array();
+        protected static $useRouteRegistry = false;
         protected static $preferredLanguage = NULL;
         protected static $virtualPath = NULL;
         protected static $currentController;
@@ -19,26 +23,43 @@
         private static $executed = false;
         private static $initialized = false;
         private static $rewriteUnlockKey;
+        private static $initToken;
 
-        public function __construct($url = '') {
+        public function initialize($url = '') {
             if (!self::$rewriteUnlockKey) self::$rewriteUnlockKey = \Helper\uuidv4();
             if (!self::$db) self::$db = new Database;
             if (!self::$initialized) {
                 self::$initialized = true;
                 if (isset($_GET['url'])) self::$url = $_GET['url'];
                 if ($url != '') self::$url = $url;
-
                 $this->validateUrl();
-                $this->fillProperties();
+
+                self::$systemControllers = array_map(function($item) {
+                    return explode('.', $item)[0];
+                }, array_diff(scandir(APP_DIR . '/controllers'), array('.', '..')));
+                self::$initToken = Random::String(50);
+                return self::$initToken;
             }
+        }
+
+        public function finishInitialization($token) {
+            if (is_string(self::$initToken) && self::$initToken == $token) {
+                $this->fillProperties();
+                self::$initToken = null;
+            }
+        }
+
+        public static function lockedControllers() {
+            return self::$systemControllers;
         }
 
         public function refactorRequest($url, $unlockKey = null) {
             if (self::$executed) return false;
-            if (self::$controller == 'PbApi' || self::$controller == 'PbAuth' || self::$controller == 'PbDashboard' || self::$controller == 'PbLoader' || self::$controller == 'PbPubfiles') {
+            if (in_array(self::$controller, self::$systemControllers)) {
                 if (self::$rewriteUnlockKey !== $unlockKey) return false;
             }
             
+            self::$useRouteRegistry = false;
             self::$preferredLanguage = NULL;
             self::$virtualPath = NULL;
             self::$rawController = 'root';
@@ -86,6 +107,15 @@
                 }
             }
 
+            if (Route::exists(self::$controller, self::$method)) {
+                self::$useRouteRegistry = true;
+                return;
+            }
+
+            echo self::$controller;
+            echo self::$method;
+            die();
+
             $virtualPaths = $this->matchVirtualPath();
             if (count($virtualPaths) > 0 && isset($virtualPaths[$virtualIndex])) {
                 self::$rawController = 'root';
@@ -126,26 +156,31 @@
 
         public function executeRequest() {
             if (self::$executed) return false;
-            if (!self::$controller) {
-                $this->displayError(404);
-            }
 
-            if (!self::$method) {
-                if (method_exists(self::$currentController, '__error')) { 
-                    if (self::$controller == 'PbApi' || self::$controller == 'PbAuth' || self::$controller == 'PbDashboard' || self::$controller == 'PbLoader' || self::$controller == 'PbPubfiles') {
-                        self::$currentController->__error(404, self::$rewriteUnlockKey);
-                    } else {
-                        self::$currentController->__error(404);
-                    }
-                    
-                } else {
+            if (self::$useRouteRegistry) {
+                Route::call(self::$controller, self::$method, self::$params);
+            } else {
+                if (!self::$controller) {
                     $this->displayError(404);
                 }
-            } else {
-                if (self::$controller == 'PbApi' || self::$controller == 'PbAuth' || self::$controller == 'PbDashboard' || self::$controller == 'PbLoader' || self::$controller == 'PbPubfiles') {
-                    self::$currentController->{$this->prepareFunctionNaming(self::$method)}(self::$params, self::$rewriteUnlockKey);
+
+                if (!self::$method) {
+                    if (method_exists(self::$currentController, '__error')) { 
+                        if (in_array(self::$controller, self::$systemControllers)) {
+                            self::$currentController->__error(404, self::$rewriteUnlockKey);
+                        } else {
+                            self::$currentController->__error(404);
+                        }
+                        
+                    } else {
+                        $this->displayError(404);
+                    }
                 } else {
-                    self::$currentController->{$this->prepareFunctionNaming(self::$method)}(self::$params);
+                    if (in_array(self::$controller, self::$systemControllers)) {
+                        self::$currentController->{$this->prepareFunctionNaming(self::$method)}(self::$params, self::$rewriteUnlockKey);
+                    } else {
+                        self::$currentController->{$this->prepareFunctionNaming(self::$method)}(self::$params);
+                    }
                 }
             }
             
@@ -161,7 +196,7 @@
 
             foreach($url as $segment) if (substr($segment, 0, 2) == '__') $this->displayError(403);
 
-            if ($this->controllerExists($url[$index])) {
+            if ($this->controllerExists($url[$index]) || Route::exists($url[$index])) {
                 self::$rawController = $url[$index];
                 self::$controller = $this->prepareFunctionNaming($url[$index]);
                 unset($url[$index]);

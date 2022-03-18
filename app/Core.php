@@ -49,15 +49,17 @@
                     $modules = new Modules;
                     $router = new Router;
                     $policy = new Policy;
+                    $initToken = $router->initialize();
     
                     if (PBCMS_SAFE_MODE || intval($policy->get('pbcms-safe-mode')) == 1) {
                         Event::trigger('pbcms-safe-mode');
                         self::$inSafemode = true;
                     } else {
                         $modules->initialize();
-                        Event::trigger('modules-initialized', $router->documentRequest());
+                        Event::trigger('modules-initialized');
                     }
-    
+
+                    $router->finishInitialization($initToken);
                     if (self::DefaultOperationMode()) {
                         $router->processRequest();
                         Event::trigger('request-processed', $router->documentRequest());

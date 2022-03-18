@@ -147,6 +147,7 @@
             require_once 'registries/Event.php';
             require_once 'registries/PermissionHints.php';
             require_once 'registries/Store.php';
+            require_once 'registries/Route.php';
         }
     }
 
