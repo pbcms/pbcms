@@ -91,7 +91,8 @@
                 "url" => self::$url,
 
                 "preferred_language" => self::$preferredLanguage,
-                "virtual_path" => self::$virtualPath
+                "virtual_path" => self::$virtualPath,
+                "locked_controller" => in_array(self::$controller, self::lockedControllers())
             );
         }
 
