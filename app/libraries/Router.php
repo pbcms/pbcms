@@ -112,10 +112,6 @@
                 return;
             }
 
-            echo self::$controller;
-            echo self::$method;
-            die();
-
             $virtualPaths = $this->matchVirtualPath();
             if (count($virtualPaths) > 0 && isset($virtualPaths[$virtualIndex])) {
                 self::$rawController = 'root';
