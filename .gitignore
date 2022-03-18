@@ -11,3 +11,5 @@ public/*
 !public/pb-pubfiles
 !public/.htaccess
 !public/index.php
+
+.phpdoc
