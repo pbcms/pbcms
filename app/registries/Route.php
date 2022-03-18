@@ -2,6 +2,7 @@
     namespace Registry;
 
     use Library\Router;
+    use Helper\Request;
 
     /**
      * Registries were inspired by the following two gists:
@@ -26,7 +27,7 @@
             }
         }
     
-        public static function call($controller, $method) {
+        public static function call($controller, $method, $params = array()) {
             $controller = self::prepareFunctionNaming($controller);
             $method = self::prepareFunctionNaming($method);
 
@@ -34,12 +35,10 @@
             if (!isset(self::$routes[$controller])) self::$routes[$controller] = [];
             if (isset(self::$routes[$controller][$method])) {
                 $callback = self::$routes[$controller][$method];
-                $arguments = array_slice(func_get_args(), 2);
-                
-                if (count($arguments) > 0) {
-                    return call_user_func_array($callback, $arguments);
+                if (is_string($callback)) {
+                    Request::rewrite($callback);
                 } else {
-                    return call_user_func($callback);
+                    return call_user_func($callback, $params);
                 }
             } else {
                 return NULL;
