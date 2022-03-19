@@ -89,7 +89,14 @@
             $this->__view("dashboard/profile");
             $this->__template($this->__useTemplate(), array(
                 "title" => "profile",
-                "section" => "profile"
+                "section" => "profile",
+                "head" => array(
+                    ["style", "pb-pages-dashboard-profile.css", array("origin" => "pubfiles")],
+                    ["style", "pbcms-system-pages.css", array("origin" => "pubfiles")]
+                ),
+                "body" => array(
+                    ['script', 'pb-pages-dashboard-profile.js', array("origin" => "pubfiles", "properties" => "type=\"module\"")]
+                )
             ));
         } 
 

@@ -1,0 +1,50 @@
+.capitalize {
+    text-transform: capitalize;
+}
+
+.profile-overview {
+    width: 100%;
+    display: flex;
+}
+
+.profile-overview .profile-image {
+    min-width: 300px;
+    max-width: 300px;
+    padding-right: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-overview .profile-image img {
+    max-height: 80%;
+    max-width: 100%;
+    border-radius: 100%;
+}
+
+.profile-overview .profile-details {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding-bottom: 30px;
+}
+
+.profile-overview .profile-details #user-fullname {
+    font-size: 40px;
+    padding-bottom: 20px;
+}
+
+.profile-overview .profile-details #user-properties {
+    width: 100%;
+}
+
+.profile-overview .profile-details #user-properties span {
+    color: #555;
+    font-size: 19px;
+}
+
+.profile-overview .profile-details #user-properties span:not(:last-child)::after {
+    padding: 0px 10px;
+    content: '-';
+}
