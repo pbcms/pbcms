@@ -4,6 +4,7 @@
     use Helper\Header;
     use Helper\Respond;
     use Helper\Request;
+    use Library\Policy;
     use Library\Language;
     use Registry\Auth as AuthPlugin;
 
@@ -19,7 +20,10 @@
         }
 
         public function __index() {
-            Header::Location(SITE_LOCATION . 'pb-auth/signin', 301);
+            $policy = new Policy();
+            $url = $policy->get('signin-url');
+            if (!$url) $url = 'pb-auth/signin';
+            Header::Location(SITE_LOCATION . $url, 301);
         }
 
         public function Signin($params) {
