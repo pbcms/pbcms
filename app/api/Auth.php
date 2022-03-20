@@ -164,11 +164,7 @@
                         ));
                                     
                         if ($res) {
-                            Respond::success(array(
-                                "res" => $res,
-                                "email" => $info->email,
-                                "content" => $content
-                            ));
+                            Respond::success();
                         } else {
                             Respond::error("email_error", $this->lang->get('messages.api-auth.reset-password.error-email_error', "An error occured while sending the password reset email."));
                         }
@@ -210,6 +206,14 @@
                                         if (isset($postdata->password)) {
                                             if ($users->update($info->id, array( "password" => $postdata->password ))) {
                                                 $users->metaDelete($info->id, "password-reset-identifier");
+
+                                                if ($postdata->end_sessions) {
+                                                    $sessionManager = new Sessions;
+                                                    foreach($sessionManager->list($info->id) as $session) {
+                                                        $sessionManager->end($session->uuid);
+                                                    }
+                                                }
+
                                                 Respond::success();
                                             } else {
                                                 Respond::error("unknown_error", "An unknown error occured while updating your password in the database.");

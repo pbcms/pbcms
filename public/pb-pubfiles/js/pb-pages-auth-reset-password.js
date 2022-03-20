@@ -13,6 +13,7 @@ const app = new Rable({
         identifier: '',
         password: '',
         passwordVerification: '',
+        endSessions: false,
         canContinue: true,
 
         async funcContinue() {
@@ -37,7 +38,8 @@ const app = new Rable({
                         PB_API.post('auth/reset-password/process-request', {
                             identifier: this.identifier,
                             verification: this.verificationToken,
-                            password: this.password
+                            password: this.password,
+                            end_sessions: this.endSessions
                         }).then(res => {
                             if (res.data.success) {
                                 this.progress = 2;

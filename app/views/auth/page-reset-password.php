@@ -51,6 +51,13 @@
     <ul class="error-list"></ul>
 </div>
 
+<div class="input-checkbox" :if="progress == 1">
+    <input type="checkbox" :checked="endSessions">
+    <span>
+        End previous sessions
+    </span>
+</div>
+
 <div class="input-buttons">
     <button type="button" class="process-section" @click="funcContinue()">
         <?php echo $lang->get("pages.pb-auth.signin.button-continue", "Continue"); ?>
