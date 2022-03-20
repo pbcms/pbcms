@@ -180,7 +180,7 @@
                             $timespan = intval($policy->get('password-reset-timespan'));
                             if (!$timespan || !is_int($timespan)) $timespan = 600;
                             
-                            if (($timeStarted + $timespan) < time()) {
+                            if (($timeStarted + $timespan) > time()) {
                                 if (isset($postdata->verification)) {
                                     if ($postdata->verification === $storedVerification) {
                                         Respond::success();
@@ -204,7 +204,7 @@
                             $timespan = intval($policy->get('password-reset-timespan'));
                             if (!$timespan || !is_int($timespan)) $timespan = 600;
                             
-                            if (($timeStarted + $timespan) < time()) {
+                            if (($timeStarted + $timespan) > time()) {
                                 if (isset($postdata->verification)) {
                                     if ($postdata->verification === $storedVerification) {
                                         if (isset($postdata->password)) {
