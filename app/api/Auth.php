@@ -196,6 +196,41 @@
                         } else {
                             Respond::error("no_reset_available", "No password reset has yet been initialized for this user or it has already been completed.");
                         }
+                    } else if ($params[0] == 'process-request') {
+                        $storedVerification = $users->metaGet($info->id, "password-reset-identifier");
+                        if ($storedVerification) {
+                            $timeStarted = explode(':', $storedVerification)[0];
+                            $storedVerification = explode(':', $storedVerification)[1];
+                            $timespan = intval($policy->get('password-reset-timespan'));
+                            if (!$timespan || !is_int($timespan)) $timespan = 600;
+                            
+                            if (($timeStarted + $timespan) < time()) {
+                                if (isset($postdata->verification)) {
+                                    if ($postdata->verification === $storedVerification) {
+                                        if (isset($postdata->password)) {
+                                            if ($users->update($info->id, array( "password" => $postdata->password ))) {
+                                                $users->metaDelete($info->id, "password-reset-identifier");
+                                                Respond::success();
+                                            } else {
+                                                Respond::error("unknown_error", "An unknown error occured while updating your password in the database.");
+                                            }
+                                        } else {
+                                            Respond::error("missing_password", "New password is missing.");
+                                        }
+                                    } else {
+                                        Respond::error("invalid_reset_verification", "The provided reset verification token does not match the stored token.");
+                                    }
+                                } else {
+                                    Respond::error("missing_reset_verification", "Missing the reset verification token from the postdata.");
+                                }
+                            } else {
+                                Respond::error("request_expired", "The password reset request has expired.");
+                            }
+                        } else {
+                            Respond::error("no_reset_available", "No password reset has yet been initialized for this user or it has already been completed.");
+                        }
+                    } else {
+                        Respond::error("unknown_request", "An invalid request was made.");
                     }
 
                     break;

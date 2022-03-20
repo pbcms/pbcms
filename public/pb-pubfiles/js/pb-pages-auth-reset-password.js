@@ -26,19 +26,38 @@ const app = new Rable({
                             this.progress = 1;
                             this.taskMessage = "Enter your new password and confirm it.";
                         } else {
-                            this.errorMessage = `${res.data.errorMessage} (${res.data.error})`;
+                            this.errorMessage = `${res.data.message} (${res.data.error})`;
                         }
                     });
-                case 1:
-                    if (this.password == this.passwordVerification) {
 
+                    break;
+                case 1:
+                    if (!this.canContinue) break;
+                    if (this.password == this.passwordVerification) {
+                        PB_API.post('auth/reset-password/process-request', {
+                            identifier: this.identifier,
+                            verification: this.verificationToken,
+                            password: this.password
+                        }).then(res => {
+                            if (res.data.success) {
+                                this.progress = 2;
+                                this.taskMessage = "Success! You can now sign back in.";
+                            } else {
+                                this.errorMessage = `${res.data.message} (${res.data.error})`;
+                            }
+                        });
                     } else {
-                        this.errorMessage
+                        this.errorMessage = "These passwords don't match!";
                     }
+
+                    break;
+                case 2:
+                    location.href = SITE_LOCATION + 'pb-auth';
             }
         },
 
         passwordInputHandler(type) {
+            this.errorMessage = '';
             switch(type) {
                 case 0:
                     PB_API.post('auth/validate-password', {

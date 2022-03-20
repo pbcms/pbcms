@@ -27,7 +27,7 @@
 </div>
 
 <div class="input-field" :if="progress == 1" :class:red-border="passwordErrors.length > 0">
-    <input type="text" placeholder=" " :value="password" @input="passwordInputHandler(0)" required>
+    <input type="password" placeholder=" " :value="password" @input="passwordInputHandler(0)" required>
     <span>
         New password
     </span>
@@ -44,7 +44,7 @@
 </div>
 
 <div class="input-field" :if="progress == 1">
-    <input type="text" placeholder=" " :value="passwordVerification" @input="passwordInputHandler(1)" required>
+    <input type="password" placeholder=" " :value="passwordVerification" @input="passwordInputHandler(1)" required>
     <span>
         Verify new password
     </span>

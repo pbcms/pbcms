@@ -7,9 +7,9 @@
 
         if (await validatePortal()) {
             const data = fieldData();
-            const params = new URLSearchParams();
-            params.append('identifier', data.identifier);
-            PB_API.post('auth/reset-password', params).then(res => {
+            PB_API.post('auth/reset-password', {
+                identifier: data.identifier
+            }).then(res => {
                 if (res.data.success == undefined) {
                     portal.querySelector('p.error').innerText = 'An unknown error has occured! (unknown_error)';
                 } else if (res.data.success == false) {
