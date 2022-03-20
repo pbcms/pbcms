@@ -62,54 +62,29 @@
             ));
         }
 
-        public function forgotPassword() {
-            if ($this->user->signedin()) {
-                Header::Location(SITE_LOCATION . (isset($_GET['followup']) ? $_GET['followup'] : 'pb-dashboard'));
-                die();
-            }
-
-            $this->__view('auth/page-forgot-password');
-            $this->__template('pb-portal', array(
-                "title" => $this->lang->get('pages.pb-auth.forgot-password.title', "Forgot password"),
-                "subtitle" => $this->lang->get('pages.pb-auth.forgot-password.subtitle', "Reset your password."),
-                "description" => str_replace('{{SITE_TITLE}}', SITE_TITLE, $this->lang->get('pages.pb-auth.forgot-password.description', "Reset your password on {{SITE_TITLE}}")),
-                "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
-                "body" => array(
-                    ['script', 'pb-pages-auth-forgot-password.js', array("origin" => "pubfiles")]
-                )
-            ));
-        }
-
         public function ResetPassword($params) {
-            if (Request::method() == "POST") {
-                if (!isset($params[0])) {
-                    Respond::error("missing_verifier", "The password reset verifier is missing from your request.");
-                } else {
-
-                }
+            if (!isset($params[0])) {
+                $this->__view('auth/page-reset-password-initialize');
+                $this->__template('pb-portal', array(
+                    "title" => $this->lang->get('pages.pb-auth.forgot-password.title', "Forgot password"),
+                    "subtitle" => $this->lang->get('pages.pb-auth.forgot-password.subtitle', "Reset your password."),
+                    "description" => str_replace('{{SITE_TITLE}}', SITE_TITLE, $this->lang->get('pages.pb-auth.forgot-password.description', "Reset your password on {{SITE_TITLE}}")),
+                    "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
+                    "body" => array(
+                        ['script', 'pb-pages-auth-reset-password-initialize.js', array("origin" => "pubfiles")]
+                    )
+                ));
             } else {
-                if (!isset($params[0])) {
-                    $this->__view('auth/page-reset-password-error', array(
-                        "message" => "The password reset verifier is missing from your request."
-                    ));
-
-                    $this->__template('pb-error', array(
-                        "title" => "Missing reset verifier.",
-                        "description" => "The password reset verifier is missing from your request.",
-                        "copyright" => "&copy; " . SITE_TITLE . " " . date("Y")
-                    ));
-                } else {
-                    $this->__view('auth/page-reset-password');
-                    $this->__template('pb-portal', array(
-                        "title" => "Reset your password",
-                        "subtitle" => "Password reset procedure.",
-                        "description" => "Reset your password.",
-                        "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
-                        "body" => array(
-                            ['script', 'pb-pages-auth-reset-password.js', array("origin" => "pubfiles", "properties" => "type=\"module\"")]
-                        )
-                    ));
-                }
+                $this->__view('auth/page-reset-password');
+                $this->__template('pb-portal', array(
+                    "title" => "Reset your password",
+                    "subtitle" => "Password reset procedure.",
+                    "description" => "Reset your password.",
+                    "copyright" => "&copy; " . SITE_TITLE . " " . date("Y"),
+                    "body" => array(
+                        ['script', 'pb-pages-auth-reset-password.js', array("origin" => "pubfiles", "properties" => "type=\"module\"")]
+                    )
+                ));
             }
         }
 
