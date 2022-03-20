@@ -15,7 +15,7 @@
                 } else if (res.data.success == false) {
                     portal.querySelector('p.error').innerText = res.data.message + ' (' + res.data.error + ')';
                 } else {
-                    portal.querySelector('p.error').innerText = 'E-email sent!';
+                    portal.querySelector('p.error').innerHTML = 'E-email sent, check your <b>spambox</b> too!';
                 }
             });
         }
