@@ -161,16 +161,17 @@
                 $obj = $this->info($type, $name);
             }
 
+
             if ($obj == NULL) {
                 return false;
             } else {
-                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "object-properties` WHERE `property`='${property}'");
+                $res = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "object-properties` WHERE `object`='$obj->id' AND `property`='${property}'");
                 return $res->num_rows > 0;
             }
         }
 
-        public function set($type, $name = '', $property = '', $value = '') {
-            if ($value == '' && $value !== 0) {
+        public function set($type, $name = '', $property = '', $value = false) {
+            if (is_bool($value) && !$value) {
                 $obj = $this->info($type);
                 $value = $property;
                 $property = $name;
@@ -183,7 +184,7 @@
             if ($obj == NULL) {
                 return false;
             } else {
-                if ($this->get($obj->id, $property) == NULL) {
+                if (!$this->propertyExists($obj->id, $property)) {
                     $this->db->query("INSERT INTO `" . DATABASE_TABLE_PREFIX . "object-properties` (`object`, `property`, `value`) VALUES ('" . $obj->id . "', '${property}', '${value}')");
                 } else {
                     $this->db->query("UPDATE `" . DATABASE_TABLE_PREFIX . "object-properties` SET `value`='${value}' WHERE `object`='" . $obj->id . "' AND `property`='${property}'");
