@@ -564,7 +564,7 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                                     detail: {
                                         type: 'data:updated',
                                         listener: async item => {
-                                            if (item == target) {
+                                            if (!item || item == target) {
                                                 const denyList = ['object', 'function']
                                                 if (denyList.includes(typeof node.value) || denyList.includes(typeof data[target])) {
                                                     console.error('Cannot sync objects or functions.');
@@ -600,7 +600,7 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                                     detail: {
                                         type: 'data:updated',
                                         listener: async item => {
-                                            if (item == target) {
+                                            if (!item || item == target) {
                                                 const denyList = ['object', 'function']
                                                 if (denyList.includes(typeof node.innerText) || denyList.includes(typeof data[target])) {
                                                     console.error('Cannot sync objects or functions.');
@@ -630,11 +630,12 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                             var target = attribute.value;
                             if (typeof node.checked == 'boolean') {
                                 const data = await new Promise(resolve => activeEventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
+                                node.checked = data[target];
                                 activeEventTransporter.dispatchEvent(new CustomEvent('registerListener', {
                                     detail: {
                                         type: 'data:updated',
-                                        listener: async () => {
-                                            if (item == target) {
+                                        listener: async item => {
+                                            if (!item || item == target) {
                                                 if (node.checked !== data[target]) node.checked = data[target];
                                             }
                                         }
@@ -649,7 +650,7 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                             node.removeAttribute(attribute.name); 
                             break;
                         case 'if':
-                            var target = target;
+                            var target = attribute.value;
                             if (logic_if[latestif]) latestif++;
                             logic_if[latestif] = [];
                             logic_if[latestif].push({
