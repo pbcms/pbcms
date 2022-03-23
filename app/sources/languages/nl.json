@@ -67,7 +67,7 @@
         "error-welcome-page": {
             "title": "Welkom",
             "description": "Welkom bij uw nieuwe PBCMS site!",
-            "content-1": "Welkom bij uw nieuwe PBCMS installatie, dit is een korte introductie. <br>Begin met <a href='{{SITE_LOCATION}}pb-auth/signin'>het inloggen tot uw account</a> en met het ontdekken van het dashboard!",
+            "content-1": "Welkom bij uw nieuwe PBCMS installatie, dit is een korte introductie. <br>Begin met <a href='{{SITE_LOCATION}}pb-auth'>het inloggen tot uw account</a> en met het ontdekken van het dashboard!",
             "content-2": "Deze pagina wordt enkel getoond omdat deze standaard aan staat zolang er geen thuis-pagina bestaat. U kunt <a href='#'>dit uitschakelen</a> of <a href='#'>een thuis-pagina creëren</a>."
         },
         "error-404": {
