@@ -59,7 +59,7 @@
 }
 
 .two-fields + .input-field {
-    margin-top: 0px;
+    margin-top: 0px !important;
 }
 
 .submitter {
