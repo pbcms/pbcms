@@ -765,6 +765,32 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
 
                             node.removeAttribute(attribute.name);
                             break;
+                        case 'style':
+                            var target = attribute.value;
+                            var property = processedName[1];
+                            property = property.split('_')[0] + property.split('_').slice(1).map(item => item.slice(0, 1).toUpperCase() + item.slice(1)).join('')
+
+                            activeEventTransporter.dispatchEvent(new CustomEvent('registerListener', {
+                                detail: {
+                                    type: 'data:updated',
+                                    listener: async () => {
+                                        const data = await new Promise(resolve => activeEventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
+                                        const scopeData = await new Promise(resolve => activeEventTransporter.dispatchEvent(new CustomEvent('retrieveScopeData', { detail: { resolve } })));
+                                        let keys = Object.keys(data);
+                                        keys.push('return ' + target);
+                                        let runner = Function.apply({}, keys);
+                                        try {
+                                            let res = runner.apply(scopeData, Object.values(data));
+                                            node.style[property] = res;
+                                        } catch(e) {
+                                            console.error(e);
+                                        }
+                                    }
+                                }
+                            }));
+
+                            node.removeAttribute(attribute.name);
+                            break;
                     }
                 }
             });
