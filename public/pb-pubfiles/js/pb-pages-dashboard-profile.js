@@ -132,8 +132,6 @@ PbAuth.apiInstance().get('user/info').then(async res => {
                         if (this.usernames_enabled && this.username != '') result.username = this.username;
                         if (this.password != '') result.password = this.password;
 
-                        console.log(result);
-
                         PbAuth.apiInstance().patch('user/update', result).then(res => {
                             console.log(res.data);
                             if (res.data.success) {
@@ -144,7 +142,7 @@ PbAuth.apiInstance().get('user/info').then(async res => {
                                 this.password = "";
                                 this.displayMessage("Profile updated successfully!");
                             } else {
-                                this.displayMessage(`${res.data.message} (${res.data.error})`);
+                                this.displayMessage(`${res.data.message} (${res.data.error})`, true);
                             }
                         })
                     }
