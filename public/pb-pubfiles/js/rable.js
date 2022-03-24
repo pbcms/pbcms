@@ -159,7 +159,7 @@ function processTextNodes(el, eventTransporter) {
                         }
                     }));
                 });
-            } else if (node.childNodes.length > 0) {
+            } else if (node.childNodes.length > 0 && !node.doNotProcessChildNodes) {
                 if (node.getAttribute('rable:norender') !== null || node.getAttribute('rbl:norender') !== null || node.getAttribute(':norender') !== null || node.getAttribute('rable:no-render') !== null || node.getAttribute('rbl:no-render') !== null || node.getAttribute(':no-render') !== null) return;
                 processTextNodes(node, activeEventTransporter);
             }
@@ -411,7 +411,6 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
             }
 
             const activeEventTransporter = (node.eventTransporter ? node.eventTransporter : eventTransporter);
-            if (node.childNodes.length > 0) processElementAttributes(node, activeEventTransporter, components);
             [...node.attributes].forEach(async attribute => {
                 var attrName = attribute.name;
                 if (attrName.slice(0, 1) == '@') attrName = ':on:' + attrName.slice(1);
@@ -465,6 +464,7 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                             clonedNode.removeAttribute(attribute.name);
 
                             node.doNotProcessTextNodes = true;
+                            node.doNotProcessChildNodes = true;
                             node.forIdentifier = forIdentifier;
                             node.forMasterNode = true;
                             node.style.display = 'none';
@@ -496,6 +496,7 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                                             if (el.forIdentifier == forIdentifier) {
                                                 if (el.forMasterNode) {
                                                     masterNode = el;
+                                                    masterNode.doNotProcessTextNodes = true;
                                                 } else {
                                                     el.parentNode.removeChild(el);
                                                 }
@@ -748,6 +749,7 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                 }
             });
 
+            if (node.childNodes.length > 0 && !node.doNotProcessChildNodes) processElementAttributes(node, activeEventTransporter, components);
             if (component) {
                 processTextNodes(node, activeEventTransporter);
                 node.doNotProcessTextNodes = true;
