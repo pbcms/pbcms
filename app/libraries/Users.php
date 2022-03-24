@@ -18,8 +18,11 @@
             $this->db = new Database;
             $this->policy = new Policy;
 
-            if ($this->policy->get('usernames-enabled') == '1') array_push($this->allowed, "username");
             if ($this->policy->get('usernames-required') == '1') array_push($this->required, "username");
+            if ($this->policy->get('usernames-enabled') == '1') {
+                array_push($this->allowed, "username");
+                array_push($this->updateAllowed, "username");
+            }
         }
 
         public function create($user) {
