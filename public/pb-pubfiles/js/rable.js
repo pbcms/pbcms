@@ -143,6 +143,7 @@ function processTextNodes(el, eventTransporter) {
                             listener: async () => {
                                 const data = await new Promise(resolve => activeEventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
                                 const scopeData = await new Promise(resolve => activeEventTransporter.dispatchEvent(new CustomEvent('retrieveScopeData', { detail: { resolve } })));                                
+                                console.log(data);
                                 node.data = node.originalData.replaceAll(/{{(.*?)}}/g, (match, target) => {
                                     let keys = Object.keys(data);
                                     keys.push('return ' + target);
@@ -512,16 +513,35 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                                                 for (var i = 0; i < keys.length; i++) {
                                                     const item = keys[i];
                                                     const replacementNode = clonedNode.cloneNode(true);
-                                                    const updatedData = {...data};
+                                                    var updatedData = {...data};
                                                     updatedData[value] = data[target][item];
                                                     if (key) updatedData[key] = item;
-    
+
+                                                    const validator = root => ({
+                                                        get: (obj, prop) => {
+                                                            console.log(prop);
+                                                            if (prop == value) {
+                                                                return data[target][item];
+                                                            } else if (key && prop == key) {
+                                                                return item;
+                                                            } else {
+                                                                return data[prop];
+                                                            }
+                                                        },
+                                                        set: (obj, prop, itemValue) => {
+                                                            data[prop] = itemValue;
+                                                            return true;
+                                                        }
+                                                    });
+                                            
+                                                    updatedData = new Proxy(updatedData, validator(false));
+
                                                     const temporaryEventTransporter = new EventTarget;
                                                     temporaryEventTransporter.addEventListener('retrieveData', e => e.detail.resolve(updatedData));   
                                                     temporaryEventTransporter.addEventListener('registerListener', e => e.detail.listener());                                     
                                                     temporaryEventTransporter.addEventListener('retrieveScopeData', e => e.detail.resolve(data));
     
-                                                    processElementAttributes(replacementNode, temporaryEventTransporter, components);
+                                                    processElementAttributes(replacementNode, temporaryEventTransporter, components, updatedData);
                                                     processTextNodes(replacementNode, temporaryEventTransporter);
                                                     replacementNode.forIdentifier = forIdentifier;
     
@@ -749,7 +769,7 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                 }
             });
 
-            if (node.childNodes.length > 0 && !node.doNotProcessChildNodes) processElementAttributes(node, activeEventTransporter, components);
+            if (node.childNodes.length > 0 && !node.doNotProcessChildNodes) processElementAttributes(node, activeEventTransporter, components, (component ? component.data : rawData));
             if (component) {
                 processTextNodes(node, activeEventTransporter);
                 node.doNotProcessTextNodes = true;
