@@ -373,7 +373,7 @@
                             );
                         } 
                         
-                        if ($this->find($changes->username, false) != NULL) {
+                        if ($this->find($changes->username, false) != NULL && $changes->username != $user->username) {
                             return (object) array(
                                 "success" => false,
                                 "error" => "username_taken",
