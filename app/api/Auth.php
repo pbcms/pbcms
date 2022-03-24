@@ -327,3 +327,18 @@
         $res->valid = $res->success;
         Respond::success($res);
     });
+
+    $this->__registerMethod('account-policies', function() {
+        if (!Request::requireMethod('get')) die();
+
+        $policy = new Policy;
+        Respond::success(array(
+            "policies" => array(
+                "usernames-enabled" => $policy->get("usernames-enabled") == 1,
+                "usernames-required" => $policy->get("usernames-required") == 1,
+                "usernames-minimum-length" => $policy->get("usernames-minimum-length"),
+                "usernames-maximum-length" => $policy->get("usernames-maximum-length"),
+                "password-policy" => $policy->get("password-policy")
+            )
+        ));
+    });
