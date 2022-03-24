@@ -58,6 +58,10 @@
     max-width: 48%;
 }
 
+.two-fields + .input-field {
+    margin-top: 0px;
+}
+
 .submitter {
     display: flex;
     align-items: center;
