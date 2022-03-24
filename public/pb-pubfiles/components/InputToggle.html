@@ -1,0 +1,77 @@
+<data>
+    {
+        "id": null,
+        "name": null,
+        "label": null,
+        "checked": false
+    }
+</data>
+
+<component>
+    <div class="input-toggle">
+        <label :if="label"> {{ label }} </label>
+        <input type="checkbox" :bind:name :checked="checked" :bind:id="id">
+        <label :bind:for="id"></label>
+    </div>
+</component>
+
+<style>
+    .input-toggle {
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-toggle + .input-toggle {
+        margin-top: 0px;
+    }
+
+    .input-toggle label {
+        display: block;
+        padding: 10px 0px;
+        font-weight: bold;
+    }
+
+    .input-toggle input {
+        width: 0px;
+        height: 0px;
+        display: none;
+        visibility: none;
+        border: none;
+        outline: none;
+        display: absolute;
+    }
+
+    .input-toggle input + label {
+        width: 25px;
+        height: 10px;
+        margin: 6px 5px 5px 15px;
+        padding: 0px;
+        background-color: #c3c3c3;
+        border-radius: 10px;
+        position: relative;
+        transition: background-color .1s ease;
+        cursor: pointer;
+    }
+
+    .input-toggle input:checked + label {
+        background-color: var(--c-blue-light);
+    }
+
+    .input-toggle input + label::after {
+        content: '';
+        width: 18px;
+        height: 18px;
+        position: absolute;
+        left: -4px;
+        top: -4px;
+        background-color: #666;
+        border-radius: 20px;
+        transition: background-color .1s ease, left .1s ease, right .1s ease;
+    }
+
+    .input-toggle input:checked + label::after {
+        left: 11px;
+        background-color: var(--c-blue-dark);
+    }
+</style>

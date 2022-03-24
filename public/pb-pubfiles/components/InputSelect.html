@@ -1,0 +1,136 @@
+<data>
+    {
+        "name": null,
+        "selected": null,
+        "placeholder": "Select an option",
+        "options": [],
+        "openmenu": false
+    }
+</data>
+
+<component>
+    <div class="input-select" :class:open="openmenu">
+        <input :bind:name @mousedown="this.openmenu = !this.openmenu;" @blur="this.openmenu = false" :value="selected" placeholder=" " type="text" readonly>
+        <span>
+            {{ selected ? options[selected] : placeholder }}
+        </span>
+        <div class="arrow"></div>
+        <ul class="dropdown">
+            <li :for="options as option => text">
+                <p @mousedown="this.selected = option;">
+                    {{ text }}
+                </p>
+            </li>
+        </ul>
+    </div>
+</component>
+
+<style>
+    .input-select {
+        width: 100%;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    .input-select span {
+        position: absolute;
+        top: 13px;
+        left: 20px;
+        width: calc(100% - 50px);
+        padding: 0px;
+        background-color: white;
+        pointer-events: none;
+        color: #666;
+    }
+
+    .input-select .arrow {
+        width: 0; 
+        height: 0; 
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 8px solid #888;
+
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto 20px;
+        pointer-events: none;
+        transition: transform .2s ease;
+    }
+
+    .input-select.open .arrow {
+        transform: rotate(180deg);
+    }
+
+    .input-select input {
+        width: calc(100% - 52px);
+        padding: 15px 25px;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        cursor: pointer;
+
+        border: 1px solid #888;
+        border-radius: 5px;
+        transition: border-c .1s ease;
+    }
+
+    .input-select input:not(:placeholder-shown) {
+        border: 1px solid #4492eb;
+    }
+
+    .input-select.open input {
+        border: 2px solid #0059c1;
+        width: calc(100% - 54px);
+        padding: 14px 25px;
+    }
+
+    .input-select input:not(:placeholder-shown) + span {
+        color: #000;
+    }
+
+    .input-select.error input {
+        border: 2px solid red !important;
+        color: red !important;
+        width: calc(100% - 54px);
+        padding: 14px 25px;
+    }
+
+    .input-select.error span {
+        color: red !important;
+    }
+
+    .input-select ul {
+        position: absolute;
+        width: 100%;
+        top: 50px;
+        background-color: white;
+        border-radius: 5px;
+        -webkit-box-shadow: 0px 2px 6px -2px rgba(0,0,0,0.75);
+        -moz-box-shadow: 0px 2px 6px -2px rgba(0,0,0,0.75);
+        box-shadow: 0px 2px 6px -2px rgba(0,0,0,0.75);
+        overflow: hidden;
+        display: none;
+        list-style-type: none;
+        z-index: 100;
+    }
+
+    .input-select ul li p {
+        padding: 10px 20px;
+    }
+
+    .input-select ul li:hover {
+        background-color: #e5e5e5;
+        cursor: pointer;
+    }
+
+    .input-select.error ul li {
+        color: red !important;
+    }
+
+    .input-select.open ul {
+        display: block;
+    }
+</style>
