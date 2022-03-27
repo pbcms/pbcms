@@ -161,7 +161,7 @@
     });
 
     $this->__registerMethod('profile-picture', function($params) {
-        //if (!Request::requireAuthentication()) die();
+        if (!Request::requireAuthentication()) die();
         if (Request::method() == "DELETE") {
             $user = $this->user->info();
             $users = new Users;
