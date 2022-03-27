@@ -3,6 +3,7 @@
     use Helper\Validate as Validator;
     use Helper\ApiResponse as Respond;
     use Library\Users;
+    use Library\Media;
 
     $this->__registerMethod('create', function() {
         if (!Request::requireMethod('post')) die();
@@ -156,5 +157,42 @@
                     Respond::error($result->error, $result);
                 }
             }
+        }
+    });
+
+    $this->__registerMethod('profile-picture', function($params) {
+        //if (!Request::requireAuthentication()) die();
+        if (Request::method() == "DELETE") {
+            $user = $this->user->info();
+            $users = new Users;
+            $users->metaDelete('profile-picture');
+            Respond::success();
+        } else if (Request::method() == "GET") {
+            $user = $this->user->info();
+            Respond::success(array(
+                "picture" => $user->picture
+            ));
+        } else if (Request::method() == "PATCH") {
+            if (isset($params[0])) {
+                $user = $this->user->info();
+                $users = new Users;
+                $media = new Media;
+                $mediaItem = $media->info($params[0]);
+
+                if ($mediaItem) {
+                    if ($mediaItem->owner == $user->id) {
+                        $users->metaSet('profile-picture', $params[0]);
+                        Respond::success();
+                    } else {
+                        Respond::error('forbidden_media', "You are not the owner of this media item.");
+                    }
+                } else {
+                    Respond::error('unknown_media', "No media item exists with the provided uuid.");
+                }
+            } else {
+                Respond::error('missing_information', "No uuid of a media item was provided.");
+            }
+        } else {
+            Respond::error('invalid_request_method', "The request was made with an incorrect request method. (The 'GET', 'PATCH' or 'DELETE' method is required)");
         }
     });
