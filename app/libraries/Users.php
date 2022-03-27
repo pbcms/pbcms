@@ -268,13 +268,24 @@
                 $res->id = intval($res->id);
                 if (!isset($res->type)) $res->type = 'local';
 
-                $picture = $this->db->query("SELECT * FROM `" . DATABASE_TABLE_PREFIX . "media` WHERE `owner`='" . $res->id . "' ORDER BY `id` DESC");
-                if ($picture->num_rows > 0) {
-                    $picture = (object) $picture->fetch_assoc();
-                    $res->picture = (object) array(
-                        "path" => "/pb-pubfiles/media/" . $picture->uuid . '.' . $picture->ext,
-                        "url" => SITE_LOCATION . "pb-pubfiles/media/" . $picture->uuid . '.' . $picture->ext
-                    );
+                $picture = $this->metaGet($res->id, 'profile-picture');
+                if ($picture) {
+                    $media = new Media();
+                    $mediaItem = $media->info($picture);
+                    if ($mediaItem && $mediaItem->owner == $res->id) {
+                        $res->picture = (object) array(
+                            "uuid" => $mediaItem->uuid,
+                            "ext" => $mediaItem->ext,
+                            "file" => $mediaItem->uuid . "_100." . $mediaItem->ext,
+                            "path" => "/pb-pubfiles/media/" . $mediaItem->uuid . "_100." . $mediaItem->ext,
+                            "url" => SITE_LOCATION . "pb-pubfiles/media/" . $mediaItem->uuid . "_100." . $mediaItem->ext
+                        );
+                    } else {
+                        $res->picture = (object) array(
+                            "path" => "/pb-pubfiles/img/generic/default-user-black.png",
+                            "url" => SITE_LOCATION . "pb-pubfiles/img/generic/default-user-black.png"
+                        );
+                    }
                 } else {
                     $res->picture = (object) array(
                         "path" => "/pb-pubfiles/img/generic/default-user-black.png",
