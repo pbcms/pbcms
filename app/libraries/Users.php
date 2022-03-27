@@ -243,6 +243,9 @@
                 "username" => null,
                 "password" => null,
                 "picture" => (object) array(
+                    "uuid" => null,
+                    "ext" => "png",
+                    "file" => "default-user-black.png",
                     "path" => "/pb-pubfiles/img/generic/default-user-black.png",
                     "url" => SITE_LOCATION . "pb-pubfiles/img/generic/default-user-black.png"
                 ),
@@ -282,12 +285,18 @@
                         );
                     } else {
                         $res->picture = (object) array(
+                            "uuid" => null,
+                            "ext" => "png",
+                            "file" => "default-user-black.png",
                             "path" => "/pb-pubfiles/img/generic/default-user-black.png",
                             "url" => SITE_LOCATION . "pb-pubfiles/img/generic/default-user-black.png"
                         );
                     }
                 } else {
                     $res->picture = (object) array(
+                        "uuid" => null,
+                        "ext" => "png",
+                        "file" => "default-user-black.png",
                         "path" => "/pb-pubfiles/img/generic/default-user-black.png",
                         "url" => SITE_LOCATION . "pb-pubfiles/img/generic/default-user-black.png"
                     );
