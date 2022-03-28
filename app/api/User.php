@@ -165,7 +165,7 @@
         if (Request::method() == "DELETE") {
             $user = $this->user->info();
             $users = new Users;
-            $users->metaDelete('profile-picture');
+            $users->metaDelete($user->id, 'profile-picture');
             Respond::success();
         } else if (Request::method() == "GET") {
             $user = $this->user->info();
@@ -181,7 +181,7 @@
 
                 if ($mediaItem) {
                     if ($mediaItem->owner == $user->id) {
-                        $users->metaSet('profile-picture', $params[0]);
+                        $users->metaSet($user->id, 'profile-picture', $params[0]);
                         Respond::success();
                     } else {
                         Respond::error('forbidden_media', "You are not the owner of this media item.");
