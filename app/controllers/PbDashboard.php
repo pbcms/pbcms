@@ -66,9 +66,6 @@
             $this->__template($this->__useTemplate(), array(
                 "title" => "updates",
                 "section" => "updates",
-                "head" => array(
-                    ["style", "pb-pages-dashboard-updates.css", array("origin" => "pubfiles")],
-                ),
                 "body" => array(
                     ['script', 'pb-pages-dashboard-updates.js', array("origin" => "pubfiles", "properties" => "type=\"module\"")]
                 )
@@ -190,6 +187,9 @@
             $this->__template($this->__useTemplate(), array(
                 "title" => "roles",
                 "section" => "roles",
+                "head" => array(
+                    ["style", "pb-pages-dashboard-roles.css", array("origin" => "pubfiles")],
+                ),
                 "body" => array(
                     ['script', 'pb-pages-dashboard-roles.js', array("origin" => "pubfiles", "properties" => 'type="module"')]
                 )

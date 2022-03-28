@@ -1,0 +1,28 @@
+.weight-editor {
+    position: relative;
+}
+
+.weight-editor div {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.weight-editor div span {
+    border-spacing: 0px;
+    height: 50%;
+}
+
+.weight-editor div svg {
+    height: calc(100% - 10px);
+    padding: 5px 3px;
+    cursor: pointer;
+}
+
+.weight-editor div svg:hover {
+    background-color: #e5e5e5;
+}

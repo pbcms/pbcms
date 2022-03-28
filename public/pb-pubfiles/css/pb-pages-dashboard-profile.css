@@ -62,36 +62,6 @@
     margin-top: 0px !important;
 }
 
-.submitter {
-    display: flex;
-    align-items: center;
-    padding-top: 20px;
-}
-
-.submitter button {
-    margin-top: 0px !important;
-}
-
-.submitter button.red {
-    background-color: red;
-}
-
-.submitter button:not(:first-child) {
-    margin-left: 15px;
-}
-
-.submitter .message {
-    padding-left: 15px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 1.5s ease;
-}
-
-.submitter .message.show {
-    opacity: 1;
-    transition: opacity .1s ease;
-}
-
 .profile-picture {
     display: flex;
 }
