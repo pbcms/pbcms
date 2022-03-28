@@ -1,0 +1,11 @@
+#module-repositories .repo-actions a:not(:hover) {
+    text-decoration: none;
+}
+
+#module-repositories .repo-actions a.red {
+    color: red;
+}
+
+#module-repositories .repo-actions span {
+    margin: 0px 10px;
+}

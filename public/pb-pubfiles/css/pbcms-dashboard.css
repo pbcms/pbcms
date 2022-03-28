@@ -791,8 +791,8 @@ html, body {
     text-align: left;
 }
 
-.content table td input, 
-.content table th input {
+.content table td > input, 
+.content table th > input {
     background-color: transparent;
     border: none;
     outline: none;
