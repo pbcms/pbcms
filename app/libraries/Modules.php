@@ -288,7 +288,7 @@
                         if ($zip->extractTo(DYNAMIC_DIR . '/modules/' . $module->module)) {
                             unlink($filename);
                             if ($root !== '') {
-                                if (!\Helper\copyRecursive(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root, DYNAMIC_DIR . '/modules/' . $module->module . '/')) {
+                                if (\Helper\copyRecursive(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root, DYNAMIC_DIR . '/modules/' . $module->module . '/')) {
                                     return ($this->deleteDirectory(DYNAMIC_DIR . '/modules/' . $module->module . '/' . $root) ? 1 : -8);
                                 } else {
                                     return -7;
