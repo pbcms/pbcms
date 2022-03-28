@@ -279,9 +279,9 @@
                         $res->picture = (object) array(
                             "uuid" => $mediaItem->uuid,
                             "ext" => $mediaItem->ext,
-                            "file" => $mediaItem->uuid . "_100." . $mediaItem->ext,
-                            "path" => "/pb-pubfiles/media/" . $mediaItem->uuid . "_100." . $mediaItem->ext,
-                            "url" => SITE_LOCATION . "pb-pubfiles/media/" . $mediaItem->uuid . "_100." . $mediaItem->ext
+                            "file" => $mediaItem->uuid . "." . $mediaItem->ext,
+                            "path" => "/pb-pubfiles/media/" . $mediaItem->uuid . "." . $mediaItem->ext,
+                            "url" => SITE_LOCATION . "pb-pubfiles/media/" . $mediaItem->uuid . "." . $mediaItem->ext
                         );
                     } else {
                         $res->picture = (object) array(
