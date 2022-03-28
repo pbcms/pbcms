@@ -398,6 +398,7 @@ html, body {
     background-color: white;
     border-radius: 10px;
     position: relative;
+    box-shadow: 0px 0px 0px rgb(0 0 0 / 50%), 0 10px 30px rgb(0 0 0 / 10%);
 }
 
 .content section.no-padding,
@@ -416,6 +417,7 @@ html, body {
 .content section.transparent,
 .content .section.transparent {
     background-color: transparent !important;
+    box-shadow: unset !important;
 }
 
 .content section.overflow-scroll,
@@ -475,6 +477,7 @@ html, body {
     padding: 0px;
     padding-bottom: 15px;
     padding-top: 10px;
+    box-shadow: unset !important;
 }
 
 .content section.page-introduction.columns,
