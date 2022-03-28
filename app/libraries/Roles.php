@@ -114,7 +114,7 @@
                         $sql .= " `$key`='$value'";
                     }
 
-                    $sql .= " `updated`=CURRENT_TIMESTAMP() WHERE `id`=" . $role->id;
+                    $sql .= ", `updated`=CURRENT_TIMESTAMP() WHERE `id`='" . $role->id . "'";
                     $res = $this->db->query($sql);
                     return (object) array(
                         "success" => true
