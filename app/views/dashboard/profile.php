@@ -39,3 +39,30 @@
         </p>
     </div>
 </section>
+
+<section class="profile-picture">
+    <div class="picture">
+        <label for="uploader">
+            <img :bind:src="picture.url">
+        </label>
+    </div>
+    <form class="controls" @submit="submitter(event)">
+        <input type="file" id="uploader" name="file" @input="pictureSelected(event)">
+        
+        <label for="uploader" class="button">
+            Upload new picture
+        </label>
+
+        <div class="submitter">
+            <button>
+                Save
+            </button>
+            <button type="button" @click="deletePicture()" class="red">
+                Delete
+            </button>
+            <p class="message" :class:show="showMessage">
+                {{ message }}
+            </p>
+        </div>
+    </form>
+</section>

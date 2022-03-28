@@ -158,6 +158,80 @@ PbAuth.apiInstance().get('user/info').then(async res => {
             })
         });
 
+        const profilepicture = new Rable({
+            data: {
+                picture: {...res.data.user.picture},
+                message: '',
+                showMessage: false,
+
+                submitter(e) {
+                    e.preventDefault();
+                    const data = new FormData(e.target);
+                    const api  = PbAuth.apiInstance();
+
+                    data.append('type', 'profilepicture');
+                    data.append('public', '1');
+                    api.post('media/create', data, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }).then(res => {
+                        if (res.data && res.data.success) {
+                            api.patch('user/profile-picture/' + res.data.uuid).then(res => {
+                                if (res.data && res.data.success) {
+                                    this.displayMessage(`Profile picture updated!`);
+
+                                    api.get('user/profile-picture').then(res => {
+                                        if (res.data && res.data.success) {
+                                            this.picture = res.data.picture;
+                                            profileoverview.data.picture = res.data.picture;
+                                        }
+                                    });
+                                } else {
+                                    this.displayMessage(`${res.data.message} (${res.data.error})`, true);
+                                }
+                            })
+                        } else {
+                            this.displayMessage(`${res.data.message} (${res.data.error})`, true);
+                        }
+                    })
+                },
+
+                deletePicture() {
+                    const api = PbAuth.apiInstance();
+                    api.delete('user/profile-picture').then(res => {
+                        if (res.data && res.data.success) {
+                            this.displayMessage(`Profile picture updated!`);
+
+                            api.get('user/profile-picture').then(res => {
+                                if (res.data && res.data.success) {
+                                    this.picture = res.data.picture;
+                                    profileoverview.data.picture = res.data.picture;
+                                }
+                            });
+                        } else {
+                            this.displayMessage(`${res.data.message} (${res.data.error})`, true);
+                        }
+                    });
+                },
+
+                pictureSelected(e) {
+                    const [file] = e.target.files;
+                    this.picture.url = URL.createObjectURL(file);
+                },
+
+                displayMessage(msg, persistant = false) {
+                    this.message = msg;
+                    this.showMessage = true;
+                    if (!persistant) setTimeout(() => {
+                        if (msg == this.message) this.showMessage = false;
+                    }, 2000);
+                }
+            }
+        });
+
+        profilepicture.mount('.profile-picture');
+
         PB_API.get('auth/account-policies').then(res => {
             if (res.data.success) {
                 profileeditor.data.usernames_enabled = res.data.policies['usernames-enabled'];
