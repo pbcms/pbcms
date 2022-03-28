@@ -93,7 +93,7 @@
         if ($this->user->check('role.delete')) {
             if (isset($params[0])) {
                 $roles = new Roles;
-                $res = $roles->update($params[0]);
+                $res = $roles->delete($params[0]);
                 if ($res->success) {
                     Respond::success();
                 } else {
