@@ -853,6 +853,48 @@ html, body {
     display: none;
 }
 
+.content .submitter {
+    display: flex;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.content .submitter button {
+    margin-top: 0px !important;
+}
+
+.content .submitter button.red {
+    background-color: red;
+}
+
+.content .submitter button:not(:first-child) {
+    margin-left: 15px;
+}
+
+.content .submitter .message {
+    padding-left: 15px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.5s ease;
+}
+
+.content .submitter .message.show {
+    opacity: 1;
+    transition: opacity .1s ease;
+}
+
+.content table .multiple-actions a:not(:hover) {
+    text-decoration: none;
+}
+
+.content table .multiple-actions a.red {
+    color: red;
+}
+
+.content table .multiple-actions span {
+    margin: 0px 10px;
+}
+
 /* ANIMATIONS */
 
 @-webkit-keyframes rotate {

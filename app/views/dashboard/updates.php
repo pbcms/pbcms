@@ -40,7 +40,7 @@
                 <td>
                     {{ repo.enabled ? "Yes" : "No" }}
                 </td>
-                <td class="repo-actions">
+                <td class="multiple-actions">
                     <a href="#" @click="refreshRepo(index, event)">
                         refresh
                     </a>
@@ -68,7 +68,7 @@
                 <td>
                     <input-toggle &new_repo_enabled="checked"></input-toggle>
                 </td>
-                <td class="repo-actions">
+                <td class="multiple-actions">
                     <a href="#" @click="saveRepo(event)">
                         save repository
                     </a>
