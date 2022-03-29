@@ -61,7 +61,7 @@
 
             Respond::success((object) array(
                 "users" => array_map(function($user) {
-                    unset($user['password']);
+                    unset($user->password);
                     return $user;
                 }, $result)
             ));
