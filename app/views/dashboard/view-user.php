@@ -1,27 +1,71 @@
-<?php
-    $user = $data['user'];
-?>
+<section class="profile-overview">
+    <div class="profile-image">
+        <img :bind:src="picture.url">
+    </div>
+    <div class="profile-details" test.atttr='1'>
+        <h1 id="user-fullname">
+            {{ firstname }} {{ lastname }}
+        </h1>
+        <p id="user-properties">
+            <span class="capitalize">
+                {{ type }} account
+            </span>
+            <span>
+                {{ email }}
+            </span>
+            <span :if="username">
+                {{ username }}
+            </span>
+        </p>
+    </div>
+</section>
 
-<section class="profile-card">
-    <div class="user-overview">
-        <div class="left">
-            <div class="profile-picture">
-                <img src="<?php echo $user->picture->url; ?>" alt="<?php echo $user->firstname; ?>'s profile picture.">
-            </div>
-            <div class="user-main">
-                <h1>
-                    <?php echo $user->fullname; ?>
-                </h1>
-                <div class="details">
-                    <span><?php echo $user->email; ?></span>
-                    <span><?php echo $user->username; ?></span>
-                    <span><?php echo ucfirst(strtolower($user->status)); ?></span>
-                </div>
-            </div>
-        </div>
-        <div class="user-dates">
-            <span>Created: <?php echo $user->created; ?></span>
-            <span>Updated: <?php echo $user->updated; ?></span>
-        </div>
+<section class="no-margin transparent overflow-scroll" id="userroles">
+    <table>
+        <thead>
+            <th class="smaller">
+                ID
+            </th>
+            <th>
+                Name
+            </th>
+            <th class="bigger">
+                Description
+            </th>
+            <th class="smaller">
+                Weight
+            </th>
+            <th>
+                Assigned
+            </th>
+        </thead>
+        <tbody>
+            <tr :for="role in roles">
+                <td>
+                    {{role.id}}
+                </td>
+                <td>
+                    {{role.name}}
+                </td>
+                <td>
+                    {{role.description}}
+                </td>
+                <td>
+                    {{role.weight}}
+                </td>
+                <td>
+                    <input-toggle &role.assigned="checked"></input-toggle>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="submitter">
+        <button @click="saveRoles()">
+            Save roles
+        </button>
+        <p class="message" :class:show="showMessage">
+            {{ message }}
+        </p>
     </div>
 </section>

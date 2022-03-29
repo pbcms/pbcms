@@ -1,24 +1,3 @@
-<?php
-    use Library\Users;
-    use Library\Policy;
-
-    $users = new Users;
-    $policy = new Policy;
-
-    $userlist = $users->list();
-    $usernamesEnabled = $policy->get('usernames-enabled') == '1';
-
-    $tableContent = '';
-    foreach($userlist as $user) {
-        $tableContent .= renderRow((object) $user, $usernamesEnabled);
-    }
-
-    function renderRow($item, $usernamesEnabled) {
-        $result = '<tr id="' . $item->id. '"><td>' . $item->id . '</td><td>' . $item->firstname . ' ' . $item->lastname . '</td><td>' . $item->email . '</td>' . ($usernamesEnabled ? '<td>' . ($item->username ? $item->username : '') . '</td>' : '') . '<td>' . ucfirst(strtolower($item->status)) . '</td><td>' . $item->created . '</td><td>' . $item->updated . '</td></tr>';
-        return $result;
-    }
-?>
-
 <section class="page-introduction">
     <h1>
         <?php echo $this->lang->get("pages.pb-dashboard.users.page-title", "Manage users"); ?>
@@ -34,29 +13,57 @@
             <th class="smaller">
                 ID
             </th>
-            <th>
+            <th class="medium">
                 Name
             </th>
             <th>
                 E-mail
             </th>
-            <?php
-                if ($usernamesEnabled) echo '<th>Username</th>';
-            ?>
+            <th>
+                Username
+            </th>
             <th>
                 Status
             </th>
-            <th>
+            <th class="medium">
                 Created
             </th>
-            <th>
+            <th class="medium">
                 Updated
+            </th>
+            <th>
+                Actions
             </th>
         </thead>
         <tbody>
-            <?php
-                echo $tableContent;
-            ?>
+            <tr :for="user in users">
+                <td>
+                    {{ user.id }}
+                </td>
+                <td>
+                    {{ user.fullname }}
+                </td>
+                <td>
+                    {{ user.email }}
+                </td>
+                <td>
+                    {{ user.username }}
+                </td>
+                <td>
+                    {{ user.status }}
+                </td>
+                <td>
+                    {{ user.created }}
+                </td>
+                <td>
+                    {{ user.updated }}
+                </td>
+                <td>
+                    <a href="#" @click="location.href=SITE_LOCATION + 'pb-dashboard/users/' + user.id">
+                        manage
+                    </a>
+                </td>
+            </tr>
         </tbody>
     </table>
 </section>

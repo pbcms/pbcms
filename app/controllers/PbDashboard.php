@@ -116,7 +116,7 @@
                             ['style', 'pb-pages-dashboard-view-user.css', array("origin" => "pubfiles")]
                         ),
                         "body" => array(
-                            ['script', 'pb-pages-dashboard-view-user.js', array("origin" => "pubfiles")]
+                            ['script', 'pb-pages-dashboard-view-user.js', array("origin" => "pubfiles", "properties" => "type=\"module\"")]
                         )
                     ));
                 } else {
@@ -132,7 +132,7 @@
                     "title" => "users",
                     "section" => "users",
                     "body" => array(
-                        ['script', 'pb-pages-dashboard-users.js', array("origin" => "pubfiles")]
+                        ['script', 'pb-pages-dashboard-users.js', array("origin" => "pubfiles", "properties" => "type=\"module\"")]
                     )
                 ));
             }
