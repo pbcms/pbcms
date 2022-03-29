@@ -339,7 +339,45 @@
 
             $res = $this->db->query($sql);
             if ($res->num_rows > 0) {
-                return (array) $res->fetch_all(MYSQLI_ASSOC);
+                return array_map(function($user) {
+                    $user = (object) $user;
+                    $user->id = intval($user->id);
+                    $user->fullname = $user->firstname . ' ' . $user->lastname;
+                    if (!isset($user->type)) $user->type = 'local';
+
+                    $picture = $this->metaGet($user->id, 'profile-picture');
+                    if ($picture) {
+                        $media = new Media();
+                        $mediaItem = $media->info($picture);
+                        if ($mediaItem && $mediaItem->owner == $user->id) {
+                            $user->picture = (object) array(
+                                "uuid" => $mediaItem->uuid,
+                                "ext" => $mediaItem->ext,
+                                "file" => $mediaItem->uuid . "." . $mediaItem->ext,
+                                "path" => "/pb-pubfiles/media/" . $mediaItem->uuid . "." . $mediaItem->ext,
+                                "url" => SITE_LOCATION . "pb-pubfiles/media/" . $mediaItem->uuid . "." . $mediaItem->ext
+                            );
+                        } else {
+                            $user->picture = (object) array(
+                                "uuid" => null,
+                                "ext" => "png",
+                                "file" => "default-user-black.png",
+                                "path" => "/pb-pubfiles/img/generic/default-user-black.png",
+                                "url" => SITE_LOCATION . "pb-pubfiles/img/generic/default-user-black.png"
+                            );
+                        }
+                    } else {
+                        $user->picture = (object) array(
+                            "uuid" => null,
+                            "ext" => "png",
+                            "file" => "default-user-black.png",
+                            "path" => "/pb-pubfiles/img/generic/default-user-black.png",
+                            "url" => SITE_LOCATION . "pb-pubfiles/img/generic/default-user-black.png"
+                        );
+                    }
+
+                    return $user;
+                }, (array) $res->fetch_all(MYSQLI_ASSOC));
             } else {
                 return array();
             }
@@ -575,6 +613,7 @@
         public function check($user, $permission, $extendedResult = false) {
             $id = $this->users->getId($user);
             if ($id === false) return false;
+            $roleManager = new Roles;
             $roles = $this->relations->list(array(
                 "type" => 'user:role',
                 "origin" => $id,
@@ -586,9 +625,13 @@
 
             foreach($roles as $role) {
                 $role = (array) $role;
-                $res = $this->permissions->check("role", $role[(explode(':', $role['type'])[0] == 'role' ? 'origin' : 'target')], $permission, true);
-                if ($res->grantSize > $grantSize) $grantSize = $res->grantSize;
-                if ($res->rejectSize > $rejectSize) $rejectSize = $res->rejectSize;
+                $role = $roleManager->find($role[(explode(':', $role['type'])[0] == 'role' ? 'origin' : 'target')]);
+
+                if ($role) {
+                    $res = $this->permissions->check("role", $role->id, $permission, true);
+                    if ($res->grantSize - $role->weight > $grantSize) $grantSize = $res->grantSize - $role->weight;
+                    if ($res->rejectSize - $role->weight > $rejectSize) $rejectSize = $res->rejectSize - $role->weight;
+                }
             }
 
             $res = $this->permissions->check("user", $id, $permission, true);
