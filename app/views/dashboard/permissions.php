@@ -17,14 +17,9 @@
     <input-field &new_permission_target="value" $placeholder="Target"></input-field>
     <input-toggle &new_permission_granted="checked" $label="Granted"></input-toggle>
 
-    <div class="submitter">
-        <button @click="createPermission()">
-            Create
-        </button>
-        <p class="message" :class:show="showMessage">
-            {{ message }}
-        </p>
-    </div>
+    <button @click="createPermission()">
+        Create
+    </button>
 </section>
 
 <section class="no-margin transparent overflow-scroll">
