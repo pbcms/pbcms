@@ -8,7 +8,7 @@
 </data>
 
 <component>
-    <div class="input-toggle">
+    <div class="input-toggle" @click>
         <label :if="label"> {{ label }} </label>
         <input type="checkbox" :bind:name :checked="checked" :bind:id="id">
         <label :bind:for="id"></label>
