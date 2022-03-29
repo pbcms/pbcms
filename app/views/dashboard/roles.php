@@ -7,6 +7,26 @@
     </p>
 </section>
 
+<section id="new-role">
+    <h2>
+        New role
+    </h2>
+
+    <br>
+    <input-field &new_role_name="value" $placeholder="Name"></input-field>
+    <input-field &new_role_description="value" $placeholder="Description"></input-field>
+    <input-field &new_role_weight="value" $placeholder="Weight" $type="number"></input-field>
+
+    <div class="submitter">
+        <button @click="createRole()">
+            Create
+        </button>
+        <p class="message" :class:show="showMessage">
+            {{ message }}
+        </p>
+    </div>
+</section>
+
 <section class="no-margin transparent overflow-scroll">
     <table>
         <thead>
@@ -64,24 +84,4 @@
             </tr>
         </tbody>
     </table>
-</section>
-
-<section id="new-role">
-    <h2>
-        New role
-    </h2>
-
-    <br>
-    <input-field &new_role_name="value" $placeholder="Name"></input-field>
-    <input-field &new_role_description="value" $placeholder="Description"></input-field>
-    <input-field &new_role_weight="value" $placeholder="Weight" $type="number"></input-field>
-
-    <div class="submitter">
-        <button @click="createRole()">
-            Create
-        </button>
-        <p class="message" :class:show="showMessage">
-            {{ message }}
-        </p>
-    </div>
 </section>
