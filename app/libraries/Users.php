@@ -27,7 +27,7 @@
 
         public function create($user) {
             $user = (object) $user;
-            if (!isset($user->type) && strtolower($user->type) != 'local') {
+            if (!isset($user->type) || strtolower($user->type) == 'local') {
                 array_push($this->required, 'password');
                 array_push($this->allowed, 'password');
             }
