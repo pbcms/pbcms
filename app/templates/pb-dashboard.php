@@ -21,6 +21,7 @@
     use Library\Policy;
     use Registry\Event;
     use Registry\Dashboard;
+    use Helper\Header;
 
     $meta = new Meta;
     $meta->set('robots', 'index, nofollow');
@@ -47,6 +48,18 @@
     $userModel = $this->__model("user");
     $user = $userModel->info();
 
+    if (isset($data['section'])) {
+        $sectionDetails = Dashboard::get($data['section']);
+        if ($sectionDetails && isset($sectionDetails['permissions'])) {
+            $passed = false;
+            foreach($sectionDetails['permissions'] as $permission) if ($userModel->check($permission)) $passed = true;
+            if (!$passed) {
+                Header::Location(SITE_LOCATION . 'pb-dashboard/overview');
+                die();
+            }
+        }
+    }
+
     $policy = new Policy;
     $supportLocation = $policy->get('support-location');
     if (!$supportLocation) $supportLocation = 'https://support.pbcms.io/';
@@ -54,74 +67,6 @@
     if (!$docsLocation) $docsLocation = 'https://docs.pbcms.io/';
 
     if (!isset($data['backup_section'])) $data['backup_section'] = null;
-    $sidebarItems = (object) array(
-        "no_category" => array(
-            [
-                "title" => $this->lang->get('templates.pb-dashboard.section-titles.overview', "Overview"),
-                "section" => "overview",
-                "icon" => "disc"
-            ],
-            [
-                "title" => $this->lang->get('templates.pb-dashboard.section-titles.updates', "Updates"),
-                "section" => "updates",
-                "icon" => "refresh-cw",
-                "permissions" => ["site.administration.perform-updates", "module.update"]
-            ]
-        ),
-        "content" => array(
-            [
-                "title" => $this->lang->get('templates.pb-dashboard.section-titles.media', "Media"),
-                "section" => "media",
-                "icon" => "image"
-            ],
-            [
-                "title" => $this->lang->get('templates.pb-dashboard.section-titles.virtual-paths', "Virtual paths"),
-                "section" => "virtual-paths",
-                "icon" => "list",
-                "permissions" => ["router.virtual-path.list"]
-            ]
-        ),
-        "configuration" => array(
-            [
-                "title" => $this->lang->get('templates.pb-dashboard.section-titles.profile', "Profile"),
-                "section" => "profile",
-                "icon" => "user"
-            ],
-            [
-                "title" => $this->lang->get('templates.pb-dashboard.section-titles.users', "Users"),
-                "section" => "users",
-                "icon" => "users",
-                "permissions" => ["user.list"]
-            ],
-            [
-                "title" => $this->lang->get('templates.pb-dashboard.section-titles.modules', "Modules"),
-                "section" => "modules",
-                "icon" => "package",
-                "permissions" => ["module.list"]
-            ],
-            [
-                "title" => $this->lang->get('templates.pb-dashboard.section-titles.roles', "Roles"),
-                "section" => "roles",
-                "icon" => "folder",
-                "permissions" => ["role.list"]
-            ],
-            [
-                "title" => $this->lang->get('templates.pb-dashboard.section-titles.permissions', "Permissions"),
-                "section" => "permissions",
-                "icon" => "shield",
-                "permissions" => ["permission.list"]
-            ],
-            [
-                "title" => $this->lang->get('templates.pb-dashboard.section-titles.policies', "Policies"),
-                "section" => "policies",
-                "icon" => "book",
-                "permissions" => ["policy.list"]
-            ]
-        ),
-        "other" => array(
-
-        )
-    );
 
     $activeSection = $data['section'];
     $backupSection = $data['backup_section'];
@@ -315,7 +260,7 @@
             <div class="content-container">
                 <div class="content-shadow"></div>
                 <div class="content">
-                    <?php echo $content; ?>
+                    <?=$content?>
                 </div>
             </div>
         </div>
