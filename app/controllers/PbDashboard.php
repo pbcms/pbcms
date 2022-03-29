@@ -131,6 +131,9 @@
                 $this->__template($this->__useTemplate(), array(
                     "title" => "users",
                     "section" => "users",
+                    "head" => array(
+                        ['style', 'pb-pages-dashboard-users.css', array("origin" => "pubfiles")]
+                    ),
                     "body" => array(
                         ['script', 'pb-pages-dashboard-users.js', array("origin" => "pubfiles", "properties" => "type=\"module\"")]
                     )

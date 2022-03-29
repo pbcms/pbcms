@@ -1,0 +1,12 @@
+.two-fields {
+    display: flex;
+    justify-content: space-between;
+}
+
+.two-fields .input-field {
+    max-width: 48%;
+}
+
+.two-fields + .input-field {
+    margin-top: 0px !important;
+}

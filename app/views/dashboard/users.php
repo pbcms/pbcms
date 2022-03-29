@@ -7,6 +7,32 @@
     </p>
 </section>
 
+<section id="new-user">
+    <h2>
+        New user
+    </h2>
+
+    <br>
+    <div class="two-fields">
+        <input-field &new_user_firstname="value" $placeholder="Firstname"></input-field>
+        <input-field &new_user_lastname="value" $placeholder="Lastname"></input-field>
+    </div>
+
+    <input-field &new_user_email="value" $placeholder="E-mail address" $type="email"></input-field>
+    <input-field &new_user_username="value" $placeholder="Username"></input-field>
+    <input-select &new_user_status="selected" &new_user_status_options="options" $placeholder="User status"></input-select>
+    <input-field &new_user_password="value" $placeholder="Password" $type="password"></input-field>
+
+    <div class="submitter">
+        <button @click="createUser()">
+            Create
+        </button>
+        <p class="message" :class:show="showMessage">
+            {{ message }}
+        </p>
+    </div>
+</section>
+
 <section class="no-margin transparent overflow-scroll">
     <table>
         <thead>

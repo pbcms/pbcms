@@ -5,6 +5,48 @@ const app = new Rable({
     data: {
         users: [],
 
+        new_user_firstname: "",
+        new_user_lastname: "",
+        new_user_email: "",
+        new_user_username: "",
+        new_user_status: "",
+        new_user_password: "",
+
+        new_user_status_options: {
+            UNVERIFIED: 'Unverified',
+            VERIFIED: "Verified",
+            LOCKED: "Locked"
+        },
+
+        message: "",
+        showMessage: false,
+
+        async createUser() {
+            const res = await api.post('user/create', {
+                firstname: this.new_user_firstname,
+                lastname: this.new_user_lastname,
+                email: this.new_user_email,
+                username: this.new_user_username,
+                status: this.new_user_status,
+                password: this.new_user_password
+            });
+
+            if (res.data && res.data.success) {
+                this.displayMessage("User created succesfully!");
+
+                this.new_user_firstname = "";
+                this.new_user_lastname = "";
+                this.new_user_email = "";
+                this.new_user_username = "";
+                this.new_user_status = "";
+                this.new_user_password = "";
+
+                await this.refreshUsers();
+            } else {
+                this.displayMessage(`${res.data.message} (${res.data.error})`, true);
+            }
+        },
+
         async refreshUsers() {
             let res = await api.get('user/list');
             if (res.data.success == undefined) {
@@ -14,10 +56,20 @@ const app = new Rable({
             } else {
                 this.users = res.data.users;
             }
+        },
+
+        displayMessage(msg, persistant = false) {
+            this.message = msg;
+            this.showMessage = true;
+            if (!persistant) setTimeout(() => {
+                if (msg == this.message) this.showMessage = false;
+            }, 2000);
         }
     }
 });
 
+await app.importComponent('input-field', SITE_LOCATION + "pb-pubfiles/components/InputField.html");
+await app.importComponent('input-select', SITE_LOCATION + "pb-pubfiles/components/InputSelect.html");
 app.mount('.content');
 
 await app.data.refreshUsers();
