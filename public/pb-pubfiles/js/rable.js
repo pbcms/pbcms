@@ -128,6 +128,24 @@ class Scheduler {
     }
 }
 
+function getProperty(obj, property) {
+    var current = obj;
+    property.split('.').forEach(prop => current = typeof current == 'object' ? current[prop] : null);
+    return current;
+}
+
+function setProperty(obj, property, value) {
+    if (!property.includes('.')) obj[property] = value;
+    var current = obj[property.split('.').slice(0, 1)];
+    property.split('.').slice(1, -1).forEach(prop => current = typeof current == 'object' ? current[prop] : null);
+    if (typeof current == 'object') {
+        current[property.split('.').slice(-1)] = value;
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function processTextNodes(el, eventTransporter) {
     let nodes = el.childNodes;
     nodes.forEach(node => {
@@ -143,7 +161,6 @@ function processTextNodes(el, eventTransporter) {
                             listener: async () => {
                                 const data = await new Promise(resolve => activeEventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
                                 const scopeData = await new Promise(resolve => activeEventTransporter.dispatchEvent(new CustomEvent('retrieveScopeData', { detail: { resolve } })));                                
-                                console.log(data);
                                 node.data = node.originalData.replaceAll(/{{(.*?)}}/g, (match, target) => {
                                     let keys = Object.keys(data);
                                     keys.push('return ' + target);
@@ -238,7 +255,7 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                 const validator = root => ({
                     get: (target, key) => {
                         if (!root && component.binders[key]) {
-                            return rawData[component.binders[key]];
+                            return getProperty(rawData, component.binders[key]);
                         } else if (typeof target[key] === 'object' && target[key] !== null) {
                             return new Proxy(target[key], validator(root ? root : key))
                         } else {
@@ -248,9 +265,19 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                     set: (obj, prop, value) => {
                         if (typeof value == 'function') return;
                         if (dataImportFinished && !root && component.binders[prop]) {
-                            rawData[component.binders[prop]] = value;
+                            setProperty(rawData, component.binders[prop], value);
                         } else {
-                            obj[prop] = value;
+                            let processed = (typeof value == 'string' ? value.replaceAll(/{{(.*?)}}/g, (match, target) => {
+                                switch(target) {
+                                    case 'rnd':
+                                    case 'random':
+                                        return 'random-' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                                    default:
+                                        return "UNKNOWN";
+                                }
+                            }) : value);
+
+                            obj[prop] = processed;
                         }
 
                         component.eventTransporter.dispatchEvent(new CustomEvent('triggerListeners', { detail: { listeners: 'data:updated', additionalInformation: root ? root : prop } } ));
@@ -374,7 +401,7 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
 
                                 break;
                             case 'data':
-                                if (processedName[1] && attribute.value !== '') component.data[processedName[1]] = attribute.value;
+                                if (processedName[1] && attribute.value !== '') setProperty(component.data, processedName[1], attribute.value);
                                 break;
                             case 'if':
                                 if (logic_if[latestif]) latestif++;
@@ -519,7 +546,6 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
 
                                                     const validator = root => ({
                                                         get: (obj, prop) => {
-                                                            console.log(prop);
                                                             if (prop == value) {
                                                                 return data[target][item];
                                                             } else if (key && prop == key) {
@@ -573,11 +599,11 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                             var target = attribute.value;
                             if (typeof node.value == 'string') {
                                 const data = await new Promise(resolve => activeEventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
-                                node.value = data[target];
+                                node.value = getProperty(data, target);
                                 activeEventTransporter.dispatchEvent(new CustomEvent('registerSchedulerValidator', {
                                     detail: {
                                         type: 'dom-synced',
-                                        validator: () => node.value == data[target]
+                                        validator: () => node.value == getProperty(data, target)
                                     }
                                 }));
 
@@ -587,10 +613,10 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                                         listener: async item => {
                                             if (!item || item == target) {
                                                 const denyList = ['object', 'function']
-                                                if (denyList.includes(typeof node.value) || denyList.includes(typeof data[target])) {
+                                                if (denyList.includes(typeof node.value) || denyList.includes(typeof getProperty(data, target))) {
                                                     console.error('Cannot sync objects or functions.');
-                                                } else if (node.value !== data[target]) {
-                                                    node.value = data[target];
+                                                } else if (node.value !== getProperty(data, target)) {
+                                                    node.value = getProperty(data, target);
                                                     activeEventTransporter.dispatchEvent(new CustomEvent('triggerScheduledTasks'));
                                                 }
                                             }
@@ -600,20 +626,20 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
 
                                 node.addEventListener('input', e => {
                                     const denyList = ['object', 'function']
-                                    if (denyList.includes(typeof node.value) || denyList.includes(typeof data[target])) {
+                                    if (denyList.includes(typeof node.value) || denyList.includes(typeof getProperty(data, target))) {
                                         console.error('Cannot sync objects or functions.');
-                                    } else if (node.value !== data[target]) {
-                                        data[target] = node.value;
+                                    } else if (node.value !== getProperty(data, target)) {
+                                        setProperty(data, target, node.value);
                                         activeEventTransporter.dispatchEvent(new CustomEvent('triggerScheduledTasks'));
                                     }
                                 });
                             } else if (node.isContentEditable) {
                                 const data = await new Promise(resolve => activeEventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
-                                node.innerText = data[target];
+                                node.innerText = getProperty(data, target);
                                 activeEventTransporter.dispatchEvent(new CustomEvent('registerSchedulerValidator', {
                                     detail: {
                                         type: 'dom-synced',
-                                        validator: () => node.innerText == data[target]
+                                        validator: () => node.innerText == getProperty(data, target)
                                     }
                                 }));
 
@@ -623,10 +649,10 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                                         listener: async item => {
                                             if (!item || item == target) {
                                                 const denyList = ['object', 'function']
-                                                if (denyList.includes(typeof node.innerText) || denyList.includes(typeof data[target])) {
+                                                if (denyList.includes(typeof node.innerText) || denyList.includes(typeof getProperty(data, target))) {
                                                     console.error('Cannot sync objects or functions.');
-                                                } else if (node.innerText !== data[target]) {
-                                                    node.innerText = data[target];
+                                                } else if (node.innerText !== getProperty(data, target)) {
+                                                    node.innerText = getProperty(data, target);
                                                     activeEventTransporter.dispatchEvent(new CustomEvent('triggerScheduledTasks'));
                                                 }
                                             }
@@ -636,10 +662,10 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
 
                                 node.addEventListener('input', e => {
                                     const denyList = ['object', 'function']
-                                    if (denyList.includes(typeof node.innerText) || denyList.includes(typeof data[target])) {
+                                    if (denyList.includes(typeof node.innerText) || denyList.includes(typeof getProperty(data, target))) {
                                         console.error('Cannot sync objects or functions.');
-                                    } else if (node.innerText !== data[target]) {
-                                        data[target] = node.innerText;
+                                    } else if (node.innerText !== getProperty(data, target)) {
+                                        setProperty(data, target, node.innerText);
                                         activeEventTransporter.dispatchEvent(new CustomEvent('triggerScheduledTasks'));
                                     }
                                 });
@@ -651,20 +677,20 @@ function processElementAttributes(el, eventTransporter, components, rawData) {
                             var target = attribute.value;
                             if (typeof node.checked == 'boolean') {
                                 const data = await new Promise(resolve => activeEventTransporter.dispatchEvent(new CustomEvent('retrieveData', { detail: { resolve } })));
-                                node.checked = data[target];
+                                node.checked = getProperty(data, target);
                                 activeEventTransporter.dispatchEvent(new CustomEvent('registerListener', {
                                     detail: {
                                         type: 'data:updated',
                                         listener: async item => {
                                             if (!item || item == target) {
-                                                if (node.checked !== data[target]) node.checked = data[target];
+                                                if (node.checked !== getProperty(data, target)) node.checked = getProperty(data, target);
                                             }
                                         }
                                     }
                                 }));
 
                                 node.addEventListener('input', e => {
-                                    if (data[target] !== node.checked) data[target] = node.checked;
+                                    if (getProperty(data, target) !== node.checked) setProperty(data, target, node.checked);
                                 });
                             }
 
