@@ -9,7 +9,7 @@
         private $policy = NULL;
 
         private $required = array("firstname", "lastname", "email");
-        private $allowed = array("firstname", "lastname", "email", "type", "status");
+        private $allowed = array("firstname", "lastname", "email", "password", "type", "status");
         private $updateAllowed = array("firstname", "lastname", "email", "type", "status", "password");
         private $filterAllowedProperties = array("id", "firstname", "lastname", "email", "username", "type", "status", "created", "updated");
         private $userStatusses = array("UNVERIFIED", "VERIFIED", "LOCKED");
@@ -29,7 +29,6 @@
             $user = (object) $user;
             if (!isset($user->type) || strtolower($user->type) == 'local') {
                 array_push($this->required, 'password');
-                array_push($this->allowed, 'password');
             }
 
             $user = Validator::trimObject($user);
