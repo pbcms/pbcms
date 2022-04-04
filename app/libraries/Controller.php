@@ -4,6 +4,7 @@
     use Library\Router;
     use Library\Policy;
     use Library\Language;
+    use Registry\ErrorPage;
     use Helper\ApiResponse as Respond;
 
     class Controller {
@@ -104,28 +105,35 @@
             }
         }
 
-        public function __displayError($error) {
+        public function __displayError($error, $data = []) {
             $policy = new Policy;
             $router = new Router;
+            $stock = true;
             $request = $router->documentRequest();
+
             if ($error == 404 && ($request->url == '' || $request->url == '/') && intval($policy->get('show-welcome-page')) === 1) {
                 include_once APP_DIR . '/views/pages/error-welcome-page.php';
             } else {
-                if (file_exists(APP_DIR . '/views/pages/error-' . $error . '.php')) {
+                if (ErrorPage::exists($error)) {
+                    $stock = false;
+                    ErrorPage::call($error, $data);
+                } else if (file_exists(APP_DIR . '/views/pages/error-' . $error . '.php')) {
                     include_once APP_DIR . '/views/pages/error-' . $error . '.php';
                 } else {
                     include_once APP_DIR . '/views/pages/error-unknown.php';
                 }
             }
 
-            $content = ob_get_contents();
-            ob_end_clean();
+            if ($stock) {
+                $content = ob_get_contents();
+                ob_end_clean();
 
-            $data['copyright'] = "&copy; " . SITE_TITLE . " " . date("Y");
+                $data['copyright'] = "&copy; " . SITE_TITLE . " " . date("Y");
 
-            include_once APP_DIR . '/templates/pb-error.php';
+                include_once APP_DIR . '/templates/pb-error.php';
+            }
+
             http_response_code($error);
-
             die();
         }
     }

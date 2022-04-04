@@ -151,6 +151,7 @@
             require_once 'registries/PermissionHints.php';
             require_once 'registries/Store.php';
             require_once 'registries/Route.php';
+            require_once 'registries/ErrorPage.php';
         }
     }
 
