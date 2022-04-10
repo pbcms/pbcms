@@ -5,6 +5,7 @@
     require_once APP_DIR . '/cli/Help.php';
     require_once APP_DIR . '/cli/Info.php';
     require_once APP_DIR . '/cli/Ping.php';
+    require_once APP_DIR . '/cli/Cron.php';
     require_once APP_DIR . '/cli/Database.php';
     require_once APP_DIR . '/cli/User.php';
     require_once APP_DIR . '/cli/Permission.php';
@@ -23,6 +24,7 @@
             "shell" => false,
             "ping" => false,
             "exit" => false,
+            "cron" => "Execute and list available cron jobs.",
             "database" => "A utility to migrate and rollback the database.",
             "user" => "Quickly administer users from the command-line, or create temporary credentials.",
             "permission" => "Grant or revoke permissions to groups and users.",

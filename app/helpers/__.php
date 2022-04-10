@@ -54,3 +54,10 @@
 
         return $success;
     }
+
+    function prepareFunctionNaming($str) {
+        $str = str_replace('-', ' ', $str);
+        $str = ucwords($str);
+        $str = str_replace(' ', '', $str);
+        return $str;
+    }

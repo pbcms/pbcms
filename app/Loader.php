@@ -135,6 +135,7 @@
         private function loadSources() {
             require_once 'sources/dashboard-sidebar.php';
             require_once 'sources/default-permissions.php';
+            require_once 'sources/cron-jobs.php';
         }
 
         /**
@@ -152,6 +153,7 @@
             require_once 'registries/Store.php';
             require_once 'registries/Route.php';
             require_once 'registries/ErrorPage.php';
+            require_once 'registries/Cron.php';
         }
     }
 
