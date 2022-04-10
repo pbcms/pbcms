@@ -2,6 +2,7 @@
     namespace Command;
 
     use \Library\Cli;
+    use \Library\Objects;
     use \Registry\Cron as CronJobs;
 
     class Cron {
@@ -47,6 +48,13 @@
                         foreach($jobs as $name) {
                             $this->run($name, $options);
                         }
+
+                        $time = time();
+                        if ($options['verbose']) $cli->printLine();
+                        if ($options['verbose']) $cli->printLine("Updating \"last-ran-system\" status to \"$time\".");
+                        $object = new Objects;
+                        if (!$object->exists('system', 'cron')) $object->create('system', 'cron');
+                        $object->set('system', 'cron', 'last-ran-system', $time);
                     }
                     
                     if ($options['verbose']) $cli->printLine();
