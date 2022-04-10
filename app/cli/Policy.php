@@ -181,21 +181,21 @@
 
             $cli->printLine("Actions: ");
             $cli->printLine();
-            $cli->printLine("  \e[92mlist\e[39m                    List all current policies.");
-            $cli->printLine("  \e[92mset\e[39m [\e[96moptions\e[39m]           Set the value of a policy.");
-            $cli->printLine("  \e[92mget\e[39m [\e[96moptions\e[39m]           Get the value of a policy.");
-            $cli->printLine("  \e[92mexists\e[39m [\e[96moptions\e[39m]        Check if a policy exists.");
-            $cli->printLine("  \e[92mdelete\e[39m [\e[96moptions\e[39m]        Delete a policy.");
+            $cli->printLine("  \e[92mlist\e[39m                        List all current policies.");
+            $cli->printLine("  \e[92mset\e[39m [\e[96moptions\e[39m]               Set the value of a policy.");
+            $cli->printLine("  \e[92mget\e[39m [\e[96moptions\e[39m]               Get the value of a policy.");
+            $cli->printLine("  \e[92mexists\e[39m [\e[96moptions\e[39m]            Check if a policy exists.");
+            $cli->printLine("  \e[92mdelete\e[39m [\e[96moptions\e[39m]            Delete a policy.");
 
             $cli->printLine();
 
             $cli->printLine("Options: ");
             $cli->printLine();
-            $cli->printLine("  \e[96m--name\e[39m, \e[96m-n\e[39m              The name of the policy.                 \e[90mname-of-policy\e[39m");
-            $cli->printLine("  \e[96m--value\e[39m, \e[96m-v\e[39m             The value of the migration:             \e[90mexample-value\e[39m");
-            $cli->printLine("  \e[96m--limit\e[39m, \e[96m-l\e[39m             Limit X amount of result:               \e[90mx\e[39m");
-            $cli->printLine("  \e[96m--offset\e[39m, \e[96m-o\e[39m            Skip the first amount of results by X:  \e[90mx\e[39m");
-            $cli->printLine("  \e[96m--confirm\e[39m               Confirm an action.");
+            $cli->printLine("  \e[96m--name\e[39m, \e[96m-n\e[39m                  The name of the policy.                 \e[90mname-of-policy\e[39m");
+            $cli->printLine("  \e[96m--value\e[39m, \e[96m-v\e[39m                 The value of the migration:             \e[90mexample-value\e[39m");
+            $cli->printLine("  \e[96m--limit\e[39m, \e[96m-l\e[39m                 Limit X amount of result:               \e[90mx\e[39m");
+            $cli->printLine("  \e[96m--offset\e[39m, \e[96m-o\e[39m                Skip the first amount of results by X:  \e[90mx\e[39m");
+            $cli->printLine("  \e[96m--confirm\e[39m                   Confirm an action.");
         }
 
         public function createColumn($value, $width) {

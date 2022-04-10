@@ -115,15 +115,15 @@
 
             $cli->printLine("Actions: ");
             $cli->printLine();
-            $cli->printLine("  \e[92mexecute\e[39m [\e[96moptions\e[39m]       Execute all or a single cron job.");
-            $cli->printLine("  \e[92mlist\e[39m                    List all registered cron jobs.");
+            $cli->printLine("  \e[92mexecute\e[39m [\e[96moptions\e[39m]           Execute all or a single cron job.");
+            $cli->printLine("  \e[92mlist\e[39m                        List all registered cron jobs.");
 
             $cli->printLine();
 
             $cli->printLine("Options: ");
             $cli->printLine();
-            $cli->printLine("  \e[96m--job\e[39m, \e[96m-j\e[39m               Target a specific job by it's name:                   \e[90mawesome-job-name\e[39m");
-            $cli->printLine("  \e[96m--verbose\e[39m, \e[96m-v\e[39m           Enable logs of the cron jobs.");                      
+            $cli->printLine("  \e[96m--job\e[39m, \e[96m-j\e[39m                   Target a specific job by it's name:                   \e[90mawesome-job-name\e[39m");
+            $cli->printLine("  \e[96m--verbose\e[39m, \e[96m-v\e[39m               Enable logs of the cron jobs.");                      
         }
 
         public function createColumn($value, $width) {
