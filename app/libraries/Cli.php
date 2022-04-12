@@ -14,6 +14,7 @@
     require_once APP_DIR . '/cli/Policy.php';
     require_once APP_DIR . '/cli/Session.php';
     require_once APP_DIR . '/cli/VirtualPath.php';
+    require_once APP_DIR . '/cli/Object.php';
 
     class Cli {
         private static $shell = false;
@@ -26,6 +27,7 @@
             "exit" => false,
             "cron" => "Execute and list available cron jobs.",
             "database" => "A utility to migrate and rollback the database.",
+            "object" => "Manage objects and their properties.",
             "user" => "Quickly administer users from the command-line, or create temporary credentials.",
             "permission" => "Grant or revoke permissions to groups and users.",
             "language" => "Retrieve a language string.",
@@ -134,7 +136,9 @@
 
         private function request($command) {
             if (isset(self::$commands[$command])) {
-                $class = 'Command\\' . $this->prepareFunctionNaming($command);
+                $command = $this->prepareFunctionNaming($command);
+                if ($command == "Object") $command = "_Object";
+                $class = 'Command\\' . $command;
                 $cmd = new $class;
                 return $cmd;
             } else {
