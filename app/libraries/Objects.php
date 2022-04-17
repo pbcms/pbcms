@@ -77,23 +77,38 @@
                 $type = $arg1;
                 $limit = (is_numeric($arg2) ? $arg2 : 10);
                 $offset = (is_numeric($arg3) ? $arg3 : 0);
-            } else {
-                return false;
+            } else if (is_object($arg1) || is_array($arg1)) {
+                $options = (object) $arg1;
+                $type = (!isset($options->type) ? null : $options->type);
+                $limit = (!isset($options->limit) ? 10 : $options->limit);
+                $offset = (!isset($options->offset) ? 0 : $options->offset);
+                $properties = (array) (!isset($options->properties) ? null : $options->properties);
+            }
+
+            $propstring = "";
+            if ($properties) {
+                $propstring = "INNER JOIN `" . DATABASE_TABLE_PREFIX . "object-properties` ON `" . DATABASE_TABLE_PREFIX . "objects`.`id` = `" . DATABASE_TABLE_PREFIX . "object-properties`.`object`";
+                foreach($properties as $property => $value) {
+                    $propstring .= " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`property`='$property'";
+                    $propstring .= " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`value` LIKE '$value'";
+                }
             }
 
             if (!$type) {
                 if ($limit < 1) {
-                    $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` LIMIT 18446744073709551610 OFFSET ${offset}"; //Limit by the biggest unsigned int possible.
+                    $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` $propstring LIMIT 18446744073709551610 OFFSET ${offset}"; //Limit by the biggest unsigned int possible.
                 } else {
-                    $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` LIMIT ${limit} OFFSET ${offset}";
+                    $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` $propstring LIMIT ${limit} OFFSET ${offset}";
                 }
             } else {
                 if ($limit < 1) {
-                    $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` WHERE `type`='${type}' LIMIT 18446744073709551610 OFFSET ${offset}"; //Limit by the biggest unsigned int possible.
+                    $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` $propstring WHERE `type`='${type}' LIMIT 18446744073709551610 OFFSET ${offset}"; //Limit by the biggest unsigned int possible.
                 } else {
-                    $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` WHERE `type`='${type}' LIMIT ${limit} OFFSET ${offset}";
+                    $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` $propstring WHERE `type`='${type}' LIMIT ${limit} OFFSET ${offset}";
                 }
             }
+
+            print_r($query);
 
             $res = $this->db->query($query);
             if ($res->num_rows > 0) {
