@@ -69,14 +69,17 @@
                 $type = null;
                 $limit = 10;
                 $offset = 0;
+                $properties = null;
             } else if (is_numeric($arg1)) {
                 $type = null;
                 $limit = $arg1;
                 $offset = (is_numeric($arg2) ? $arg2 : 0);
+                $properties = null;
             } else if (is_string($arg1)) {
                 $type = $arg1;
                 $limit = (is_numeric($arg2) ? $arg2 : 10);
                 $offset = (is_numeric($arg3) ? $arg3 : 0);
+                $properties = null;
             } else if (is_object($arg1) || is_array($arg1)) {
                 $options = (object) $arg1;
                 $type = (!isset($options->type) ? null : $options->type);
@@ -107,8 +110,6 @@
                     $query = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "objects` $propstring WHERE `type`='${type}' LIMIT ${limit} OFFSET ${offset}";
                 }
             }
-
-            print_r($query);
 
             $res = $this->db->query($query);
             if ($res->num_rows > 0) {
