@@ -9,12 +9,16 @@
     $lang->load();
 
     $externalProviders = Event::trigger("auth-button-external-provider", array('type' => "signin"));
+
+    $identifier = (isset($_GET['identifier']) && !empty($_GET['identifier']) ? $_GET['identifier'] : '');
+    $focusIdentifier = $identifier == "" ? "autofocus" : "";
+    $focusPassword   = $identifier != "" ? "autofocus" : "";
 ?>
 
 <p class="error"><?php if (isset($_GET['error'])) echo $lang->get('messages.api-auth.access-token.error-' . $_GET['error'], $lang->get('common.messages.error-unknown_error', 'An unknown error has occured.')); ?></p>
 
 <div class="input-field">
-    <input type="text" name="identifier" placeholder=" ">
+    <input type="text" name="identifier" placeholder=" " value="<?=$identifier?>" <?=$focusIdentifier?>>
     <span>
         <?php 
             if (intval($policy->get('usernames-enabled')) == 1) {
@@ -28,7 +32,7 @@
 </div>
 
 <div class="input-field">
-    <input type="password" name="password" placeholder=" ">
+    <input type="password" name="password" placeholder=" " <?=$focusPassword?>>
     <span>
         <?php echo $lang->get("pages.pb-auth.signin.field-password", "Password"); ?>
     </span>
