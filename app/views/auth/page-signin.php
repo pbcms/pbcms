@@ -36,17 +36,17 @@
 </div>
 
 <?php
-        if (intval($policy->get("allow-stay-signedin")) === 1) {
-            ?>
-                <div class="input-checkbox">
-                    <input type="checkbox" name="stay-signedin">
-                    <span>
-                        <?php echo $lang->get("pages.pb-auth.signin.box-stay-signedin", "Stay signed-in?"); ?>
-                    </span>
-                </div>
-            <?php
-        }
-    ?>
+    if (intval($policy->get("allow-stay-signedin")) === 1) {
+        ?>
+            <div class="input-checkbox">
+                <input type="checkbox" name="stay-signedin">
+                <span>
+                    <?php echo $lang->get("pages.pb-auth.signin.box-stay-signedin", "Stay signed-in?"); ?>
+                </span>
+            </div>
+        <?php
+    }
+?>
 
 <div class="input-buttons">
     <button type="submit" class="process-section">
