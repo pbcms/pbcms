@@ -34,6 +34,11 @@
             return $db->escapeObject($_POST);
         }
 
+        public static function parseGet() {
+            $db = new \Library\Database;
+            return $db->escapeObject($_GET);
+        }
+
         public static function requireMethod($method) {
             if (self::method() !== strtoupper($method)) {
                 ApiResponse::error('invalid_request_method', "The request was made with an incorrect request method. (The '" . strtoupper($method) . "' method is required)");
