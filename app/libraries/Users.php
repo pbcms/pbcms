@@ -331,7 +331,7 @@
                     }
                 }
 
-                if (isset($filters->limit)) $sql .= " LIMIT " . $filters->limit;
+                if (isset($filters->limit)) $sql .= " LIMIT " . ($filters->limit < 1 ? '18446744073709551610' : $filters->limit);
                 if (isset($filters->offset)) $sql .= " OFFSET " . $filters->offset;
                 if (isset($filters->order)) $sql .= " ORDER BY `id` " . (strtolower($filters->order) == 'desc' ? "DESC" : "ASC");
             }
