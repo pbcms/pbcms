@@ -117,6 +117,21 @@
         }
     });
 
+    $this->__registerMethod('retrieve-plugin', function($params) {
+        $required = array("identifier");
+        $body = Request::parseBody();
+
+        if (!Request::requireMethod('post')) die();
+        if (!Request::requireData($required, $body)) die();
+
+        $users = new Users;
+        $user = $users->info($body->identifier);
+        $plugin = (!$user ? "local" : $user->type);
+        Respond::success(array(
+            "plugin" => $plugin
+        ));
+    });
+
     $this->__registerMethod('reset-password', function($params) {
         $policy = new Policy;
         $resetPolicy = $policy->get("password-reset-policy");
