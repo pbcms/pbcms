@@ -33,7 +33,15 @@
 
         public function escapeObject($data) {
             $data = (object) $data;
-            foreach($data as $key => $value) $data->{$key} = self::$conn->real_escape_string($value);
+            foreach($data as $key => $value) {
+                if (is_object($value)) {
+                    $data->{$key} = $this->escapeObject($value);
+                } else if (is_array($value)) {
+                    $data->{$key} = (array) $this->escapeObject($value);
+                } else {
+                    $data->{$key} = self::$conn->real_escape_string($value);
+                }
+            }
             return $data;
         }
     }
