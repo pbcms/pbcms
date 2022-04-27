@@ -17,6 +17,7 @@
         protected static $controller = 'Root';
         protected static $method = '__index';
         protected static $params = [];
+        protected static $rawUrl = '/';
         protected static $url = '/';
         protected static $db;
 
@@ -89,6 +90,10 @@
                 "method" => self::$method,
                 "params" => self::$params,
                 "url" => self::$url,
+
+                "rawController" => self::$rawController,
+                "rawMethod" => self::$rawMethod,
+                "rawUrl" => self::$rawUrl,
 
                 "preferred_language" => self::$preferredLanguage,
                 "virtual_path" => self::$virtualPath,
@@ -307,6 +312,9 @@
             if (substr(self::$url, 0, 1) == '/' && strlen(self::$url) > 1) {
                 self::$url = substr(self::$url, 1);
             }
+
+            self::$rawUrl = self::$url;
+            self::$url = self::$db->escape(self::$url);
         }
 
         public function prepareFunctionNaming($str) {
