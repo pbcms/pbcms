@@ -54,7 +54,7 @@ const app = new Rable({
 
                     break;
                 case 2:
-                    location.href = SITE_LOCATION + 'pb-auth';
+                    location.href = SITE_LOCATION + 'pb-auth?identifier=' + this.identifier;
             }
         },
 

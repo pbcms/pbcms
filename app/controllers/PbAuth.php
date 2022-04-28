@@ -23,7 +23,7 @@
             $policy = new Policy();
             $url = $policy->get('signin-url');
             if (!$url) $url = 'pb-auth/signin';
-            Header::Location(SITE_LOCATION . $url, 301);
+            Header::Location(SITE_LOCATION . $url . (isset($_GET['identifier']) ? (strpos($url, '?') ? "&" : "?") . 'identifier=' . $_GET['identifier'] : ""), 301);
         }
 
         public function Signin($params) {
