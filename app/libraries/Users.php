@@ -382,6 +382,75 @@
             }
         }
 
+        public function search($input = array()) {
+            $input = (object) $input;
+            $sql = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "users`";
+
+            if (count(array_keys(get_object_vars($input))) > 0) {
+                $allowedFilters = array("limit", "offset", "order");
+
+                $filters = (object) Validator::removeUnlisted($allowedFilters, $input);
+                $properties = (object) Validator::removeUnlisted($this->filterAllowedProperties, $input);
+
+                if (count(array_keys(get_object_vars($properties))) > 0) {
+                    $sql .= " WHERE";
+                    foreach($properties as $key => $value) {
+                        if (array_keys(get_object_vars($properties))[0] !== $key) $sql .= " AND";
+                        $sql .= " `${key}` LIKE '%${value}%'";
+                    }
+                }
+
+                if (isset($filters->limit)) $sql .= " LIMIT " . ($filters->limit < 1 ? '18446744073709551610' : $filters->limit);
+                if (isset($filters->offset)) $sql .= " OFFSET " . $filters->offset;
+                if (isset($filters->order)) $sql .= " ORDER BY `id` " . (strtolower($filters->order) == 'desc' ? "DESC" : "ASC");
+            }
+
+            $res = $this->db->query($sql);
+            if ($res->num_rows > 0) {
+                return array_map(function($user) {
+                    $user = (object) $user;
+                    $user->id = intval($user->id);
+                    $user->fullname = $user->firstname . ' ' . $user->lastname;
+                    if (!isset($user->type)) $user->type = 'local';
+
+                    $picture = $this->metaGet($user->id, 'profile-picture');
+                    if ($picture) {
+                        $media = new Media();
+                        $mediaItem = $media->info($picture);
+                        if ($mediaItem && $mediaItem->owner == $user->id) {
+                            $user->picture = (object) array(
+                                "uuid" => $mediaItem->uuid,
+                                "ext" => $mediaItem->ext,
+                                "file" => $mediaItem->uuid . "." . $mediaItem->ext,
+                                "path" => "/pb-pubfiles/media/" . $mediaItem->uuid . "." . $mediaItem->ext,
+                                "url" => SITE_LOCATION . "pb-pubfiles/media/" . $mediaItem->uuid . "." . $mediaItem->ext
+                            );
+                        } else {
+                            $user->picture = (object) array(
+                                "uuid" => null,
+                                "ext" => "png",
+                                "file" => "default-user-black.png",
+                                "path" => "/pb-pubfiles/img/generic/default-user-black.png",
+                                "url" => SITE_LOCATION . "pb-pubfiles/img/generic/default-user-black.png"
+                            );
+                        }
+                    } else {
+                        $user->picture = (object) array(
+                            "uuid" => null,
+                            "ext" => "png",
+                            "file" => "default-user-black.png",
+                            "path" => "/pb-pubfiles/img/generic/default-user-black.png",
+                            "url" => SITE_LOCATION . "pb-pubfiles/img/generic/default-user-black.png"
+                        );
+                    }
+
+                    return $user;
+                }, (array) $res->fetch_all(MYSQLI_ASSOC));
+            } else {
+                return array();
+            }
+        }
+
         public function update($user, $changes) {
             if (is_numeric($user) && intval($user) === 0) return false;
             $user = $this->find($user);
