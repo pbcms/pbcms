@@ -174,7 +174,7 @@
                     }
 
                     if (!$list) {
-                        $cli->printLine("Unknown object!");
+                        $cli->printLine("Unknown object or no properties!");
                     } else {
                         $longest = (object) array(
                             "id" => 4,
@@ -231,6 +231,78 @@
                                 ""
                             ))));
                         }
+                    }
+
+                    break;
+                case "purge":
+                    $options = $this->getOptions();
+                    if (isset($options['id'])) {
+                        if (empty($options['id']))  return $cli->printLine("The object id flag is empty! Alternatively, use the \e[96m--type\e[39m (\e[96m-t\e[39m) and \e[96m--object\e[39m (\e[96m-o\e[39m) flags" . PHP_EOL);
+                        $result = $objectManager->exists($options['id']);
+                    } else {
+                        if (!isset($options['type']))   return $cli->printLine("Missing the object type flag! Define it using the \e[96m--type\e[39m or \e[96m-t\e[39m flag." . PHP_EOL);
+                        if (empty($options['type']))    return $cli->printLine("The object type flag is empty!" . PHP_EOL);
+                        if (!isset($options['object'])) return $cli->printLine("Missing the object name flag! Define it using the \e[96m--object\e[39m or \e[96m-o\e[39m flag." . PHP_EOL);
+                        if (empty($options['object']))  return $cli->printLine("The object name flag is empty!" . PHP_EOL);
+                        $result = $objectManager->exists($options['type'], $options['object']);
+                    }
+
+                    if ($result) {
+                        if (!isset($options['confirm'])) {
+                            if (isset($options['id'])) {
+                                $cli->printLine("Are you sure that your want to purge the object with id \"\e[96m" . $options['id'] . "\e[39m\"?");
+                            } else {
+                                $cli->printLine("Are you sure that your want to purge the object with type \"\e[96m" . $options['type'] . "\e[39m\" and name \"\e[96m" . $options['object'] . "\e[39m\"?");
+                            }
+
+                            $prompt = $cli->prompt("Type \"\e[92mconfirm\e[39m\" to continue: \e[92m");
+                            $cli->printLine("\e[39m ");
+                            if (strtolower($prompt) != "confirm") {
+                                $cli->printLine("Did not receive \"\e[92mconfirm\e[39m\", cancelling.");
+                                break;
+                            }
+                        }
+
+                        if (isset($options['id'])) {
+                            $res = $objectManager->purge($options['id']);
+                            $cli->printLine("Object with id \"\e[96m" . $options['id'] . "\e[39m\" was deleted.");
+                        } else {
+                            $res = $objectManager->purge($options['type'], $options['object']);
+                            $cli->printLine("Object with type \"\e[96m" . $options['type'] . "\e[39m\" and name \"\e[96m" . $options['object'] . "\e[39m\" was deleted.");
+                        }
+                    } else {
+                        $cli->printLine("This object does not exist.");
+                    }
+
+                    break;
+                case "get":
+                    $options = $this->getOptions();
+                    if (isset($options['id'])) {
+                        if (empty($options['id']))  return $cli->printLine("The object id flag is empty! Alternatively, use the \e[96m--type\e[39m (\e[96m-t\e[39m) and \e[96m--object\e[39m (\e[96m-o\e[39m) flags" . PHP_EOL);
+                        $result = $objectManager->exists($options['id']);
+                    } else {
+                        if (!isset($options['type']))   return $cli->printLine("Missing the object type flag! Define it using the \e[96m--type\e[39m or \e[96m-t\e[39m flag." . PHP_EOL);
+                        if (empty($options['type']))    return $cli->printLine("The object type flag is empty!" . PHP_EOL);
+                        if (!isset($options['object'])) return $cli->printLine("Missing the object name flag! Define it using the \e[96m--object\e[39m or \e[96m-o\e[39m flag." . PHP_EOL);
+                        if (empty($options['object']))  return $cli->printLine("The object name flag is empty!" . PHP_EOL);
+                        $result = $objectManager->exists($options['type'], $options['object']);
+                    }
+
+                    if (!isset($options['property'])) return $cli->printLine("Missing the property flag! Define it using the \e[96m--property\e[39m or \e[96m-p\e[39m flag." . PHP_EOL);
+                    if (empty($options['property']))  return $cli->printLine("The property flag is empty!" . PHP_EOL);
+
+                    if ($result) {
+                        if (isset($options['id'])) {
+                            $result = $objectManager->get($options['id'], $options['property']);
+                            if (!$result) return $cli->printLine("Property \"\e[96m" . $options['property'] . "\e[39m\" does not exist on object with id \"\e[96m" . $options['id'] . "\e[39m\"." . PHP_EOL);
+                        } else {
+                            $result = $objectManager->get($options['type'], $options['object'], $options['property']);
+                            if (!$result) return $cli->printLine("Property \"\e[96m" . $options['property'] . "\e[39m\" does not exist on object with type \"\e[96m" . $options['type'] . "\e[39m\" and name \"\e[96m" . $options['object'] . "\e[39m\"." . PHP_EOL);
+                        }
+
+                        $cli->printLine("Value is: \e[96m" . $result . "\e[39m");
+                    } else {
+                        $cli->printLine("This object does not exist.");
                     }
 
                     break;
