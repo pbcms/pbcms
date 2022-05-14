@@ -89,6 +89,13 @@
                     "icon" => "book",
                     "permissions" => ["policy.list"],
                     "category" => "configuration"
+                ],
+                [
+                    "title" => $lang->get("templates.pb-dashboard.section-titles.shell", "Shell"),
+                    "section" => "shell",
+                    "icon" => "terminal",
+                    "permissions" => ["site.execute-command"],
+                    "category" => "configuration"
                 ]
             );
 

@@ -1,4 +1,5 @@
 <?php
+    use Library\Cli;
     use Library\Users;
     use Library\DatabaseMigrator;
     use Helper\ApiResponse as Respond;
@@ -13,6 +14,31 @@
             $dbmig->migrate();
             Respond::success(array(
                 "logs" => $dbmig->retrieveLogs()
+            ));
+        } else {
+            Respond::error('missing_privileges', "You are lacking the permissions to perform this action.");
+        }
+    });
+
+    $this->__registerMethod('execute-command', function() {
+        if (!Request::requireAuthentication()) die();
+
+        if ($this->user->check("site.execute-command")) {
+            $body = Request::parseBody();
+            $required = array('input');
+            if (!Request::requireData($required, $body)) die();
+
+            $cli = new Cli();
+            $cli->process($body->input);
+            $output = ob_get_contents();
+            ob_end_clean();
+
+            if (!defined("SITE_TITLE")) define("SITE_TITLE", "Rescue shell");
+            $prompt = SITE_TITLE . "@PBCMS ~> ";
+
+            Respond::success(array(
+                "prompt" => $prompt,
+                "output" => $output
             ));
         } else {
             Respond::error('missing_privileges', "You are lacking the permissions to perform this action.");

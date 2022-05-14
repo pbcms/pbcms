@@ -229,6 +229,20 @@
             ));
         }
 
+        public function Shell($params) {
+            $this->__view("dashboard/shell");
+            $this->__template($this->__useTemplate(), array(
+                "title" => "shell",
+                "section" => "shell",
+                "head" => array(
+                    ['style', 'pb-pages-dashboard-shell.css', array("origin" => "pubfiles")]
+                ),
+                "body" => array(
+                    ['script', 'pb-pages-dashboard-shell.js', array("origin" => "pubfiles", "properties" => 'type="module"')]
+                )
+            ));
+        }
+
         public function Shortcuts($params) {
             $this->__view("dashboard/shortcuts");
             $this->__template($this->__useTemplate(), array(

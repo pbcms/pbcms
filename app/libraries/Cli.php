@@ -147,7 +147,8 @@
         }
 
         public function print($text = "") {
-            fwrite(STDOUT, $text);
+            if (OPERATION_MODE == "cli") return fwrite(STDOUT, $text);
+            echo $text;
         }
 
         public function printLine($text = "") {
