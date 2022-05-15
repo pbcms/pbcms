@@ -88,28 +88,39 @@
                 $properties = (!isset($options->properties) ? null : (array) $options->properties);
             }
 
-            $select = "`" . DATABASE_TABLE_PREFIX . "objects`.`id`, `" . DATABASE_TABLE_PREFIX . "objects`.`type`, `" . DATABASE_TABLE_PREFIX . "objects`.`name`, `" . DATABASE_TABLE_PREFIX . "objects`.`created`, `" . DATABASE_TABLE_PREFIX . "objects`.`updated`";
-            $propstring = "";
-            if ($properties && count($properties) > 0) {
-                $propstring = "INNER JOIN `" . DATABASE_TABLE_PREFIX . "object-properties` ON `" . DATABASE_TABLE_PREFIX . "objects`.`id` = `" . DATABASE_TABLE_PREFIX . "object-properties`.`object`";
-                foreach($properties as $property => $value) {
-                    $propstring .= " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`property`='$property'";
-                    $propstring .= " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`value` LIKE '$value'";
+            $query = "SELECT ";
+            $query .= "`" . DATABASE_TABLE_PREFIX . "objects`.`id`, `" . DATABASE_TABLE_PREFIX . "objects`.`type`, `";
+            $query .= DATABASE_TABLE_PREFIX . "objects`.`name`, `" . DATABASE_TABLE_PREFIX . "objects`.`created`, `";
+            $query .= DATABASE_TABLE_PREFIX . "objects`.`updated`";
+            $query .= " FROM `" . DATABASE_TABLE_PREFIX . "objects`";
+            $query .= " WHERE ";
+            if ($type) {
+                $query .= "`type`='${type}'";
+            } else {
+                $query .= "1";
+            }
+
+            function build_sub($props){
+                end($props);
+                $sql = "SELECT `".DATABASE_TABLE_PREFIX . "object-properties`.`object` FROM `" . DATABASE_TABLE_PREFIX . "object-properties`";
+                $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "object-properties`.`property`='".key($props)."'";
+                $sql .= " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`value` LIKE '".current($props)."'";
+                array_pop($props);
+                if (count($props)>0) {
+                    return $sql . " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`object` IN (".build_sub($props).")";
+                } else {
+                    return $sql;
                 }
             }
 
-            if (!$type) {
-                if ($limit < 1) {
-                    $query = "SELECT $select FROM `" . DATABASE_TABLE_PREFIX . "objects` $propstring LIMIT 18446744073709551610 OFFSET ${offset}"; //Limit by the biggest unsigned int possible.
-                } else {
-                    $query = "SELECT $select FROM `" . DATABASE_TABLE_PREFIX . "objects` $propstring LIMIT ${limit} OFFSET ${offset}";
-                }
+            if ($properties && count($properties) > 0) {
+                $query .= " AND `" . DATABASE_TABLE_PREFIX . "objects`.`id` IN (".build_sub($properties).")";
+            }
+
+            if ($limit < 1) {
+                $query .= " LIMIT 18446744073709551610 OFFSET ${offset}"; //Limit by the biggest unsigned int possible.
             } else {
-                if ($limit < 1) {
-                    $query = "SELECT $select FROM `" . DATABASE_TABLE_PREFIX . "objects` $propstring WHERE `type`='${type}' LIMIT 18446744073709551610 OFFSET ${offset}"; //Limit by the biggest unsigned int possible.
-                } else {
-                    $query = "SELECT $select FROM `" . DATABASE_TABLE_PREFIX . "objects` $propstring WHERE `type`='${type}' LIMIT ${limit} OFFSET ${offset}";
-                }
+                $query .= " LIMIT ${limit} OFFSET ${offset}";
             }
 
             $res = $this->db->query($query);
