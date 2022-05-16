@@ -90,6 +90,41 @@
                     </a>
                 </td>
             </tr>
+            <tr>
+                <td colspan=8 class="table-pagination">
+                    <div>
+                        <p>
+                            Rows per page
+                        </p>
+                        <input-select &filter_limit_options="options" &pagination.limit="selected" $compact=true $placeholder=""></input-select>
+                        <p>
+                            {{ pagination.limit * (pagination.page - 1) + 1 }} - {{ pagination.limit * (pagination.page - 1) + users.length }} of {{ pagination.count }}
+                        </p>
+                        <div class="actions">
+                            <div @click="this.pagination.page = 1; this.refreshUsers();">
+                                <div :norender>
+                                    <i data-feather="chevrons-left"></i>
+                                </div>
+                            </div>
+                            <div @click="this.pagination.page--; this.refreshUsers();">
+                                <div :norender>
+                                    <i data-feather="chevron-left"></i>
+                                </div>
+                            </div>
+                            <div @click="this.pagination.page++; this.refreshUsers();">
+                                <div :norender>
+                                    <i data-feather="chevron-right"></i>
+                                </div>
+                            </div>
+                            <div @click="this.pagination.page = parseInt(pagination.count / pagination.limit); this.refreshUsers();">
+                                <div :norender>
+                                    <i data-feather="chevrons-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
 </section>

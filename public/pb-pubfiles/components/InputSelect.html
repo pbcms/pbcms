@@ -4,12 +4,13 @@
         "selected": null,
         "placeholder": "Select an option",
         "options": [],
-        "openmenu": false
+        "openmenu": false,
+        "compact": false
     }
 </data>
 
 <component>
-    <div class="input-select" :class:open="openmenu">
+    <div class="input-select" :class:open="openmenu" :class:compact="compact">
         <input :bind:name @mousedown="this.openmenu = !this.openmenu;" @blur="this.openmenu = false" :value="selected" placeholder=" " type="text" readonly>
         <span>
             {{ selected ? options[selected] : placeholder }}
@@ -33,6 +34,11 @@
         position: relative;
     }
 
+    .input-select.compact {
+        margin-top: 3px;
+        margin-bottom: 3px;
+    }
+
     .input-select span {
         position: absolute;
         top: 13px;
@@ -42,6 +48,11 @@
         background-color: white;
         pointer-events: none;
         color: #666;
+    }
+
+    .input-select.compact span {
+        top: 6px;
+        font-size: 15px;
     }
 
     .input-select .arrow {
@@ -60,9 +71,19 @@
         transition: transform .2s ease, border-color .1s ease;
     }
 
+    .input-select.compact .arrow {
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 7px solid #888;
+    }
+
     .input-select.open .arrow {
         transform: rotate(180deg);
         border-top: 8px solid #0059c1;
+    }
+
+    .input-select.compact.open .arrow {
+        border-top: 7px solid #0059c1;
     }
 
     .input-select input {
@@ -76,6 +97,10 @@
         border: 1px solid #888;
         border-radius: 5px;
         transition: border-color .1s ease;
+    }
+
+    .input-select.compact input {
+        padding: 7px 25px;
     }
 
     .input-select input:not(:placeholder-shown) {
@@ -103,10 +128,15 @@
         color: red !important;
     }
 
+    .input-select.compact.open input,
+    .input-select.compact.error input {
+        padding: 6px 25px;
+    }
+
     .input-select ul {
         position: absolute;
         width: 100%;
-        top: 50px;
+        top: 40px;
         background-color: white;
         border-radius: 5px;
         -webkit-box-shadow: 0px 2px 6px -2px rgba(0,0,0,0.75);
@@ -123,6 +153,10 @@
 
     .input-select ul li p {
         padding: 12px 20px;
+    }
+
+    .input-select.compact ul li p {
+        padding: 7px 20px;
     }
 
     .input-select ul li:hover {

@@ -5,6 +5,21 @@ const app = new Rable({
     data: {
         users: [],
 
+        pagination: {
+            limit: "10",
+            count: (await api.get('user/count')).data.count,
+            page: 1,
+        },
+
+        filter_limit_options: {
+            "5": 5,
+            "10": 10,
+            "25": 25,
+            "50": 50,
+            "75": 75,
+            "100": 100
+        },
+
         new_user_firstname: "",
         new_user_lastname: "",
         new_user_email: "",
@@ -48,7 +63,10 @@ const app = new Rable({
         },
 
         async refreshUsers() {
-            let res = await api.get('user/list');
+            let res = await api.post('user/list', {
+                limit: this.pagination.limit,
+                offset: this.pagination.limit * (this.pagination.page - 1)
+            });
             if (res.data.success == undefined) {
                 alert('An unknown error has occured! (unknown_error)');
             } else if (res.data.success == false) {

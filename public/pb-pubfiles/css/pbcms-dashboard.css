@@ -876,6 +876,62 @@ html, body {
     margin: 6px 5px 5px 8px;
 }
 
+.content table .table-pagination > div {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.content table .table-pagination .input-select {
+    width: 90px;
+}
+
+.content table .table-pagination p {
+    margin: 0px 35px 4px;
+}
+
+.content table .table-pagination p:first-child {
+    margin: 0px 10px 5px 0px;
+}
+
+.content table .table-pagination .actions {
+    display: flex;
+}
+
+.content table .table-pagination .actions > div {
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+    margin: 5px 0px 5px 15px;
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 50%;
+    transition: background-color .2s ease, color .2s ease, border-radius .3s ease;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.content table .table-pagination .actions > div > div {
+    width: 20px;
+    height: 20px;
+}
+
+.content table .table-pagination .actions > div svg {
+    stroke-width: 1;
+}
+
+
+.content table .table-pagination .actions > div svg {
+    width: 20px;
+    height: 20px;
+}
+
+.content table .table-pagination .actions > div:hover {
+    background-color: #000;
+    border-radius: 30%;
+    color: white;
+}
+
 .content section.buttons,
 .content .section.buttons,
 .content section .buttons,

@@ -319,21 +319,58 @@
 
             if (count(array_keys(get_object_vars($input))) > 0) {
                 $allowedFilters = array("limit", "offset", "order");
-
                 $filters = (object) Validator::removeUnlisted($allowedFilters, $input);
-                $properties = (object) Validator::removeUnlisted($this->filterAllowedProperties, $input);
 
-                if (count(array_keys(get_object_vars($properties))) > 0) {
-                    $sql .= " WHERE";
-                    foreach($properties as $key => $value) {
-                        if (array_keys(get_object_vars($properties))[0] !== $key) $sql .= " AND";
-                        $sql .= " `${key}`='${value}'";
+                if (isset($input->search)) {
+                    $searchtype = (isset($input->searchtype) && (strtolower($input->searchtype) == 'and' || $input->searchtype == '&&' || $input->searchtype == '&') ? " AND" : " OR");
+                    if (is_string($input->search)) {
+                        $search = $input->search;
+                        $input->search = [];
+
+                        if (!isset($input->search_properties)) $input->search_properties = ['firstname', 'lastname', 'email', 'username'];
+                        $properties = (object) Validator::removeUnlisted($this->filterAllowedProperties, $input->search_properties);
+                        foreach($properties as $property) $input->search[$property] = $autoquery . $search . $autoquery;
+                    }
+
+                    if (count(array_keys(get_object_vars($input->search))) > 0) {
+                        $sql .= " WHERE";
+                        foreach($input->search as $key => $value) {
+                            if (array_keys(get_object_vars($input->search))[0] !== $key) $sql .= $searchtype;
+                            $sql .= " `${key}` LIKE '%${value}%'";
+                        }
+                    } else {
+                        $sql .= " WHERE 1";
+                    }
+                } else {
+                    $searchtype = (isset($input->searchtype) && (strtolower($input->searchtype) == 'or' || $input->searchtype == '||' || $input->searchtype == '|') ? " OR" : " AND");
+                    $properties = (object) Validator::removeUnlisted($this->filterAllowedProperties, $input);
+
+                    if (count(array_keys(get_object_vars($properties))) > 0) {
+                        $sql .= " WHERE";
+                        foreach($properties as $key => $value) {
+                            if (array_keys(get_object_vars($properties))[0] !== $key) $sql .= $searchtype;
+                            $sql .= " `${key}`='${value}'";
+                        }
+                    } else {
+                        $sql .= " WHERE 1";
+                    }
+                }
+
+                if (isset($input->meta)) {
+                    $input->meta = (array) $input->meta;
+                    if (count($input->meta) > 0) {
+                        $metatype = (isset($input->metatype) && (strtolower($input->metatype) == 'or' || $input->metatype == '||') ? " OR" : " AND");
+                        $metasearch = isset($input->metasearch) && $input->metasearch;
+                        $metaautosearch = (!$metasearch || !isset($input->metaautosearch) || !$input->metaautosearch ? '' : '%');
+                        $sql .= " AND `" . DATABASE_TABLE_PREFIX . "users`.`id` IN (".$this->list_build_sub($input->meta, $metatype, $metasearch, $metaautosearch).")";
                     }
                 }
 
                 if (isset($filters->limit)) $sql .= " LIMIT " . ($filters->limit < 1 ? '18446744073709551610' : $filters->limit);
                 if (isset($filters->offset)) $sql .= " OFFSET " . $filters->offset;
                 if (isset($filters->order)) $sql .= " ORDER BY `id` " . (strtolower($filters->order) == 'desc' ? "DESC" : "ASC");
+            } else {
+                $sql .= " WHERE 1";
             }
 
             $res = $this->db->query($sql);
@@ -380,6 +417,27 @@
             } else {
                 return array();
             }
+        }
+
+        private function list_build_sub($props, $type = "AND", $search = false, $autosearch = '%') {
+            if (!$search) $autosearch = '';
+            end($props);
+            $sql = "SELECT `".DATABASE_TABLE_PREFIX . "usermeta`.`user` FROM `" . DATABASE_TABLE_PREFIX . "usermeta`";
+            $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "usermeta`.`name`='".key($props)."'";
+            $sql .= " $type `" . DATABASE_TABLE_PREFIX . "usermeta`.`value` " . ($search ? 'LIKE' : '=') . " '$autosearch".current($props)."$autosearch'";
+            array_pop($props);
+            if (count($props)>0) {
+                return $sql . " AND `" . DATABASE_TABLE_PREFIX . "usermeta`.`user` IN (".$this->list_build_sub($props, $type, $search, $autosearch).")";
+            } else {
+                return $sql;
+            }
+        }
+
+        public function count() {
+            $sql = "SELECT COUNT(`id`) as count FROM `" . DATABASE_TABLE_PREFIX . "users`";
+            $res = $this->db->query($sql);
+            $res = (object) $res->fetch_assoc();
+            return $res->count;
         }
 
         public function search($input = array()) {

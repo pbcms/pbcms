@@ -70,6 +70,18 @@
         }
     });
 
+    $this->__registerMethod('count', function() {
+        if (!Request::requireAuthentication()) die();
+        if ($this->user->check('user.count')) {
+            $users = new Users;
+            Respond::success((object) array(
+                "count" => $users->count()
+            ));
+        } else {
+            Respond::error("missing_privileges", $this->lang->get("messages.api-user.count.error-missing_privileges", "You are lacking the permission to count users."));
+        }
+    });
+
     $this->__registerMethod('update', function($params) {
         if (!Request::requireMethod('patch')) die();
         if (!Request::requireAuthentication()) die();
