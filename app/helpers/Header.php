@@ -1,21 +1,48 @@
 <?php
     namespace Helper;
 
+    /**
+     * Shortcuts to set of response headers.
+     */
     class Header {
-        public static function Location($loc, $status = 302) {
+
+        /**
+         * Sets a location header with a specified location and status to redirect the client to a different page.
+         * 
+         * @param   string  $location   The location the client should redirect to.
+         * @param   int     $status=302 The response code, should be in the 3XX range.
+         * @return  void                Redirects the client to the targeted location.
+         */
+        public static function Location(string $location, int $status = 302): void {
             if ($status < 300 || $status > 399) $status = 302;
             http_response_code($status);
-            header("Location: ${loc}");
+            header("Location: ${location}");
         }
 
-        public static function Json() {
+        /**
+         * Set a JSON Content-Type header.
+         * 
+         * @return  void
+         */
+        public static function Json(): void {
             header("Content-Type: application/json");
         }
 
-        public static function ContentType($type) {
+        /**
+         * Set a Content-Type header with the specified type.
+         * 
+         * @param   string  $type   The Content-Type that should be set and will be returned.
+         * @return  void
+         */
+        public static function ContentType(string $type): void {
             header("Content-Type: ${type}");
         }
 
+        /**
+         * Retrieve authorization headers.
+         * 
+         * @return string|null  The contents of the authorization header.
+         */
         public static function Authorization() {        //Credit: https://stackoverflow.com/a/40582472
             $headers = null;
             if (isset($_SERVER['Authorization'])) {

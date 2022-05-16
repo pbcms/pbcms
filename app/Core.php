@@ -86,7 +86,7 @@
              *
              * @return bool
              */
-            public static function Safemode() {
+            public static function Safemode(): bool {
                 return self::$inSafemode;
             }
             
@@ -95,16 +95,16 @@
              *
              * @return bool
              */
-            public static function InCli() {
+            public static function InCli(): bool {
                 return OPERATION_MODE == "CLI";
             }
             
             /**
              * States wheter pbcms is in the default operation mode (web) or not.
              *
-             * @return void
+             * @return bool
              */
-            public static function DefaultOperationMode() {
+            public static function DefaultOperationMode(): bool {
                 return OPERATION_MODE == "DEFAULT";
             }
             

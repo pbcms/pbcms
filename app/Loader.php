@@ -8,6 +8,8 @@
 
     /**
      * Initiates all library inclusions, makes system definitions, loads pre-core modules and loads the core or starts installation.
+     * 
+     * @return void
      */
     class Loader {
         private static $initialized = false;

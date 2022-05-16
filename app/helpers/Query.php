@@ -1,7 +1,17 @@
 <?php
     namespace Helper;
 
+    /**
+     * Helper to encode and decode query strings.
+     */
     class Query {
+
+        /**
+         * Encode a data object into a query string.
+         * 
+         * @param   object  $data   The data object to be converted into a query string.
+         * @return  string          The resulting query string.
+         */
         public static function encode($data) {
             $res = '';
             foreach ($data as $key => $value) {
