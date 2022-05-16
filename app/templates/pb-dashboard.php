@@ -47,6 +47,7 @@
     $shortcuts = json_decode($users->metaGet($this->session->user->id, 'dashboard-shortcuts'));
     $userModel = $this->__model("user");
     $user = $userModel->info();
+    $advancedMode = $userModel->check('site.advanced-mode') && $users->metaGet($user->id, 'pb-dashboard-advanced-mode');
 
     if (isset($data['section'])) {
         $sectionDetails = Dashboard::get($data['section']);
@@ -71,10 +72,11 @@
     $activeSection = $data['section'];
     $backupSection = $data['backup_section'];
 
-    $parseCategoryItems = function($category = null) use ($userModel, $activeSection, $backupSection) {
+    $parseCategoryItems = function($category = null) use ($userModel, $activeSection, $backupSection, $advancedMode) {
         $result = "";
 
         foreach(Dashboard::list($category) as $section => $item) {
+            if (isset($item['advanced']) && $item['advanced'] && !$advancedMode) continue;
             if (isset($item['permissions'])) {
                 $passed = false;
                 foreach($item['permissions'] as $permission) {
@@ -225,7 +227,9 @@
                 </div>
                 <div class="control-button exit-dashboard">
                     <div class="icon-button">
-                        <i data-feather="home"></i>
+                        <a href="<?=SITE_LOCATION?>">
+                            <i data-feather="home"></i>
+                        </a>
                     </div>
                 </div>
                 <div class="control-button account-control">
@@ -245,6 +249,11 @@
                                 <div class="item">
                                     <a href="<?=SITE_LOCATION?>pb-dashboard/profile">
                                         Profile
+                                    </a>
+                                </div>
+                                <div class="item">
+                                    <a onclick="PbAuth.apiInstance().get('site/dashboard/toggle-advanced').then(res => location.reload())">
+                                        <?=$advancedMode ? 'Leave' : "Enter"?> advanced
                                     </a>
                                 </div>
                                 <div class="item">

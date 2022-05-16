@@ -15,7 +15,7 @@
 html, body {
     width: 100%;
     height: 100vh;
-    background-color: #f0f0f0;
+    background-color: #f6f6f6;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -328,6 +328,7 @@ html, body {
 .container .control-bar .control-button .control-menu .inner-menu .items .item a {
     color: white;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .container .content-container {
@@ -702,15 +703,21 @@ html, body {
     background-color: var(--c-blue-dark);
 }
 
+/* TABLE */
+
 .content table {
     width: 100%;
     margin-bottom: 10px;
 }
 
+.content table tr {
+    background-color: #fff;
+}
+
 .content > table,
 .content section > table,
 .content .section > table {
-    border-spacing: 0px 15px;
+    border-spacing: 0px 0px;
 }
 
 .content table td, 
@@ -718,6 +725,22 @@ html, body {
     min-height: 40px;
     min-width: 20px;
     margin-left: 30px;
+    border-top: 1px solid #bbb;
+}
+
+.content table td:first-child,
+.content table th:first-child {
+    border-left: 1px solid #bbb;
+}
+
+.content table td:last-child,
+.content table th:last-child {
+    border-right: 1px solid #bbb;
+}
+
+.content table tbody tr:last-child td,
+.content table tbody tr:last-child th {
+    border-bottom: 1px solid #bbb;
 }
  
 .content table thead td,
@@ -743,31 +766,32 @@ html, body {
 .content table tbody td, 
 .content table tbody th {
     height: 40px;
-    padding: 5px 25px 7px 25px;
+    padding: 5px 35px;
 }
 
 .content table thead td, 
 .content table thead th {
-    padding: 0px 25px;
+    padding: 15px 35px;
 }
 
 .content table tbody tr {
-    background-color: white;
-    border-radius: 15px;
-    box-shadow: 0px 0px 0px rgb(0 0 0 / 50%), 0 10px 30px rgb(0 0 0 / 10%);
     height: 40px;
 }
 
-.content table tbody tr th:first-child,
-.content table tbody tr td:first-child {
-    border-top-left-radius: 15px;
-    border-bottom-left-radius: 15px;
+.content table thead tr:first-child th:first-child {
+    border-top-left-radius: 5px;
 }
 
-.content table tbody tr th:last-child,
-.content table tbody tr td:last-child {
-    border-top-right-radius: 15px;
-    border-bottom-right-radius: 15px;
+.content table thead tr:first-child th:last-child {
+    border-top-right-radius: 5px;
+}
+
+.content table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 5px;
+}
+
+.content table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 5px;
 }
 
 .content table thead th {

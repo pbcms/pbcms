@@ -47,7 +47,8 @@
                     "section" => "virtual-paths",
                     "icon" => "list",
                     "permissions" => ["router.virtual-path.list"],
-                    "category" => "content"
+                    "category" => "content",
+                    "advanced" => true
                 ],
                 [
                     "title" => $lang->get('templates.pb-dashboard.section-titles.profile', "Profile"),
@@ -74,28 +75,32 @@
                     "section" => "roles",
                     "icon" => "folder",
                     "permissions" => ["role.list"],
-                    "category" => "configuration"
+                    "category" => "configuration",
+                    "advanced" => true
                 ],
                 [
                     "title" => $lang->get('templates.pb-dashboard.section-titles.permissions', "Permissions"),
                     "section" => "permissions",
                     "icon" => "shield",
                     "permissions" => ["permission.list"],
-                    "category" => "configuration"
+                    "category" => "configuration",
+                    "advanced" => true
                 ],
                 [
                     "title" => $lang->get('templates.pb-dashboard.section-titles.policies', "Policies"),
                     "section" => "policies",
                     "icon" => "book",
                     "permissions" => ["policy.list"],
-                    "category" => "configuration"
+                    "category" => "configuration",
+                    "advanced" => true
                 ],
                 [
                     "title" => $lang->get("templates.pb-dashboard.section-titles.shell", "Shell"),
                     "section" => "shell",
                     "icon" => "terminal",
                     "permissions" => ["site.execute-command"],
-                    "category" => "configuration"
+                    "category" => "configuration",
+                    "advanced" => true
                 ]
             );
 

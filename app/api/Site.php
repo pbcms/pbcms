@@ -100,10 +100,28 @@
                         "shortcuts" => $shortcuts
                     ));
                     break;
+                case 'toggle-advanced': 
+                    $users = new Users;
+                    if ($this->user->check('site.advanced-mode')) {
+                        $user = $this->user->info();
+                        $current = $users->metaGet($user->id, 'pb-dashboard-advanced-mode');
+                        $users->metaSet($user->id, 'pb-dashboard-advanced-mode', ($current ? '0' : '1'));
+                        Respond::success();
+                    } else {
+                        Respond::error('missing_privileges', "You are not allowed to enter advanced mode.");  
+                    }
+
+                    break;
                 default:
                     Respond::error('unknown_action', "An unknown action was requested.");
             }
         } else {
             Respond::error('missing_action', "No action was defined.");     
         }
+    });
+
+
+
+    $this->__registerMethod('search', function($params) {
+
     });

@@ -13,10 +13,11 @@
     <h1>
         Overview
     </h1>
-    <p>
-        Overview of the site and actions that should be taken.
-    </p>
 </section>
+
+<div class="grid-container">
+
+</div>
 
 <?php
     if (count($availableMigrations) > 0 && $userModel->check('site.migrate-database')) {
