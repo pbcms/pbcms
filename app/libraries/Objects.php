@@ -100,21 +100,8 @@
                 $query .= "1";
             }
 
-            function build_sub($props){
-                end($props);
-                $sql = "SELECT `".DATABASE_TABLE_PREFIX . "object-properties`.`object` FROM `" . DATABASE_TABLE_PREFIX . "object-properties`";
-                $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "object-properties`.`property`='".key($props)."'";
-                $sql .= " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`value` LIKE '".current($props)."'";
-                array_pop($props);
-                if (count($props)>0) {
-                    return $sql . " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`object` IN (".build_sub($props).")";
-                } else {
-                    return $sql;
-                }
-            }
-
             if ($properties && count($properties) > 0) {
-                $query .= " AND `" . DATABASE_TABLE_PREFIX . "objects`.`id` IN (".build_sub($properties).")";
+                $query .= " AND `" . DATABASE_TABLE_PREFIX . "objects`.`id` IN (".$this->list_build_sub($properties).")";
             }
 
             if ($limit < 1) {
@@ -128,6 +115,19 @@
                 return $res->fetch_all(MYSQLI_ASSOC);
             } else {
                 return array();
+            }
+        }
+
+        private function list_build_sub($props){
+            end($props);
+            $sql = "SELECT `".DATABASE_TABLE_PREFIX . "object-properties`.`object` FROM `" . DATABASE_TABLE_PREFIX . "object-properties`";
+            $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "object-properties`.`property`='".key($props)."'";
+            $sql .= " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`value` LIKE '".current($props)."'";
+            array_pop($props);
+            if (count($props)>0) {
+                return $sql . " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`object` IN (".$this->list_build_sub($props).")";
+            } else {
+                return $sql;
             }
         }
 
