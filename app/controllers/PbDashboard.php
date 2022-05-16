@@ -66,6 +66,7 @@
             $this->__template($this->__useTemplate(), array(
                 "title" => "updates",
                 "section" => "updates",
+                "show-loader" => true,
                 "body" => array(
                     ['script', 'pb-pages-dashboard-updates.js', array("origin" => "pubfiles", "properties" => "type=\"module\"")]
                 )
@@ -93,6 +94,7 @@
             $this->__template($this->__useTemplate(), array(
                 "title" => "profile",
                 "section" => "profile",
+                "show-loader" => true,
                 "head" => array(
                     ["style", "pb-pages-dashboard-profile.css", array("origin" => "pubfiles")],
                     ["style", "pbcms-system-pages.css", array("origin" => "pubfiles")]
@@ -112,6 +114,7 @@
                     $this->__template($this->__useTemplate(), array(
                         "title" => "User - " . $user->fullname,
                         "section" => "users",
+                        "show-loader" => true,
                         "head" => array(
                             ['style', 'pb-pages-dashboard-view-user.css', array("origin" => "pubfiles")]
                         ),
@@ -131,6 +134,7 @@
                 $this->__template($this->__useTemplate(), array(
                     "title" => "users",
                     "section" => "users",
+                    "show-loader" => true,
                     "head" => array(
                         ['style', 'pb-pages-dashboard-users.css', array("origin" => "pubfiles")]
                     ),
@@ -156,6 +160,7 @@
                     $this->__template($this->__useTemplate(), array(
                         "title" => "Module - " . getParameter($module, 'name', $module->module),
                         "section" => "modules",
+                        "show-loader" => true,
                         "head" => array(
                             ['style', 'pb-pages-dashboard-view-module.css', array("origin" => "pubfiles")]
                         ),
@@ -175,6 +180,7 @@
                 $this->__template($this->__useTemplate(), array(
                     "title" => "modules",
                     "section" => "modules",
+                    "show-loader" => true,
                     "head" => array(
                         ['style', 'pb-pages-dashboard-modules.css', array("origin" => "pubfiles")]
                     ),
@@ -190,6 +196,7 @@
             $this->__template($this->__useTemplate(), array(
                 "title" => "roles",
                 "section" => "roles",
+                "show-loader" => true,
                 "head" => array(
                     ["style", "pb-pages-dashboard-roles.css", array("origin" => "pubfiles")],
                 ),
@@ -204,6 +211,7 @@
             $this->__template($this->__useTemplate(), array(
                 "title" => "permissions",
                 "section" => "permissions",
+                "show-loader" => true,
                 "body" => array(
                     ['script', 'pb-pages-dashboard-permissions.js', array("origin" => "pubfiles", "properties" => 'type="module"')]
                 )
@@ -223,6 +231,7 @@
             $this->__template($this->__useTemplate(), array(
                 "title" => "policies",
                 "section" => "policies",
+                "show-loader" => true,
                 "body" => array(
                     ['script', 'pb-pages-dashboard-policies.js', array("origin" => "pubfiles")]
                 )
@@ -234,6 +243,7 @@
             $this->__template($this->__useTemplate(), array(
                 "title" => "shell",
                 "section" => "shell",
+                "show-loader" => true,
                 "head" => array(
                     ['style', 'pb-pages-dashboard-shell.css', array("origin" => "pubfiles")]
                 ),

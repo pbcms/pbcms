@@ -62,3 +62,5 @@ const app = new Rable({
 });
 
 app.mount('#shell');
+
+DashboardContentLoader.close();

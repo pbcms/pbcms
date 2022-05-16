@@ -73,3 +73,4 @@ await app.importComponent('input-select', SITE_LOCATION + "pb-pubfiles/component
 app.mount('.content');
 
 await app.data.refreshUsers();
+DashboardContentLoader.close();

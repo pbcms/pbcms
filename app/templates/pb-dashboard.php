@@ -48,15 +48,22 @@
     $userModel = $this->__model("user");
     $user = $userModel->info();
     $advancedMode = $userModel->check('site.advanced-mode') && $users->metaGet($user->id, 'pb-dashboard-advanced-mode');
+    $requireAdvancedMode = false;
 
     if (isset($data['section'])) {
         $sectionDetails = Dashboard::get($data['section']);
-        if ($sectionDetails && isset($sectionDetails['permissions'])) {
-            $passed = false;
-            foreach($sectionDetails['permissions'] as $permission) if ($userModel->check($permission)) $passed = true;
-            if (!$passed) {
-                Header::Location(SITE_LOCATION . 'pb-dashboard/overview');
-                die();
+        if ($sectionDetails) {
+            if (isset($sectionDetails['permissions'])) {
+                $passed = false;
+                foreach($sectionDetails['permissions'] as $permission) if ($userModel->check($permission)) $passed = true;
+                if (!$passed) {
+                    Header::Location(SITE_LOCATION . 'pb-dashboard/overview');
+                    die();
+                }
+            }
+
+            if (!$advancedMode && isset($sectionDetails['advanced']) && $sectionDetails['advanced']) {
+                $requireAdvancedMode = true;
             }
         }
     }
@@ -266,10 +273,35 @@
                     </div>
                 </div>
             </div>
-            <div class="content-container">
+            <div class="content-container <?=!$requireAdvancedMode && isset($data['show-loader']) && $data['show-loader'] ? 'content-loading' : ''?>">
                 <div class="content-shadow"></div>
-                <div class="content">
-                    <?=$content?>
+                <div class="content-loader">
+                    <svg class="animated-spinner" height="50" width="50">
+                        <circle class="path" cx="25" cy="25.2" r="19.9" fill="none" stroke-width="4" stroke-miterlimit="10" />
+                    </svg>
+                </div>
+                <div class="content <?=$requireAdvancedMode ? 'require-advanced-mode' : ''?>">
+                    <?php
+                        if ($requireAdvancedMode) {
+                            ?>
+                                <section>
+                                    <?=file_get_contents(PUBFILES_DIR . '/img/generic/require-advanced-mode.svg')?>
+
+                                    <h1>
+                                        Enter advanced mode?
+                                    </h1>
+                                    <p>
+                                        This page requires you to have advanced mode enabled.
+                                    </p>
+                                    <button onclick="PbAuth.apiInstance().get('site/dashboard/toggle-advanced').then(res => location.reload())">
+                                        Enter advanced
+                                    </button>
+                                </section>
+                            <?php
+                        } else {
+                            echo $content;
+                        }
+                    ?>
                 </div>
             </div>
         </div>

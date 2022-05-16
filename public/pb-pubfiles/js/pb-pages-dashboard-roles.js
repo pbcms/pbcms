@@ -88,3 +88,5 @@ await app.importComponent('input-field', SITE_LOCATION + "pb-pubfiles/components
 app.mount('.content');
 
 await app.data.refreshRoles();
+
+DashboardContentLoader.close();

@@ -102,3 +102,5 @@ await app.importComponent('input-toggle', SITE_LOCATION + "pb-pubfiles/component
 app.mount('.content');
 
 app.data.refreshPermissions();
+
+DashboardContentLoader.close();

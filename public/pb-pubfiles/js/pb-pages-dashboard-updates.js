@@ -118,3 +118,6 @@ api.get('modules/list').then(res => {
         });
     }
 });
+
+
+DashboardContentLoader.close();

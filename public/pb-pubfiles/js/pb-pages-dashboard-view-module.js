@@ -28,4 +28,6 @@
             });
         }
     });
+
+    DashboardContentLoader.close();
 })();

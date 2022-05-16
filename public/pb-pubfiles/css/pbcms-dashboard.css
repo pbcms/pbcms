@@ -204,6 +204,7 @@ html, body {
     height: calc(100vh);
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .container .control-bar {
@@ -345,12 +346,38 @@ html, body {
     position: absolute;
     left: -100px;
     top: -3px;
+    z-index: 1000;
+}
+
+.container .content-loader {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 900;
+    transition: opacity .2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f6f6f6;
+}
+
+.content-container.content-loading .content-loader {
+    opacity: 1;
+    pointer-events: all;
 }
 
 .container .content {
     height: 100%;
     width: 100%;
     overflow: auto;
+    transition: opacity .45s ease;
+}
+
+.content-container.content-loading .content {
+    opacity: 0;
 }
 
 .container .content::-webkit-scrollbar {
@@ -381,9 +408,9 @@ html, body {
     padding: 20px 30px;
     margin: 20px 45px 10px 45px;
     background-color: white;
-    border-radius: 10px;
+    border-radius: 5px;
     position: relative;
-    box-shadow: 0px 0px 0px rgb(0 0 0 / 50%), 0 10px 30px rgb(0 0 0 / 10%);
+    border: 1px solid #bbb;
 }
 
 .content section.no-padding,
@@ -402,7 +429,7 @@ html, body {
 .content section.transparent,
 .content .section.transparent {
     background-color: transparent !important;
-    box-shadow: unset !important;
+    border: none;
 }
 
 .content section.overflow-scroll,
@@ -462,7 +489,7 @@ html, body {
     padding: 0px;
     padding-bottom: 15px;
     padding-top: 10px;
-    box-shadow: unset !important;
+    border: none;
 }
 
 .content section.page-introduction.columns,
@@ -480,6 +507,36 @@ html, body {
 .content section.page-introduction,
 .content .section.page-introduction {
     background-color: transparent !important;
+}
+
+.content.require-advanced-mode {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    margin-top: 40px;
+}
+
+.content.require-advanced-mode section {
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 50px 25px;
+}
+
+.content.require-advanced-mode section svg {
+    width: 70%;
+    height: 300px;
+    padding-bottom: 25px;
+}
+
+.content.require-advanced-mode section h1 {
+    font-size: 30px;
+}
+
+.content.require-advanced-mode section p {
+    margin: 20px 0px 10px;
+    color: #666;
 }
 
 .content .sections-container {
@@ -545,14 +602,13 @@ html, body {
 .content .button {
     margin-top: 20px;
     background-color: black;
-    padding: 8px 20px;
+    padding: 7px 20px 9px;
     color: white;
     border: none;
     outline: none;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     text-decoration: none;
 }
 

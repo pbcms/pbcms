@@ -103,3 +103,5 @@ api.get('user/info/' + userId).then(async res => {
         profileoverview.mount('.profile-overview');  
     }
 });
+
+DashboardContentLoader.close();

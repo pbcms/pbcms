@@ -59,4 +59,6 @@
 
         document.querySelector('section.table-modules').classList.toggle('show-available-modules');
     });
+
+    DashboardContentLoader.close();
 })();

@@ -4,6 +4,7 @@ PbAuth.apiInstance().get('user/info').then(async res => {
     if (!res.data.success) {
         alert(`${res.data.message} (${res.data.error})`);
     } else {
+        res.data.user.picture.url = res.data.user.picture.url + '?width=250';
         const profileoverview = new Rable({ data: {...res.data.user} });
         profileoverview.mount('.profile-overview');
 
@@ -183,6 +184,7 @@ PbAuth.apiInstance().get('user/info').then(async res => {
 
                                     api.get('user/profile-picture').then(res => {
                                         if (res.data && res.data.success) {
+                                            res.data.picture.url = res.data.picture.url + '?width=250';
                                             this.picture = res.data.picture;
                                             profileoverview.data.picture = res.data.picture;
                                         }
@@ -205,6 +207,7 @@ PbAuth.apiInstance().get('user/info').then(async res => {
 
                             api.get('user/profile-picture').then(res => {
                                 if (res.data && res.data.success) {
+                                    res.data.picture.url = res.data.picture.url + '?width=250';
                                     this.picture = res.data.picture;
                                     profileoverview.data.picture = res.data.picture;
                                 }
@@ -246,4 +249,6 @@ PbAuth.apiInstance().get('user/info').then(async res => {
         await profileeditor.importComponent('input-select', SITE_LOCATION + "pb-pubfiles/components/InputSelect.html");
         profileeditor.mount('.profile-editor');
     }
+    
+    DashboardContentLoader.close();
 });
