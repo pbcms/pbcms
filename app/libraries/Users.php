@@ -396,9 +396,6 @@
             }
 
             $res = $this->db->query($sql);
-
-            if (isset($input->filters) && count($input->filters) > 0) die($sql);
-
             if (isset($input->count) && $input->count) {
                 $res = (object) $res->fetch_assoc();
                 return $res->count;
