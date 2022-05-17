@@ -63,5 +63,16 @@ class DashboardContentLoader {
         sideOpts.style.scrollBehavior = 'smooth';
     }
 
-    DashboardContentLoader.cooldown();
+    let dashurl = SITE_LOCATION + 'pb-dashboard/';
+    if (document.referrer.slice(0, dashurl.length) == dashurl) {
+        DashboardContentLoader.cooldown(250);
+    } else {
+        DashboardContentLoader.cooldown();
+    }
+
 })();
+
+window.addEventListener('beforeunload', async () => {
+    DashboardContentLoader.open();
+    await new Promise(resolve => setTimeout(() => resolve(), 100));
+});
