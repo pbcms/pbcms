@@ -356,6 +356,26 @@
                     }
                 }
 
+                if (isset($input->filters) && count($input->filters) > 0) {
+                    foreach($input->filters as $filter) {
+                        $filter = (object) $filter;
+                        switch($filter->target) {
+                            case 'meta':
+                                if (!isset($filter->compare)) $filter->compare = "=";
+                                if (!in_array(strtoupper($filter->compare), ['like', '=', '<', '<=', '>', '>='])) $filter->compare = "=";
+                                if (isset($filter->search) && $filter->search) $filter->compare = 'LIKE';
+                                $filter->compare = strtoupper($filter->compare);
+
+                                if (!isset($filter->type))
+                                if (in_array())
+                                break;
+                            case 'relation':
+
+                                break;
+                        }
+                    }
+                }
+
                 if (isset($input->meta)) {
                     $input->meta = (array) $input->meta;
                     if (count($input->meta) > 0) {
