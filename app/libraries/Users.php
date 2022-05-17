@@ -321,6 +321,19 @@
                 $allowedFilters = array("limit", "offset", "order");
                 $filters = (object) Validator::removeUnlisted($allowedFilters, $input);
 
+                $searchtype = (isset($input->searchtype) && (strtolower($input->searchtype) == 'or' || $input->searchtype == '||' || $input->searchtype == '|') ? " OR" : " AND");
+                $properties = (object) Validator::removeUnlisted($this->filterAllowedProperties, $input);
+
+                if (count(array_keys(get_object_vars($properties))) > 0) {
+                    $sql .= " WHERE";
+                    foreach($properties as $key => $value) {
+                        if (array_keys(get_object_vars($properties))[0] !== $key) $sql .= $searchtype;
+                        $sql .= " `${key}`='${value}'";
+                    }
+                } else {
+                    $sql .= " WHERE 1";
+                }
+
                 if (isset($input->search)) {
                     $searchtype = (isset($input->searchtype) && (strtolower($input->searchtype) == 'and' || $input->searchtype == '&&' || $input->searchtype == '&') ? " AND" : " OR");
                     if (is_string($input->search)) {
@@ -332,6 +345,8 @@
                         foreach($properties as $property) $input->search[$property] = $search;
                     }
 
+                    $sql .= " AND `" . DATABASE_TABLE_PREFIX . "users`.`id` IN (SELECT `" . DATABASE_TABLE_PREFIX . "users`.`id` FROM `" . DATABASE_TABLE_PREFIX . "users`";
+
                     if (count(array_keys($input->search)) > 0) {
                         $sql .= " WHERE";
                         foreach($input->search as $key => $value) {
@@ -341,19 +356,8 @@
                     } else {
                         $sql .= " WHERE 1";
                     }
-                } else {
-                    $searchtype = (isset($input->searchtype) && (strtolower($input->searchtype) == 'or' || $input->searchtype == '||' || $input->searchtype == '|') ? " OR" : " AND");
-                    $properties = (object) Validator::removeUnlisted($this->filterAllowedProperties, $input);
 
-                    if (count(array_keys(get_object_vars($properties))) > 0) {
-                        $sql .= " WHERE";
-                        foreach($properties as $key => $value) {
-                            if (array_keys(get_object_vars($properties))[0] !== $key) $sql .= $searchtype;
-                            $sql .= " `${key}`='${value}'";
-                        }
-                    } else {
-                        $sql .= " WHERE 1";
-                    }
+                    $sql .= ")";
                 }
 
                 if (isset($input->filters) && count($input->filters) > 0) {
@@ -393,7 +397,7 @@
 
             $res = $this->db->query($sql);
 
-            if (!$res) die($sql);
+            if (isset($input->filters) && count($input->filters) > 0) die($sql);
 
             if (isset($input->count) && $input->count) {
                 $res = (object) $res->fetch_assoc();
