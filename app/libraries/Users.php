@@ -315,7 +315,7 @@
 
         public function list($input = array()) {
             $input = (object) $input;
-            $sql = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "users`";
+            $sql = "SELECT " . (isset($input->count) && $input->count ? 'COUNT(`id`) as count' : '*') . " FROM `" . DATABASE_TABLE_PREFIX . "users`";
 
             if (count(array_keys(get_object_vars($input))) > 0) {
                 $allowedFilters = array("limit", "offset", "order");
@@ -359,10 +359,16 @@
                 if (isset($input->meta)) {
                     $input->meta = (array) $input->meta;
                     if (count($input->meta) > 0) {
-                        $metatype = (isset($input->metatype) && (strtolower($input->metatype) == 'or' || $input->metatype == '||') ? " OR" : " AND");
                         $metasearch = isset($input->metasearch) && $input->metasearch;
                         $metaautosearch = (!$metasearch || !isset($input->metaautosearch) || !$input->metaautosearch ? '' : '%');
-                        $sql .= " AND `" . DATABASE_TABLE_PREFIX . "users`.`id` IN (".$this->list_build_sub($input->meta, $metatype, $metasearch, $metaautosearch).")";
+                        $sql .= " AND `" . DATABASE_TABLE_PREFIX . "users`.`id` IN (".$this->list_build_sub_meta($input->meta, $metasearch, $metaautosearch).")";
+                    }
+                }
+
+                if (isset($input->relations)) {
+                    $input->relations = (array) $input->relations;
+                    if (count($input->relations) > 0) {
+                        $sql .= " AND `" . DATABASE_TABLE_PREFIX . "users`.`id` IN (".$this->list_build_sub_rel($input->relations).")";
                     }
                 }
 
@@ -374,7 +380,10 @@
             }
 
             $res = $this->db->query($sql);
-            if ($res->num_rows > 0) {
+            if (isset($input->count) && $input->count) {
+                $res = (object) $res->fetch_assoc();
+                return $res->count;
+            } else if ($res->num_rows > 0) {
                 return array_map(function($user) {
                     $user = (object) $user;
                     $user->id = intval($user->id);
@@ -419,25 +428,38 @@
             }
         }
 
-        private function list_build_sub($props, $type = "AND", $search = false, $autosearch = '%') {
+        private function list_build_sub_meta($props, $search = false, $autosearch = '%') {
             if (!$search) $autosearch = '';
             end($props);
             $sql = "SELECT `".DATABASE_TABLE_PREFIX . "usermeta`.`user` FROM `" . DATABASE_TABLE_PREFIX . "usermeta`";
             $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "usermeta`.`name`='".key($props)."'";
-            $sql .= " $type `" . DATABASE_TABLE_PREFIX . "usermeta`.`value` " . ($search ? 'LIKE' : '=') . " '$autosearch".current($props)."$autosearch'";
+            $sql .= " AND `" . DATABASE_TABLE_PREFIX . "usermeta`.`value` " . ($search ? 'LIKE' : '=') . " '$autosearch".current($props)."$autosearch'";
             array_pop($props);
             if (count($props)>0) {
-                return $sql . " AND `" . DATABASE_TABLE_PREFIX . "usermeta`.`user` IN (".$this->list_build_sub($props, $type, $search, $autosearch).")";
+                return $sql . " AND `" . DATABASE_TABLE_PREFIX . "usermeta`.`user` IN (".$this->list_build_sub_meta($props, $search, $autosearch).")";
             } else {
                 return $sql;
             }
         }
 
-        public function count() {
-            $sql = "SELECT COUNT(`id`) as count FROM `" . DATABASE_TABLE_PREFIX . "users`";
-            $res = $this->db->query($sql);
-            $res = (object) $res->fetch_assoc();
-            return $res->count;
+        private function list_build_sub_rel($props) {
+            end($props);
+            $sql = "SELECT `".DATABASE_TABLE_PREFIX . "relations`.`" . current($props) . "` FROM `" . DATABASE_TABLE_PREFIX . "relations`";
+            $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "relations`.`type`='".key($props)."'";
+            array_pop($props);
+            if (count($props)>0) {
+                return $sql . " AND `" . DATABASE_TABLE_PREFIX . "relations`.`" . current($props) . "` IN (".$this->list_build_sub_rel($props).")";
+            } else {
+                return $sql;
+            }
+        }
+
+        public function count($input = array()) {
+            $input = (object) $input;
+            $input->count = true;
+            $input->limit = 0;
+            $input->offset = 0;
+            return $this->list($input);
         }
 
         public function search($input = array()) {

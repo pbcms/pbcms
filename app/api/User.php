@@ -74,8 +74,9 @@
         if (!Request::requireAuthentication()) die();
         if ($this->user->check('user.count')) {
             $users = new Users;
+            $postdata = Request::parseBody();
             Respond::success((object) array(
-                "count" => $users->count()
+                "count" => $users->count($postdata)
             ));
         } else {
             Respond::error("missing_privileges", $this->lang->get("messages.api-user.count.error-missing_privileges", "You are lacking the permission to count users."));
