@@ -366,29 +366,21 @@
                                 if (isset($filter->search) && $filter->search) $filter->compare = 'LIKE';
                                 $filter->compare = strtoupper($filter->compare);
 
-                                if (!isset($filter->type))
-                                if (in_array())
+                                $filter->type = (isset($filter->type) && (strtolower($filter->type) == 'excluded' || strtolower($filter->type) == 'exclude') ? "NOT IN" : "IN");
+                                if (isset($filter->search) && $filter->search) $filter->value = "%$filter->value%";
+
+                                $sql .= " AND `" . DATABASE_TABLE_PREFIX . "users`.`id` " . $filter->type . " (";
+                                $sql .= "SELECT `".DATABASE_TABLE_PREFIX . "usermeta`.`user` FROM `" . DATABASE_TABLE_PREFIX . "usermeta`";
+                                $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "usermeta`.`name`='".$filter->property."'";
+                                $sql .= " AND `" . DATABASE_TABLE_PREFIX . "usermeta`.`value` " . $filter->compare . " '".$filter->value."')";
                                 break;
                             case 'relation':
-
+                                $filter->type = (isset($filter->type) && strtolower($filter->type) == 'excluded' || strtolower($filter->type) == 'exclude' ? "NOT IN" : "IN");
+                                $sql .= " AND `" . DATABASE_TABLE_PREFIX . "users`.`id` " . $filter->type . " (";
+                                $sql .= "SELECT `".DATABASE_TABLE_PREFIX . "relations`.`" . $filter->item . "` FROM `" . DATABASE_TABLE_PREFIX . "relations`";
+                                $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "relations`.`type`='".$filter->relation."')";
                                 break;
                         }
-                    }
-                }
-
-                if (isset($input->meta)) {
-                    $input->meta = (array) $input->meta;
-                    if (count($input->meta) > 0) {
-                        $metasearch = isset($input->metasearch) && $input->metasearch;
-                        $metaautosearch = (!$metasearch || !isset($input->metaautosearch) || !$input->metaautosearch ? '' : '%');
-                        $sql .= " AND `" . DATABASE_TABLE_PREFIX . "users`.`id` IN (".$this->list_build_sub_meta($input->meta, $metasearch, $metaautosearch).")";
-                    }
-                }
-
-                if (isset($input->relations)) {
-                    $input->relations = (array) $input->relations;
-                    if (count($input->relations) > 0) {
-                        $sql .= " AND `" . DATABASE_TABLE_PREFIX . "users`.`id` IN (".$this->list_build_sub_rel($input->relations).")";
                     }
                 }
 
@@ -400,6 +392,9 @@
             }
 
             $res = $this->db->query($sql);
+
+            if (!$res) die($sql);
+
             if (isset($input->count) && $input->count) {
                 $res = (object) $res->fetch_assoc();
                 return $res->count;
