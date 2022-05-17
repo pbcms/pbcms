@@ -375,7 +375,7 @@
                                 $sql .= " AND `" . DATABASE_TABLE_PREFIX . "usermeta`.`value` " . $filter->compare . " '".$filter->value."')";
                                 break;
                             case 'relation':
-                                $filter->type = (isset($filter->type) && strtolower($filter->type) == 'excluded' || strtolower($filter->type) == 'exclude' ? "NOT IN" : "IN");
+                                $filter->type = (isset($filter->type) && (strtolower($filter->type) == 'excluded' || strtolower($filter->type) == 'exclude') ? "NOT IN" : "IN");
                                 $sql .= " AND `" . DATABASE_TABLE_PREFIX . "users`.`id` " . $filter->type . " (";
                                 $sql .= "SELECT `".DATABASE_TABLE_PREFIX . "relations`.`" . $filter->item . "` FROM `" . DATABASE_TABLE_PREFIX . "relations`";
                                 $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "relations`.`type`='".$filter->relation."')";
