@@ -328,14 +328,14 @@
                         $input->search = [];
 
                         if (!isset($input->search_properties)) $input->search_properties = ['firstname', 'lastname', 'email', 'username'];
-                        $properties = (object) Validator::removeUnlisted($this->filterAllowedProperties, $input->search_properties);
-                        foreach($properties as $property) $input->search[$property] = $autoquery . $search . $autoquery;
+                        $properties = array_intersect($this->filterAllowedProperties, $input->search_properties);
+                        foreach($properties as $property) $input->search[$property] = $search;
                     }
 
-                    if (count(array_keys(get_object_vars($input->search))) > 0) {
+                    if (count(array_keys($input->search)) > 0) {
                         $sql .= " WHERE";
                         foreach($input->search as $key => $value) {
-                            if (array_keys(get_object_vars($input->search))[0] !== $key) $sql .= $searchtype;
+                            if (array_keys($input->search)[0] !== $key) $sql .= $searchtype;
                             $sql .= " `${key}` LIKE '%${value}%'";
                         }
                     } else {

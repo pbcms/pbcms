@@ -876,6 +876,42 @@ html, body {
     margin: 6px 5px 5px 8px;
 }
 
+.content table .table-filters > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.content table .table-filters > div .filters-search {
+    display: flex;
+    flex-wrap: wrap;
+    width: calc(100% - 170px);
+}
+
+.content table .table-filters > div .filters-search input {
+    height: 30px;
+    width: 100%;
+    border: none;
+    outline: none;
+}
+
+.content table .table-filters > div .button-container {
+    display: flex;
+    gap: 20px;
+}
+
+.content table .table-filters > div .filter-button,
+.content table .table-filters > div .filter-button svg {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.content table .table-filters > div .filter-button {
+    padding: 5px;
+}
+
 .content table .table-pagination > div {
     display: flex;
     width: 100%;

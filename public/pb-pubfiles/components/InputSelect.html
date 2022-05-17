@@ -11,14 +11,14 @@
 
 <component>
     <div class="input-select" :class:open="openmenu" :class:compact="compact">
-        <input :bind:name @mousedown="this.openmenu = !this.openmenu;" @blur="this.openmenu = false" :value="selected" placeholder=" " type="text" readonly>
+        <input :bind:name @input @mousedown="this.openmenu = !this.openmenu;" @blur="this.openmenu = false" :value="selected" placeholder=" " type="text" readonly>
         <span>
             {{ selected ? options[selected] : placeholder }}
         </span>
         <div class="arrow"></div>
         <ul class="dropdown">
             <li :for="options as option => text">
-                <p @mousedown="this.selected = option;">
+                <p @mousedown="this.selected = option; event.target.parentNode.parentNode.parentNode.querySelector('input').dispatchEvent(new CustomEvent('input'));">
                     {{ text }}
                 </p>
             </li>

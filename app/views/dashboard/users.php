@@ -7,7 +7,7 @@
     </p>
 </section>
 
-<section id="new-user">
+<section id="new-user" :if="new_user">
     <h2>
         New user
     </h2>
@@ -33,33 +33,63 @@
     </div>
 </section>
 
+<section class="transparent no-padding">
+    <button :if="!new_user" @click="this.new_user = true">
+        Add user
+    </button>
+</section>
+
 <section class="no-margin transparent overflow-scroll">
     <table>
         <thead>
-            <th class="smaller">
-                ID
-            </th>
-            <th class="medium">
-                Name
-            </th>
-            <th>
-                E-mail
-            </th>
-            <th>
-                Username
-            </th>
-            <th>
-                Status
-            </th>
-            <th class="medium">
-                Created
-            </th>
-            <th class="medium">
-                Updated
-            </th>
-            <th>
-                Actions
-            </th>
+            <tr>
+                <th colspan=8 class="table-filters">
+                    <div>
+                        <div class="filter-button add-filter">
+                            <div :norender>
+                                <i data-feather="filter"></i>
+                            </div>
+                        </div>
+                        <div class="filters-search">
+                            <div class="chips">
+
+                            </div>
+                            <input type="text" placeholder="Type to search" :value="filter.search" @input="waitFinishTyping()">
+                        </div>
+                        <div class="filter-button refresh" @click="refreshUsers()">
+                            <div :norender>
+                                <i data-feather="rotate-cw"></i>
+                            </div>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th class="smaller">
+                    ID
+                </th>
+                <th class="medium">
+                    Name
+                </th>
+                <th>
+                    E-mail
+                </th>
+                <th>
+                    Username
+                </th>
+                <th>
+                    Status
+                </th>
+                <th class="medium">
+                    Created
+                </th>
+                <th class="medium">
+                    Updated
+                </th>
+                <th>
+                    Actions
+                </th>
+            </tr>
         </thead>
         <tbody>
             <tr :for="user in users">
@@ -96,7 +126,7 @@
                         <p>
                             Rows per page
                         </p>
-                        <input-select &filter_limit_options="options" &pagination.limit="selected" $compact=true $placeholder=""></input-select>
+                        <input-select &filter_limit_options="options" &pagination.limit="selected" $compact=true $placeholder="" @input="refreshUsers()"></input-select>
                         <p>
                             {{ pagination.limit * (pagination.page - 1) + 1 }} - {{ pagination.limit * (pagination.page - 1) + users.length }} of {{ pagination.count }}
                         </p>
@@ -116,7 +146,7 @@
                                     <i data-feather="chevron-right"></i>
                                 </div>
                             </div>
-                            <div @click="this.pagination.page = parseInt(pagination.count / pagination.limit); this.refreshUsers();">
+                            <div @click="this.pagination.page = Math.ceil(pagination.count / pagination.limit); this.refreshUsers();">
                                 <div :norender>
                                     <i data-feather="chevrons-right"></i>
                                 </div>

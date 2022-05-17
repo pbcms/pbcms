@@ -5,9 +5,15 @@ const app = new Rable({
     data: {
         users: [],
 
+        typing_slowdown: 0,
+
+        filter: {
+            search: ''
+        },
+
         pagination: {
             limit: "10",
-            count: (await api.get('user/count')).data.count,
+            count: 0,
             page: 1,
         },
 
@@ -20,6 +26,7 @@ const app = new Rable({
             "100": 100
         },
 
+        new_user: false,
         new_user_firstname: "",
         new_user_lastname: "",
         new_user_email: "",
@@ -63,17 +70,14 @@ const app = new Rable({
         },
 
         async refreshUsers() {
-            let res = await api.post('user/list', {
+            let body = {
                 limit: this.pagination.limit,
                 offset: this.pagination.limit * (this.pagination.page - 1)
-            });
-            if (res.data.success == undefined) {
-                alert('An unknown error has occured! (unknown_error)');
-            } else if (res.data.success == false) {
-                alert(res.data.message + ' (' + res.data.error + ')');
-            } else {
-                this.users = res.data.users;
-            }
+            };
+
+            if (this.filter.search != '') body.search = this.filter.search;
+            this.users = (await api.post('user/list', body)).data.users;
+            this.pagination.count = (await api.post('user/count', body)).data.count;
         },
 
         displayMessage(msg, persistant = false) {
@@ -82,6 +86,16 @@ const app = new Rable({
             if (!persistant) setTimeout(() => {
                 if (msg == this.message) this.showMessage = false;
             }, 2000);
+        },
+
+        waitFinishTyping() {
+            this.typing_slowdown++;
+            let current = this.typing_slowdown;
+            setTimeout(() => {
+                if (current == this.typing_slowdown) {
+                    this.refreshUsers();
+                }
+            }, 300);
         }
     }
 });
