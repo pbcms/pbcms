@@ -37,7 +37,7 @@
                 $user = (object) Validator::removeUnlisted($this->allowed, $user);
                 if (isset($user->status) && !in_array($user->status, $this->userStatusses)) unset($user->status);
 
-                $user->email = filter_var($user->email, FILTER_SANITIZE_EMAIL);
+                $user->email = strtolower(filter_var($user->email, FILTER_SANITIZE_EMAIL));
                 if (!filter_var($user->email, FILTER_VALIDATE_EMAIL)) return (object) array(
                     "success" => false,
                     "error" => "invalid_email",
@@ -254,7 +254,8 @@
                 "type" => "local"
             );
 
-            $sql = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "users` WHERE `email`='${identifier}'";
+            $email = strtolower($identifier);
+            $sql = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "users` WHERE `email`='${email}'";
             if ($this->policy->get('usernames-enabled') == '1') {
                 $sql .= " OR `username`='${identifier}'";
             }
@@ -323,6 +324,7 @@
 
                 $searchtype = (isset($input->searchtype) && (strtolower($input->searchtype) == 'or' || $input->searchtype == '||' || $input->searchtype == '|') ? " OR" : " AND");
                 $properties = (object) Validator::removeUnlisted($this->filterAllowedProperties, $input);
+                if (isset($properties->email)) $properties->email = strtolower($properties->email);
 
                 if (count(array_keys(get_object_vars($properties))) > 0) {
                     $sql .= " WHERE";
@@ -444,107 +446,12 @@
             }
         }
 
-        private function list_build_sub_meta($props, $search = false, $autosearch = '%') {
-            if (!$search) $autosearch = '';
-            end($props);
-            $sql = "SELECT `".DATABASE_TABLE_PREFIX . "usermeta`.`user` FROM `" . DATABASE_TABLE_PREFIX . "usermeta`";
-            $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "usermeta`.`name`='".key($props)."'";
-            $sql .= " AND `" . DATABASE_TABLE_PREFIX . "usermeta`.`value` " . ($search ? 'LIKE' : '=') . " '$autosearch".current($props)."$autosearch'";
-            array_pop($props);
-            if (count($props)>0) {
-                return $sql . " AND `" . DATABASE_TABLE_PREFIX . "usermeta`.`user` IN (".$this->list_build_sub_meta($props, $search, $autosearch).")";
-            } else {
-                return $sql;
-            }
-        }
-
-        private function list_build_sub_rel($props) {
-            end($props);
-            $sql = "SELECT `".DATABASE_TABLE_PREFIX . "relations`.`" . current($props) . "` FROM `" . DATABASE_TABLE_PREFIX . "relations`";
-            $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "relations`.`type`='".key($props)."'";
-            array_pop($props);
-            if (count($props)>0) {
-                return $sql . " AND `" . DATABASE_TABLE_PREFIX . "relations`.`" . current($props) . "` IN (".$this->list_build_sub_rel($props).")";
-            } else {
-                return $sql;
-            }
-        }
-
         public function count($input = array()) {
             $input = (object) $input;
             $input->count = true;
             $input->limit = 0;
             $input->offset = 0;
             return $this->list($input);
-        }
-
-        public function search($input = array()) {
-            $input = (object) $input;
-            $sql = "SELECT * FROM `" . DATABASE_TABLE_PREFIX . "users`";
-
-            if (count(array_keys(get_object_vars($input))) > 0) {
-                $allowedFilters = array("limit", "offset", "order");
-
-                $filters = (object) Validator::removeUnlisted($allowedFilters, $input);
-                $properties = (object) Validator::removeUnlisted($this->filterAllowedProperties, $input);
-
-                if (count(array_keys(get_object_vars($properties))) > 0) {
-                    $sql .= " WHERE";
-                    foreach($properties as $key => $value) {
-                        if (array_keys(get_object_vars($properties))[0] !== $key) $sql .= " AND";
-                        $sql .= " `${key}` LIKE '%${value}%'";
-                    }
-                }
-
-                if (isset($filters->limit)) $sql .= " LIMIT " . ($filters->limit < 1 ? '18446744073709551610' : $filters->limit);
-                if (isset($filters->offset)) $sql .= " OFFSET " . $filters->offset;
-                if (isset($filters->order)) $sql .= " ORDER BY `id` " . (strtolower($filters->order) == 'desc' ? "DESC" : "ASC");
-            }
-
-            $res = $this->db->query($sql);
-            if ($res->num_rows > 0) {
-                return array_map(function($user) {
-                    $user = (object) $user;
-                    $user->id = intval($user->id);
-                    $user->fullname = $user->firstname . ' ' . $user->lastname;
-                    if (!isset($user->type)) $user->type = 'local';
-
-                    $picture = $this->metaGet($user->id, 'profile-picture');
-                    if ($picture) {
-                        $media = new Media();
-                        $mediaItem = $media->info($picture);
-                        if ($mediaItem && $mediaItem->owner == $user->id) {
-                            $user->picture = (object) array(
-                                "uuid" => $mediaItem->uuid,
-                                "ext" => $mediaItem->ext,
-                                "file" => $mediaItem->uuid . "." . $mediaItem->ext,
-                                "path" => "/pb-pubfiles/media/" . $mediaItem->uuid . "." . $mediaItem->ext,
-                                "url" => SITE_LOCATION . "pb-pubfiles/media/" . $mediaItem->uuid . "." . $mediaItem->ext
-                            );
-                        } else {
-                            $user->picture = (object) array(
-                                "uuid" => null,
-                                "ext" => "png",
-                                "file" => "default-user-black.png",
-                                "path" => "/pb-pubfiles/img/generic/default-user-black.png",
-                                "url" => SITE_LOCATION . "pb-pubfiles/img/generic/default-user-black.png"
-                            );
-                        }
-                    } else {
-                        $user->picture = (object) array(
-                            "uuid" => null,
-                            "ext" => "png",
-                            "file" => "default-user-black.png",
-                            "path" => "/pb-pubfiles/img/generic/default-user-black.png",
-                            "url" => SITE_LOCATION . "pb-pubfiles/img/generic/default-user-black.png"
-                        );
-                    }
-
-                    return $user;
-                }, (array) $res->fetch_all(MYSQLI_ASSOC));
-            } else {
-                return array();
-            }
         }
 
         public function update($user, $changes) {
@@ -555,7 +462,7 @@
                 if (count(array_keys((array) $changes)) > 0) {
                     if (isset($changes->status) && !in_array($user->status, $this->userStatusses)) unset($user->status);
                     if (isset($changes->email)) {
-                        $changes->email = filter_var($changes->email, FILTER_SANITIZE_EMAIL);
+                        $changes->email = strtolower(filter_var($changes->email, FILTER_SANITIZE_EMAIL));
                         if (!filter_var($changes->email, FILTER_VALIDATE_EMAIL)) {
                             return (object) array(
                                 "success" => false,
