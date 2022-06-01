@@ -66,69 +66,67 @@
 
         public function list($arg1 = null, $arg2 = null, $arg3 = null) {
             if (!$arg1) {
-                $type = null;
-                $limit = 10;
-                $offset = 0;
-                $properties = null;
+                $type = null; $limit = 10; $offset = 0; $filters = null;
             } else if (is_numeric($arg1)) {
-                $type = null;
-                $limit = $arg1;
-                $offset = (is_numeric($arg2) ? $arg2 : 0);
-                $properties = null;
+                $type = null; $limit = $arg1; $offset = (is_numeric($arg2) ? $arg2 : 0); $filters = null;
             } else if (is_string($arg1)) {
-                $type = $arg1;
-                $limit = (is_numeric($arg2) ? $arg2 : 10);
-                $offset = (is_numeric($arg3) ? $arg3 : 0);
-                $properties = null;
+                $type = $arg1; $limit = (is_numeric($arg2) ? $arg2 : 10); $offset = (is_numeric($arg3) ? $arg3 : 0); $filters = null;
             } else if (is_object($arg1) || is_array($arg1)) {
-                $options = (object) $arg1;
-                $type = (!isset($options->type) ? null : $options->type);
-                $limit = (!isset($options->limit) ? 10 : $options->limit);
-                $offset = (!isset($options->offset) ? 0 : $options->offset);
-                $properties = (!isset($options->properties) ? null : (array) $options->properties);
+                $options = (object) $arg1; $type = (!isset($options->type) ? null : $options->type); $limit = (!isset($options->limit) ? 10 : $options->limit); $offset = (!isset($options->offset) ? 0 : $options->offset); $filters = (!isset($options->filters) ? null : (array) $options->filters);
             }
 
-            $query = "SELECT ";
-            $query .= "`" . DATABASE_TABLE_PREFIX . "objects`.`id`, `" . DATABASE_TABLE_PREFIX . "objects`.`type`, `";
-            $query .= DATABASE_TABLE_PREFIX . "objects`.`name`, `" . DATABASE_TABLE_PREFIX . "objects`.`created`, `";
-            $query .= DATABASE_TABLE_PREFIX . "objects`.`updated`";
-            $query .= " FROM `" . DATABASE_TABLE_PREFIX . "objects`";
-            $query .= " WHERE ";
-            if ($type) {
-                $query .= "`type`='${type}'";
-            } else {
-                $query .= "1";
+            $sql = "SELECT " . (isset($options->count) && $options->count ? 'COUNT(`id`) as count' : '*') . " FROM `" . DATABASE_TABLE_PREFIX . "objects` WHERE ";
+            $sql .= ($type ? "`type`='${type}'" : "1");
+
+            if (isset($options->filters) && count($options->filters) > 0) {
+                foreach($options->filters as $filter) {
+                    $filter = (object) $filter;
+                    switch($filter->target) {
+                        case 'property':
+                            if (!isset($filter->compare)) $filter->compare = "=";
+                            if (!in_array(strtoupper($filter->compare), ['like', '=', '<', '<=', '>', '>='])) $filter->compare = "=";
+                            if (isset($filter->search) && $filter->search) $filter->compare = 'LIKE';
+                            $filter->compare = strtoupper($filter->compare);
+
+                            $filter->type = (isset($filter->type) && (strtolower($filter->type) == 'excluded' || strtolower($filter->type) == 'exclude') ? "NOT IN" : "IN");
+                            if (isset($filter->search) && $filter->search) $filter->value = "%$filter->value%";
+
+                            $sql .= " AND `" . DATABASE_TABLE_PREFIX . "objects`.`id` " . $filter->type . " (";
+                            $sql .= "SELECT `".DATABASE_TABLE_PREFIX . "object-properties`.`object` FROM `" . DATABASE_TABLE_PREFIX . "object-properties`";
+                            $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "object-properties`.`property`='".$filter->property."'";
+                            $sql .= " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`value` " . $filter->compare . " '".$filter->value."')";
+                            break;
+                        case 'relation':
+                            $filter->type = (isset($filter->type) && (strtolower($filter->type) == 'excluded' || strtolower($filter->type) == 'exclude') ? "NOT IN" : "IN");
+                            $sql .= " AND `" . DATABASE_TABLE_PREFIX . "objects`.`id` " . $filter->type . " (";
+                            $sql .= "SELECT `".DATABASE_TABLE_PREFIX . "relations`.`" . $filter->item . "` FROM `" . DATABASE_TABLE_PREFIX . "relations`";
+                            $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "relations`.`type`='".$filter->relation."')";
+                            break;
+                    }
+                }
             }
 
-            if ($properties && count($properties) > 0) {
-                $query .= " AND `" . DATABASE_TABLE_PREFIX . "objects`.`id` IN (".$this->list_build_sub($properties).")";
-            }
-
-            if ($limit < 1) {
-                $query .= " LIMIT 18446744073709551610 OFFSET ${offset}"; //Limit by the biggest unsigned int possible.
-            } else {
-                $query .= " LIMIT ${limit} OFFSET ${offset}";
-            }
-
-            $res = $this->db->query($query);
-            if ($res->num_rows > 0) {
+            if (isset($options->limit)) $sql .= " LIMIT " . ($options->limit < 1 ? '18446744073709551610' : $options->limit);
+            if (isset($options->offset)) $sql .= " OFFSET " . $options->offset;
+            if (isset($options->order)) $sql .= " ORDER BY `id` " . (strtolower($options->order) == 'desc' ? "DESC" : "ASC");
+        
+            $res = $this->db->query($sql);
+            if (isset($options->count) && $options->count) {
+                $res = (object) $res->fetch_assoc();
+                return $res->count;
+            } else if ($res->num_rows > 0) {
                 return $res->fetch_all(MYSQLI_ASSOC);
             } else {
                 return array();
             }
         }
 
-        private function list_build_sub($props){
-            end($props);
-            $sql = "SELECT `".DATABASE_TABLE_PREFIX . "object-properties`.`object` FROM `" . DATABASE_TABLE_PREFIX . "object-properties`";
-            $sql .= " WHERE `".DATABASE_TABLE_PREFIX . "object-properties`.`property`='".key($props)."'";
-            $sql .= " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`value` LIKE '".current($props)."'";
-            array_pop($props);
-            if (count($props)>0) {
-                return $sql . " AND `" . DATABASE_TABLE_PREFIX . "object-properties`.`object` IN (".$this->list_build_sub($props).")";
-            } else {
-                return $sql;
-            }
+        public function count($input = array()) {
+            $input = (object) $input;
+            $input->count = true;
+            $input->limit = 0;
+            $input->offset = 0;
+            return $this->list($input);
         }
 
         public function properties($type, $name = '', $parse = null) {
