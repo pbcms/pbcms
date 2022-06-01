@@ -8,12 +8,17 @@
     use Library\Mailer;
     use Helper\ApiResponse as Respond;
     use Helper\Request;
+    use Helper\Header;
     use Helper\Validate;
     use Registry\Event;
 
     $this->__registerMethod('create-session', function() {
         $required = array("identifier", "password");
         $postdata = Request::parsePost();
+
+        Event::trigger('post-create-session', (object) array(
+            "postdata" => $postdata
+        ));
 
         if (!Request::requireMethod('post')) die();
         if (!Request::requireData($required)) die();
@@ -44,6 +49,12 @@
                         $secure = (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) ? true : false);
                         $url = parse_url(SITE_LOCATION);
                         setcookie('pb-refresh-token', $token->token, 2147483647, $url['path'], $url['host'], $secure, true);
+                        Event::trigger('post-create-session', (object) array(
+                            "user" => $info,
+                            "session" => $session,
+                            "token" => $token
+                        ));
+
                         Respond::success();
                     } else {
                         Respond::error($token->error, $this->lang->get('messages.api-auth.create-session.error-token_error', "An error occured while creating the refresh-token."));
@@ -114,6 +125,23 @@
             }
         } else {
             Respond::error('missing_refresh_token', $this->lang->get('messages.api-auth.access-token.error-missing_refresh_token', "No refresh token present."));    
+        }
+    });
+
+    $this->__registerMethod('signout', function($params) {
+        Event::trigger('pre-signout');
+
+        unset($_COOKIE['pb-refresh-token']); 
+        $secure = (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) ? true : false);
+        $url = parse_url(SITE_LOCATION);
+        setcookie('pb-refresh-token', null, -1, $url['path'], $url['host'], $secure, true);
+
+        Event::trigger('post-signout');
+
+        if (isset($_GET['followup'])) {
+            Header::Location(SITE_LOCATION . $_GET['followup']);
+        } else {
+            Respond::success();
         }
     });
 
