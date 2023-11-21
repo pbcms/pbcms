@@ -16,7 +16,7 @@ This project is still in alpha and under heavy development. Expect API changes t
 
 ## Documentation
 
-Documentation can be accessed via [docs.pbcms.io](https://docs.pbcms.io) or generated with ``phpDocumentor -d /dir/of/pbcms -t /output/dir/of/docs --ignore dynamic/``.
+Documentation can be generated with ``phpDocumentor -d /dir/of/pbcms -t /output/dir/of/docs --ignore dynamic/``.
 
 ## Webserver configuration
 
